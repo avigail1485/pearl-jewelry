@@ -61,7 +61,7 @@ export default function About() {
         >
           <img
             ref={imgRef}
-            src="/images/work/photography.jpg"
+            src="images/work/photography.jpg"
             alt="תמר פינקל בסטודיו"
             className="h-[120%] w-full object-cover"
           />
