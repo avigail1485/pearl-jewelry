@@ -1,0 +1,86 @@
+@font-face {
+  font-family: 'Tel Aviv Brutalist';
+  src: url('/fonts/TelAvivBrutalist-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tel Aviv Brutalist';
+  src: url('/fonts/TelAvivBrutalist-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Tel Aviv Brutalist';
+  src: url('/fonts/TelAvivBrutalist-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: auto;
+}
+
+html,
+body {
+  background-color: #f4f1ea;
+  color: #17160f;
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  overflow-x: clip;
+}
+
+::selection {
+  background: #17160f;
+  color: #f4f1ea;
+}
+
+.font-display {
+  font-family: 'Tel Aviv Brutalist', sans-serif;
+}
+
+/* line-reveal helper: each line is clipped, inner span carries the translate */
+.line-mask {
+  overflow: hidden;
+  display: block;
+}
+
+.line-inner {
+  display: inline-block;
+  will-change: transform;
+}
+
+.reveal-line {
+  overflow: hidden;
+  display: block;
+}
+
+/* Marquee track */
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+}
+
+/* custom scrollbar, subtle */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f4f1ea;
+}
+::-webkit-scrollbar-thumb {
+  background: #d9d3c4;
+  border-radius: 8px;
+}
