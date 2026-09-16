@@ -1,0 +1,11 @@
+{
+  "name": "hebrew-speech-to-text",
+  "version": "1.0.0",
+  "description": "תמלול דיבור בעברית לטקסט - אפליקציה מקומית, ללא מפתח API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "private": true,
+  "license": "MIT"
+}
