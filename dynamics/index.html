@@ -300,6 +300,16 @@ section{position:relative}
 .imagine-grid div.on .check{background:var(--accent);color:var(--accent-ink)}
 @media (max-width:900px){.imagine-grid{grid-template-columns:1fr}}
 
+/* line field reprises */
+.fx{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:block}
+.deck-stage>*:not(.fx){position:relative;z-index:1}
+#deckField{-webkit-mask-image:radial-gradient(ellipse 60% 55% at 50% 60%,#000 0%,rgba(0,0,0,.6) 55%,transparent 100%);mask-image:radial-gradient(ellipse 60% 55% at 50% 60%,#000 0%,rgba(0,0,0,.6) 55%,transparent 100%)}
+.contact{overflow:hidden}
+.contact>.wrap{position:relative;z-index:2}
+#contactField{-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 30%,rgba(0,0,0,.35) 55%,transparent 75%);mask-image:linear-gradient(to bottom,#000 0%,#000 30%,rgba(0,0,0,.35) 55%,transparent 75%)}
+.contact-shade{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to left,var(--ink) 0%,rgba(3,4,5,.85) 35%,rgba(3,4,5,.25) 65%,transparent 85%)}
+@media (max-width:900px){.contact-shade{background:linear-gradient(to bottom,rgba(3,4,5,.55),rgba(3,4,5,.85) 40%)}}
+
 /* banner band (the brand's own artwork, never stretched) */
 .band{position:relative;overflow:hidden;background:var(--ink)}
 .band img{width:100%;height:auto;will-change:transform}
@@ -580,6 +590,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   <section class="deck-sec" aria-labelledby="deckTitle">
     <div class="deck-pin" id="deckPin">
       <div class="deck-stage">
+        <canvas class="fx" id="deckField" aria-hidden="true"></canvas>
         <div class="wrap">
           <div class="sec-head">
             <span class="eyebrow">מותג שלם, לא רק לוגו</span>
@@ -774,6 +785,8 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
 
   <!-- CONTACT -->
   <section class="contact" id="contact">
+    <canvas class="fx" id="contactField" aria-hidden="true"></canvas>
+    <div class="contact-shade" aria-hidden="true"></div>
     <div class="wrap">
       <span class="eyebrow rv">צור קשר</span>
       <h2 class="split" style="margin-top:20px">בואו נדבר|<span class="accent">תכל'ס.</span></h2>
@@ -996,7 +1009,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
       return lerp(lerp(a,c,u),lerp(b,d,u),fade(y));
     }
     var W,H,lines=[],running=true,visible=true,raf=0,t0=performance.now();
-    var fine=matchMedia('(hover:hover) and (pointer:fine)').matches, idle=!fine;
+    var fine=matchMedia('(hover:hover) and (pointer:fine)').matches, idle=!fine&&!o.scroll, pointer=false, lastY=scrollY;
     var m={x:-10,y:0,lx:0,ly:0,sx:0,sy:0,vs:0,a:0,set:false};
     function build(){
       var gx=innerWidth<900?16:12, gy=32, nL=Math.ceil((W+200)/gx), nP=Math.ceil((H+30)/gy), xs=(W-gx*nL)/2, ys=(H-gy*nP)/2;
@@ -1004,7 +1017,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
     }
     function size(){ var b=sec.getBoundingClientRect(); W=Math.round(b.width); H=Math.round(b.height); var r=Math.min(devicePixelRatio||1,2); cv.width=W*r; cv.height=H*r; ctx.setTransform(r,0,0,r,0,0); build(); }
     function setM(x,y,raw){ if(raw){ var b=sec.getBoundingClientRect(); x-=b.left; y-=b.top; } m.x=x; m.y=y; if(!m.set){ m.sx=m.lx=x; m.sy=m.ly=y; m.set=true; } }
-    sec.addEventListener('mousemove',function(e){ idle=false; setM(e.clientX,e.clientY,1); });
+    sec.addEventListener('mousemove',function(e){ idle=false; pointer=true; setM(e.clientX,e.clientY,1); });
     sec.addEventListener('touchmove',function(e){ var t=e.touches[0]; idle=false; setM(t.clientX,t.clientY,1); },{passive:true});
     addEventListener('resize',size); size();
     if(window.ResizeObserver) new ResizeObserver(size).observe(sec);
@@ -1030,7 +1043,10 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
       if(!running||!visible) return;
       if(idle){ var tt=now/1000; setM(W*(.5+.35*Math.sin(tt*.5)),H*(.5+.3*Math.cos(tt*.37))); }
       m.sx+=(m.x-m.sx)*.1; m.sy+=(m.y-m.sy)*.1;
+      /* scroll mode: with no pointer, the field sways on its own and scrolling itself strums the lines */
+      var sd=0; if(o.scroll){ sd=scrollY-lastY; lastY=scrollY; if(!pointer){ var ts=now/1000; setM(W*(.5+.32*Math.sin(ts*.45)),H*(.5+.18*Math.cos(ts*.31))); } }
       var dx=m.x-m.lx, dy=m.y-m.ly; m.vs=Math.min(160,m.vs+(Math.hypot(dx,dy)-m.vs)*.1); m.lx=m.x; m.ly=m.y; m.a=Math.atan2(dy,dx);
+      if(Math.abs(sd)>.5){ m.vs=Math.min(160,Math.max(m.vs,Math.abs(sd)*1.3)); m.a=sd>0?-Math.PI/2:Math.PI/2; }
       move(now-t0); draw(); raf=requestAnimationFrame(tick);
     }
     if(reduce){ move(0); draw(); } else raf=requestAnimationFrame(tick);
@@ -1039,6 +1055,10 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   var stopField=makeField($('#field'),$('#intro'));
   /* the same field continues behind the hero on desktop */
   if(matchMedia('(min-width: 901px)').matches) makeField($('#heroField'),$('.hero'),{pauseOffscreen:true,color:'rgba(232,75,37,.5)'});
+  /* the field returns twice more: faintly under the card deck, where scrolling opens the hand and strums the lines,
+     and behind the closing call to action, so the page ends the way it began */
+  makeField($('#deckField'),$('.deck-stage'),{pauseOffscreen:true,scroll:true,color:'rgba(232,75,37,.3)'});
+  makeField($('#contactField'),$('#contact'),{pauseOffscreen:true,scroll:true,color:'rgba(232,75,37,.5)'});
 
   /* ---------- intro: loads like a player, a click opens the site ---------- */
   var intro=$('#intro'), fill=$('#introFill'), knob=$('#introKnob'), pct=$('#introPct'), play=$('#introPlay'), wipe=$('#introWipe'), started=false;
