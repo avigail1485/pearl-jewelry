@@ -122,7 +122,14 @@ main{overflow-x:clip}
 @media (max-width:900px){.nav{display:none}.site-head .logo img{height:54px}}
 
 /* hero */
-.hero{position:relative;padding-block:clamp(70px,10vw,150px) clamp(60px,8vw,120px)}
+.hero{position:relative;overflow:hidden;padding-block:clamp(70px,10vw,150px) clamp(60px,8vw,120px)}
+.hero>.wrap{position:relative;z-index:2}
+#heroField,.hero-shade{display:none}
+@media (min-width:901px){
+  #heroField{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:0;transition:opacity 1.6s .4s}
+  body:not(.pending) #heroField{opacity:1}
+  .hero-shade{display:block;position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to left,var(--ink) 0%,var(--ink) 30%,rgba(3,4,5,.75) 50%,rgba(3,4,5,.2) 72%,transparent 88%),linear-gradient(to bottom,rgba(3,4,5,.4),transparent 18%,transparent 75%,var(--ink))}
+}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:56px;align-items:center}
 .hero h1{font-size:clamp(3.2rem,9.4vw,9.6rem);line-height:.92}
 .ln{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
@@ -438,6 +445,8 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
 <main>
   <!-- HERO -->
   <section class="hero">
+    <canvas id="heroField" aria-hidden="true"></canvas>
+    <div class="hero-shade" aria-hidden="true"></div>
     <div class="wrap">
       <div class="hero-grid">
         <div>
@@ -974,8 +983,8 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
 
 
   /* ---------- intro line field: vertical lines breathe on Perlin noise, the pointer pushes them like a hand over strings ---------- */
-  var stopField=(function(){
-    var cv=$('#field'), sec=$('#intro'), ctx=cv&&cv.getContext('2d'); if(!ctx) return function(){};
+  function makeField(cv,sec,o){
+    o=o||{}; var ctx=cv&&cv.getContext('2d'); if(!ctx) return function(){};
     var perm=new Uint8Array(512), grad=[[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
     (function(){ var p=[],i,j,t; for(i=0;i<256;i++)p[i]=i; for(i=255;i>0;i--){j=Math.floor(Math.random()*(i+1));t=p[i];p[i]=p[j];p[j]=t;} for(i=0;i<512;i++)perm[i]=p[i&255]; })();
     function fade(t){return t*t*t*(t*(t*6-15)+10)}
@@ -986,18 +995,20 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
       var a=dg(grad[perm[X+perm[Y]]&7],x,y), b=dg(grad[perm[X+perm[Y+1]]&7],x,y-1), c=dg(grad[perm[X+1+perm[Y]]&7],x-1,y), d=dg(grad[perm[X+1+perm[Y+1]]&7],x-1,y-1), u=fade(x);
       return lerp(lerp(a,c,u),lerp(b,d,u),fade(y));
     }
-    var W,H,lines=[],running=true,raf=0,t0=performance.now();
+    var W,H,lines=[],running=true,visible=true,raf=0,t0=performance.now();
     var fine=matchMedia('(hover:hover) and (pointer:fine)').matches, idle=!fine;
     var m={x:-10,y:0,lx:0,ly:0,sx:0,sy:0,vs:0,a:0,set:false};
     function build(){
       var gx=innerWidth<900?16:12, gy=32, nL=Math.ceil((W+200)/gx), nP=Math.ceil((H+30)/gy), xs=(W-gx*nL)/2, ys=(H-gy*nP)/2;
       lines=[]; for(var i=0;i<=nL;i++){ var pts=[]; for(var j=0;j<=nP;j++) pts.push({x:xs+gx*i,y:ys+gy*j,wx:0,wy:0,cx:0,cy:0,vx:0,vy:0}); lines.push(pts); }
     }
-    function size(){ W=innerWidth; H=innerHeight; var r=Math.min(devicePixelRatio||1,2); cv.width=W*r; cv.height=H*r; ctx.setTransform(r,0,0,r,0,0); build(); }
-    function setM(x,y){ m.x=x; m.y=y; if(!m.set){ m.sx=m.lx=x; m.sy=m.ly=y; m.set=true; } }
-    sec.addEventListener('mousemove',function(e){ idle=false; setM(e.clientX,e.clientY); });
-    sec.addEventListener('touchmove',function(e){ var t=e.touches[0]; idle=false; setM(t.clientX,t.clientY); },{passive:true});
+    function size(){ var b=sec.getBoundingClientRect(); W=Math.round(b.width); H=Math.round(b.height); var r=Math.min(devicePixelRatio||1,2); cv.width=W*r; cv.height=H*r; ctx.setTransform(r,0,0,r,0,0); build(); }
+    function setM(x,y,raw){ if(raw){ var b=sec.getBoundingClientRect(); x-=b.left; y-=b.top; } m.x=x; m.y=y; if(!m.set){ m.sx=m.lx=x; m.sy=m.ly=y; m.set=true; } }
+    sec.addEventListener('mousemove',function(e){ idle=false; setM(e.clientX,e.clientY,1); });
+    sec.addEventListener('touchmove',function(e){ var t=e.touches[0]; idle=false; setM(t.clientX,t.clientY,1); },{passive:true});
     addEventListener('resize',size); size();
+    if(window.ResizeObserver) new ResizeObserver(size).observe(sec);
+    if(o.pauseOffscreen && 'IntersectionObserver' in window) new IntersectionObserver(function(es){ visible=es[0].isIntersecting; if(visible&&running&&!reduce){ cancelAnimationFrame(raf); raf=requestAnimationFrame(tick); } }).observe(sec);
     function move(time){
       var l=Math.max(260,m.vs*2.2), ca=Math.cos(m.a), sa=Math.sin(m.a);
       for(var i=0;i<lines.length;i++) for(var j=0,pts=lines[i];j<pts.length;j++){
@@ -1010,13 +1021,13 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
       }
     }
     function draw(){
-      ctx.clearRect(0,0,W,H); ctx.lineWidth=1.15; ctx.strokeStyle='rgba(232,75,37,.55)';
+      ctx.clearRect(0,0,W,H); ctx.lineWidth=1.15; ctx.strokeStyle=o.color||'rgba(232,75,37,.55)';
       for(var i=0;i<lines.length;i++){ var pts=lines[i]; ctx.beginPath();
         for(var j=0;j<pts.length;j++){ var p=pts[j], last=j===pts.length-1, x=p.x+p.wx+(last?0:p.cx), y=p.y+p.wy+(last?0:p.cy); j?ctx.lineTo(x,y):ctx.moveTo(x,y); }
         ctx.stroke(); }
     }
     function tick(now){
-      if(!running) return;
+      if(!running||!visible) return;
       if(idle){ var tt=now/1000; setM(W*(.5+.35*Math.sin(tt*.5)),H*(.5+.3*Math.cos(tt*.37))); }
       m.sx+=(m.x-m.sx)*.1; m.sy+=(m.y-m.sy)*.1;
       var dx=m.x-m.lx, dy=m.y-m.ly; m.vs=Math.min(160,m.vs+(Math.hypot(dx,dy)-m.vs)*.1); m.lx=m.x; m.ly=m.y; m.a=Math.atan2(dy,dx);
@@ -1024,7 +1035,10 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
     }
     if(reduce){ move(0); draw(); } else raf=requestAnimationFrame(tick);
     return function(){ running=false; cancelAnimationFrame(raf); removeEventListener('resize',size); };
-  })();
+  }
+  var stopField=makeField($('#field'),$('#intro'));
+  /* the same field continues behind the hero on desktop */
+  if(matchMedia('(min-width: 901px)').matches) makeField($('#heroField'),$('.hero'),{pauseOffscreen:true,color:'rgba(232,75,37,.5)'});
 
   /* ---------- intro: loads like a player, a click opens the site ---------- */
   var intro=$('#intro'), fill=$('#introFill'), knob=$('#introKnob'), pct=$('#introPct'), play=$('#introPlay'), wipe=$('#introWipe'), started=false;
