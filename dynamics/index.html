@@ -310,6 +310,31 @@ section{position:relative}
 .contact-shade{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(to left,var(--ink) 0%,rgba(3,4,5,.85) 35%,rgba(3,4,5,.25) 65%,transparent 85%)}
 @media (max-width:900px){.contact-shade{background:linear-gradient(to bottom,rgba(3,4,5,.55),rgba(3,4,5,.85) 40%)}}
 
+/* ================= TUNNEL: a 3D fly-through of the brand's vocabulary ================= */
+.tunnel{position:relative;height:430vh;background:var(--ink)}
+.t-stage{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;perspective:1000px;perspective-origin:50% 50%}
+.t-world{position:absolute;left:50%;top:50%;width:0;height:0;transform-style:preserve-3d;will-change:transform}
+.ti{position:absolute;left:0;top:0;white-space:nowrap;will-change:transform,opacity,filter;opacity:0;line-height:1;pointer-events:none}
+.ti.w{font-family:var(--display);font-weight:700;color:var(--fg)}
+.ti.w.light{font-weight:300}
+.ti.w.acc{color:var(--accent)}
+.ti.w.out{color:transparent;-webkit-text-stroke:1.5px var(--fg)}
+.ti.w.out.acc{-webkit-text-stroke-color:var(--accent)}
+.ti.w.mute{color:var(--mute)}
+.ti img{display:block;width:100%;height:auto}
+.ti svg{display:block;width:100%;height:auto;overflow:visible}
+.ti.blob{border-radius:44px;background:radial-gradient(circle at 28% 35%,#fff 0%,rgba(255,255,255,.0) 38%),radial-gradient(circle at 75% 70%,var(--accent) 0%,rgba(232,75,37,.0) 55%),linear-gradient(135deg,#f08a6c,var(--accent) 55%,#7a2510);box-shadow:0 30px 80px rgba(232,75,37,.35)}
+.ti.card{border-radius:22px;background:var(--ink-3);border:1px solid var(--line);display:grid;place-items:center}
+.ti.card img{width:78%}
+.ti.dot{width:3px;height:3px;border-radius:50%;background:var(--fg)}
+.t-final{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:18px;text-align:center;pointer-events:none;opacity:0;padding-inline:max(var(--gutter),env(safe-area-inset-left,0px))}
+.t-final small{font-size:clamp(1rem,1.6vw,1.3rem);color:var(--mute);letter-spacing:.1em}
+.t-final b{font:700 clamp(3rem,10vw,9rem)/.9 var(--display);color:var(--fg)}
+.t-final b span{color:var(--accent)}
+.t-hint{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:.85rem;letter-spacing:.2em;color:var(--mute);transition:opacity .4s}
+.t-hint i{display:block;width:1px;height:38px;margin:10px auto 0;background:linear-gradient(var(--accent),transparent);animation:drip 1.8s ease-in-out infinite;transform-origin:top}
+@keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
+
 /* banner band (the brand's own artwork, never stretched) */
 .band{position:relative;overflow:hidden;background:var(--ink)}
 .band img{width:100%;height:auto;will-change:transform}
@@ -487,6 +512,15 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
       <span>מיתוג</span><span>לוגו ושפה גרפית</span><span>עיצוב פרינט</span><span>קמפיינים ודיגיטל</span><span>בניית אתרים</span><span>UX/UI</span><span>עיצוב שמניע</span>
     </div>
   </div>
+
+  <!-- TUNNEL -->
+  <section class="tunnel" id="tunnel" aria-label="מה נכנס למותג">
+    <div class="t-stage">
+      <div class="t-world" id="tWorld"></div>
+      <div class="t-final" id="tFinal"><small>ומכל אלה נבנה</small><b>מותג <span>אחד.</span></b></div>
+      <p class="t-hint" id="tHint">גללו פנימה<i></i></p>
+    </div>
+  </section>
 
   <!-- PAIN -->
   <section class="sec">
@@ -994,6 +1028,77 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
     });
   }
 
+
+
+  /* ---------- tunnel: words and shapes sit at depth; scrolling flies the camera through them ---------- */
+  (function(){
+    var sec=$('#tunnel'), world=$('#tWorld'), fin=$('#tFinal'), thint=$('#tHint'); if(!sec) return;
+    var C='<svg viewBox="0 0 180 120"><path d="M160 22 H44 Q14 22 14 52 V70 Q14 100 44 100 H160" fill="none" stroke="#e84b25" stroke-width="3" stroke-linecap="round"/></svg>';
+    var SL='<svg viewBox="0 0 120 60"><path d="M10 55 L40 5 M45 55 L75 5 M80 55 L110 5" stroke="#f5f5f3" stroke-width="2.5" stroke-linecap="round"/></svg>';
+    /* [kind, content, x, y, z, size(px or width), rotZ, extra classes] — x/y are designed for a 1440px stage */
+    var D=[
+      ['w','לוגו',-470,-210,-300,92,-6,'acc'],
+      ['w','שפה גרפית',430,170,-520,64,4,'out'],
+      ['svg',C,380,-250,-700,230,-12,''],
+      ['w','טיפוגרפיה',-420,230,-900,70,3,'light'],
+      ['blob','',-560,-40,-1150,260,-5,''],
+      ['w','וואו.',90,-300,-1250,58,-4,'acc light'],
+      ['w','צבע',520,-70,-1450,110,6,'out acc'],
+      ['img','img/mark.png',-210,260,-1650,170,-14,''],
+      ['w','UX/UI',-480,-260,-1850,84,-3,''],
+      ['svg',SL,330,250,-2000,130,0,''],
+      ['w','קמפיין',300,-230,-2200,76,5,'light'],
+      ['w','"זה בדיוק אני!"',-380,110,-2400,52,-5,'mute'],
+      ['card','<img src="img/logo.png" alt="">',520,180,-2600,240,4,''],
+      ['w','אתר',-520,-160,-2800,120,-4,'acc'],
+      ['svg',C,-150,-270,-3000,180,10,''],
+      ['w','סושיאל',420,-200,-3150,72,3,'out'],
+      ['w','אריזה',-330,250,-3300,80,-6,'light'],
+      ['w','ספר מותג',380,230,-3500,66,4,''],
+      ['w','סוף סוף!',-440,-220,-3450,60,-3,'acc light'],
+      ['img','img/mark.png',300,-150,-3600,150,12,'']
+    ];
+    for(var k=0;k<70;k++) D.push(['dot','',(Math.random()-.5)*1700,(Math.random()-.5)*1100,-Math.random()*4200,3,0,'']);
+    var items=D.map(function(d){
+      var el=document.createElement('div'); el.className='ti '+(d[0]==='w'?'w ':d[0]==='blob'?'blob ':d[0]==='card'?'card ':d[0]==='dot'?'dot ':'')+d[7];
+      if(d[0]==='w'){ el.textContent=d[1]; el.style.fontSize=d[5]+'px'; }
+      else if(d[0]==='img'){ el.innerHTML='<img src="'+d[1]+'" alt="">'; el.style.width=d[5]+'px'; }
+      else if(d[0]==='svg'||d[0]==='card'){ el.innerHTML=d[1]; el.style.width=d[5]+'px'; if(d[0]==='card') el.style.height=(d[5]*.62)+'px'; }
+      else if(d[0]==='blob'){ el.style.width=d[5]+'px'; el.style.height=(d[5]*.6)+'px'; }
+      world.appendChild(el);
+      return {el:el,x:d[2],y:d[3],z:d[4],r:d[6],dot:d[0]==='dot',ry:(Math.random()-.5)*16};
+    });
+    var TRAVEL=4300, cur=0, mx=0, my=0, tmx=0, tmy=0, on=true;
+    if(fine()) sec.addEventListener('mousemove',function(e){ tmx=e.clientX/innerWidth-.5; tmy=e.clientY/innerHeight-.5; });
+    function fine(){ return matchMedia('(hover:hover) and (pointer:fine)').matches; }
+    if('IntersectionObserver' in window) new IntersectionObserver(function(es){ on=es[0].isIntersecting; }).observe(sec);
+    function render(p){
+      var k=Math.max(.42,Math.min(1,innerWidth/1440)), ky=Math.max(.55,Math.min(1,innerHeight/900)), cam=p*TRAVEL;
+      for(var i=0;i<items.length;i++){
+        var it=items[i], ze=it.z+cam, o;
+        if(ze<-3000||ze>650){ it.el.style.visibility='hidden'; continue; }
+        it.el.style.visibility='visible';
+        o=ze<-2300?(ze+3000)/700:ze>250?1-(ze-250)/400:1;
+        it.el.style.opacity=Math.max(0,Math.min(1,o))*(it.dot?.6:1);
+        it.el.style.transform='translate(-50%,-50%) translate3d('+(it.x*k)+'px,'+(it.y*ky)+'px,'+ze+'px) rotateZ('+it.r+'deg) rotateY('+it.ry+'deg)';
+        if(!it.dot) it.el.style.filter=ze<-1400?'blur('+Math.min(6,(-ze-1400)/250).toFixed(1)+'px)':'none';
+      }
+      var f=clamp((p-.86)/.12,0,1);
+      fin.style.opacity=f; fin.style.transform='scale('+(.85+.15*f)+')';
+      thint.style.opacity=1-clamp(p*8,0,1);
+    }
+    if(reduce){ render(.6); fin.style.opacity=1; fin.style.transform='none'; return; }
+    (function tick(){
+      if(on){
+        var r=sec.getBoundingClientRect(), target=clamp(-r.top/((r.height-innerHeight)||1),0,1);
+        cur+=(target-cur)*.1; if(Math.abs(target-cur)<.0002) cur=target;
+        mx+=(tmx-mx)*.06; my+=(tmy-my)*.06;
+        world.style.transform='rotateY('+(mx*10)+'deg) rotateX('+(-my*6)+'deg)';
+        render(cur);
+      }
+      requestAnimationFrame(tick);
+    })();
+  })();
 
   /* ---------- intro line field: vertical lines breathe on Perlin noise, the pointer pushes them like a hand over strings ---------- */
   function makeField(cv,sec,o){
