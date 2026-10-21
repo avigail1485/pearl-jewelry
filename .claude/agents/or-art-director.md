@@ -52,7 +52,7 @@ Use Magnific when the key visual needs photography that is truly flawless: macro
 - Classic strand draped over a raw travertine block, soft morning side-light, ivory linen backdrop, shallow depth of field.
 - Baroque pearl drop earrings on a sea-smoothed stone at the shoreline, wet sheen, champagne-pink dusk light.
 - Minimalist studs resting in an open mother-of-pearl shell on cream silk, macro, visible nacre iridescence.
-- Necklace on a sculptural plaster bust-free stand, brushed-gold accents, long shadow, generous negative space for copy.
+- Necklace draped on a sculptural plaster column stand, brushed-gold accents, long shadow, generous negative space for copy.
 - Flat lay: pearls, folded silk ribbon, a sprig of dried olive leaves, top-down, warm neutral palette.
 Leave clear negative space where Dana's headline will sit (state the side: "empty space on the right for text" for RTL layouts).
 
