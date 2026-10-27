@@ -22,7 +22,7 @@
   --mute:#9a9ca3;
   --mute-2:#5d6068;
   --accent:#e84b25;     /* exactly the logo's orange */
-  --accent-ink:#ffffff;
+  --accent-ink:#030405; /* ink on orange keeps every label above 4.5:1 */
   --display:"TA Brutalist","Arial Hebrew","Heebo",Arial,sans-serif;
   --body:"TA Brutalist","Arial Hebrew","Heebo",Arial,sans-serif;
   --gutter:clamp(20px,6vw,96px);
@@ -44,8 +44,6 @@ img{max-width:100%;display:block}
 h1,h2,h3{font-family:var(--display);font-weight:700;line-height:.98;margin:0;text-wrap:balance;letter-spacing:-.01em}
 p{margin:0}
 .wrap{max-width:var(--maxw);margin-inline:auto;padding-left:max(var(--gutter),env(safe-area-inset-left,0px));padding-right:max(var(--gutter),env(safe-area-inset-right,0px))}
-.eyebrow{display:inline-flex;align-items:center;gap:12px;font-size:.82rem;font-weight:400;letter-spacing:.16em;color:var(--mute)}
-.eyebrow img{width:26px;height:auto}
 .kicker{display:inline-flex;align-items:center;gap:.8em;font-size:clamp(.95rem,1.2vw,1.1rem);font-weight:400;color:var(--mute)}
 .kicker::before,.kicker::after{content:"";width:36px;height:1px;background:currentColor;opacity:.6}
 .kicker b{color:var(--accent);font-weight:700;letter-spacing:.1em}
@@ -77,9 +75,9 @@ main{overflow-x:clip}
 @keyframes rise{to{transform:none}}
 .intro-track{width:100%;display:grid;gap:10px}
 .intro-bar{position:relative;height:12px;border-radius:999px;background:var(--ink-3);box-shadow:inset 0 0 0 1px var(--line)}
-.intro-bar b{position:absolute;inset-block:0;right:0;width:0;border-radius:999px;background:var(--accent);box-shadow:0 0 22px rgba(232,75,37,.6)}
+.intro-bar b{position:absolute;inset-block:0;right:0;width:0;border-radius:999px;background:var(--accent)}
 .intro-bar u{position:absolute;top:50%;right:0;width:22px;height:22px;margin-right:-11px;margin-top:-11px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 5px var(--accent)}
-.intro-meta{display:flex;justify-content:space-between;font-size:.85rem;color:var(--mute);letter-spacing:.1em;font-variant-numeric:tabular-nums}
+.intro-meta{display:flex;justify-content:space-between;font-size:.85rem;color:var(--mute);letter-spacing:.04em;font-variant-numeric:tabular-nums}
 .intro-ctrl{display:flex;align-items:center;gap:clamp(18px,4vw,34px);color:var(--accent)}
 .intro-ctrl>svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.85}
 .intro-play{width:76px;height:76px;border-radius:50%;border:0;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;cursor:pointer;transform:scale(.6);opacity:.25;pointer-events:none;transition:transform .6s var(--e-out),opacity .4s}
@@ -92,14 +90,27 @@ main{overflow-x:clip}
 .intro-wipe.go{animation:wipe 1.5s cubic-bezier(.7,0,.2,1) forwards}
 @keyframes wipe{0%{transform:scale(0)}55%{transform:scale(var(--cover,40));opacity:1}100%{transform:scale(var(--cover,40));opacity:0}}
 
+
+/* polish: drawn icons, browser surfaces, states */
+html{scrollbar-color:var(--mute-2) var(--ink);caret-color:var(--accent)}
+.x svg,.check svg,.pm svg,.arrow svg{display:block;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.pain-list .x{width:1.1em;height:1.1em;margin-top:.15em}
+.pain-list .x svg{width:100%;height:100%}
+.check svg{width:16px;height:16px}
+.pm svg{width:18px;height:18px}
+.arrow{display:inline-grid;place-items:center}
+.arrow svg{width:20px;height:20px}
+.btn:disabled{opacity:.6;cursor:progress}
+.field input[aria-invalid="true"]{border-color:var(--accent);box-shadow:0 0 0 3px rgba(232,75,37,.18)}
+
 /* progress + cursor */
 .progress{position:fixed;top:env(safe-area-inset-top,0px);right:0;left:0;height:3px;z-index:70;transform-origin:right;transform:scaleX(0);background:var(--accent)}
-.cursor{position:fixed;top:0;left:0;width:14px;height:14px;border-radius:50%;background:var(--accent);pointer-events:none;z-index:80;mix-blend-mode:difference;transform:translate(-50%,-50%);transition:width .3s var(--e-out),height .3s var(--e-out);display:none}
-.cursor.big{width:70px;height:70px}
+.cursor{position:fixed;top:0;left:0;width:70px;height:70px;border-radius:50%;background:var(--accent);pointer-events:none;z-index:80;mix-blend-mode:difference;transform:translate(-50%,-50%) scale(.2);transition:transform .35s var(--e-out);display:none}
+.cursor.big{transform:translate(-50%,-50%) scale(1)}
 @media (hover:hover) and (pointer:fine){.cursor{display:block}}
 
 /* buttons with rolling label */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;font:700 1.05rem/1 var(--display);padding:20px 34px;border-radius:999px;text-decoration:none;border:2px solid transparent;cursor:pointer;transition:transform .35s var(--e-out),background .25s,color .25s,border-color .25s;white-space:nowrap}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:12px;font:700 1.18rem/1 var(--display);padding:20px 34px;border-radius:999px;text-decoration:none;border:2px solid transparent;cursor:pointer;transition:transform .35s var(--e-out),background .25s,color .25s,border-color .25s;white-space:nowrap}
 .btn-primary{background:var(--accent);color:var(--accent-ink)}
 .btn-ghost{border-color:var(--line);color:var(--fg);background:transparent}
 .btn-ghost:hover{border-color:var(--fg)}
@@ -118,7 +129,7 @@ main{overflow-x:clip}
 .nav{display:flex;gap:34px;font-weight:400;font-size:.98rem}
 .nav a{text-decoration:none;color:var(--mute);transition:color .2s}
 .nav a:hover{color:var(--fg)}
-.head-cta{padding:13px 24px;font-size:.95rem}
+.head-cta{padding:13px 24px;font-size:1.18rem}
 @media (max-width:900px){.nav{display:none}.site-head .logo img{height:54px}}
 
 /* hero */
@@ -132,7 +143,7 @@ main{overflow-x:clip}
 /* the hero slides up under the transparent header so the lines fill the whole first screen */
 .hf .hero{margin-top:-90px;padding-top:calc(90px + clamp(70px,10vw,150px))}
 .hero-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:56px;align-items:center}
-.hero h1{font-size:clamp(3.2rem,9.4vw,9.6rem);line-height:.92}
+.hero h1{font-size:clamp(3rem,7.4vw,6rem);line-height:.95}
 .ln{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}
 .ln>i{display:inline-block;font-style:normal;transition:transform 1.2s var(--e-out)}
 .pending .ln>i{transform:translateY(110%)}
@@ -183,22 +194,23 @@ section{position:relative}
 .reframe .sub{margin-top:56px;max-width:54ch;font-size:1.2rem;color:#3c3f45}
 
 /* tried paths */
-.paths{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
-.path{border:1px solid var(--line);border-radius:24px;padding:34px 28px;display:flex;flex-direction:column;gap:16px;background:var(--ink-2);transition:transform .5s var(--e-out),border-color .35s,opacity 1s var(--e-out)}
-.path:hover{transform:translateY(-8px) rotate(-.6deg);border-color:var(--accent)}
-.path h3{font-size:1.45rem;line-height:1.15}
-.path p{color:var(--mute);font-size:1rem}
-.path .verdict{margin-top:auto;padding-top:16px;border-top:1px dashed var(--line);font-weight:400;font-size:.95rem}
-@media (max-width:1000px){.paths{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:560px){.paths{grid-template-columns:1fr}}
+.paths{display:grid;border-top:1px solid var(--line)}
+.path{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1.3fr) minmax(0,.9fr);gap:14px 56px;align-items:baseline;padding-block:clamp(30px,3.6vw,46px);border-bottom:1px solid var(--line)}
+.path h3{font-size:clamp(1.6rem,3vw,2.6rem);line-height:1.15;transition:color .8s var(--e-out) .35s}
+.path h3 span{background:linear-gradient(var(--accent),var(--accent)) no-repeat 100% 44%/0% 3px;-webkit-box-decoration-break:clone;box-decoration-break:clone;transition:background-size 1.1s var(--e-out) .25s}
+.path.struck h3{color:var(--mute)}
+.path.struck h3 span{background-size:100% 3px}
+.path p{color:var(--mute);font-size:1.05rem;max-width:44ch}
+.path .verdict{color:var(--accent);font-weight:700;font-size:1.05rem}
+@media (max-width:900px){.path{grid-template-columns:minmax(0,1fr);gap:10px}}
 
 /* services: sticky horizontal scroll */
 .h-sticky{position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
 .h-track{display:flex;gap:32px;padding-inline:max(var(--gutter),calc((100vw - var(--maxw))/2 + var(--gutter)));will-change:transform}
 .svc{flex:none;width:min(78vw,640px);min-height:min(64vh,560px);border-radius:30px;padding:clamp(30px,4vw,52px);display:flex;flex-direction:column;gap:22px;position:relative;overflow:hidden;border:1px solid var(--line);background:var(--ink-2)}
-.svc:nth-child(2){background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.svc:nth-child(2){background:var(--accent);border-color:var(--accent);color:var(--ink)}
 .svc:nth-child(3){background:var(--paper);color:var(--ink);border-color:var(--paper)}
-.svc .tag{font-size:.85rem;letter-spacing:.16em;font-weight:400;opacity:.75}
+.svc .tag{font-size:.85rem;letter-spacing:.05em;font-weight:400;opacity:.8}
 .svc h3{font-size:clamp(2.2rem,4.6vw,4rem)}
 .svc .promise{font-size:clamp(1.15rem,1.7vw,1.45rem);font-weight:400;max-width:28ch}
 .svc ul{margin:auto 0 0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px}
@@ -223,10 +235,10 @@ section{position:relative}
 .deck-holder{position:relative}
 .deck{position:absolute;left:50%;top:44%;width:1px;height:1px;--cw:min(17vw,230px)}
 .dk{position:absolute;left:0;top:0;width:var(--cw);aspect-ratio:4/5;margin-left:calc(var(--cw)/-2);margin-top:calc(var(--cw)*-.62);transform-origin:50% 135%;will-change:transform}
-.dki{width:100%;height:100%;border-radius:16px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.08);transition:transform .55s cubic-bezier(.3,1.6,.5,1),box-shadow .4s;display:flex;flex-direction:column;justify-content:space-between;padding:9%;position:relative}
+.dki{width:100%;height:100%;border-radius:16px;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.08);transition:transform .6s var(--e-out),box-shadow .4s;display:flex;flex-direction:column;justify-content:space-between;padding:9%;position:relative}
 .dk:hover{z-index:60!important}
 .dk:hover .dki{transform:translateY(-40px) scale(1.08);box-shadow:0 40px 90px rgba(0,0,0,.8),0 0 0 2px var(--accent)}
-.dki .lbl{font-size:.68rem;letter-spacing:.16em;font-weight:400;opacity:.75}
+.dki .lbl{font-size:.78rem;letter-spacing:.04em;font-weight:400;opacity:.75}
 .deck-hint{text-align:center;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px));color:var(--mute);font-size:.9rem}
 .c-logo{background:var(--ink)}
 .c-logo img{width:100%;height:auto;margin-block:auto}
@@ -240,7 +252,7 @@ section{position:relative}
 .c-card .bc img{width:44%;height:auto}
 .c-card .bc small{font-size:calc(var(--cw)*.032);color:var(--mute);line-height:1.5;direction:ltr;text-align:right}
 .c-post{background:var(--accent);color:var(--accent-ink);align-items:center;justify-content:center;gap:10%}
-.c-post img{width:62%;height:auto;filter:brightness(0) invert(1)}
+.c-post img{width:62%;height:auto;filter:brightness(0)}
 .c-post b{font:700 calc(var(--cw)*.11)/1 var(--display);text-align:center}
 .c-web{background:var(--ink-2);gap:6%}
 .c-web .br{flex:1;border:1px solid var(--line);border-radius:8px;background:var(--ink);padding:9%;display:grid;gap:7px;align-content:start}
@@ -262,7 +274,7 @@ section{position:relative}
 .floor{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.4fr);gap:clamp(28px,5vw,90px);padding-block:clamp(56px,8vw,100px);border-top:1px solid var(--line)}
 .floor .big-wrap{overflow:hidden;padding-bottom:.06em}
 .floor .big{font:700 clamp(5rem,12vw,10.5rem)/.82 var(--display);letter-spacing:-.04em;color:var(--accent);display:flex;gap:.12em;align-items:baseline;transition:transform 1.3s var(--e-out),opacity 1s}
-.floor .big small{font-size:14px;letter-spacing:.16em;color:var(--mute);font-weight:400}
+.floor .big small{font-size:14px;letter-spacing:.05em;color:var(--mute);font-weight:400}
 .floor.pre .big{transform:translateY(60%);opacity:0}
 .floor h3{font-size:clamp(1.8rem,3.2vw,2.8rem);margin-top:.4em}
 .floor .why{color:var(--mute);margin-top:.7em;max-width:36ch}
@@ -270,9 +282,9 @@ section{position:relative}
 .gauge .gl{display:flex;justify-content:space-between;align-items:baseline;font-size:.9rem;margin-bottom:.6em;color:var(--mute)}
 .gauge .gl bdi{color:var(--accent);font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums;min-width:4ch;text-align:left}
 .gauge .gt{position:relative;height:10px;border-radius:999px;background:rgba(245,245,243,.08);overflow:hidden}
-.gauge .gt i{position:absolute;inset-block:0;right:0;width:var(--v,0%);border-radius:999px;background:var(--accent);box-shadow:0 0 18px rgba(232,75,37,.5)}
+.gauge .gt i{position:absolute;inset-block:0;right:0;width:var(--v,0%);border-radius:999px;background:var(--accent)}
 .gauge .gt::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(to left,transparent 0 calc(25% - 1px),var(--ink-2) calc(25% - 1px) 25%);pointer-events:none}
-.gauge .gs{display:flex;justify-content:space-between;margin-top:.5em;font-size:.7rem;color:var(--mute-2);font-variant-numeric:tabular-nums}
+.gauge .gs{display:flex;justify-content:space-between;margin-top:.5em;font-size:.75rem;color:var(--mute);font-variant-numeric:tabular-nums}
 .ses{list-style:none;margin:0;padding:0;display:grid;gap:12px;align-content:start}
 .ses li{border-radius:18px;background:rgba(245,245,243,.045);display:grid;grid-template-columns:2.6em minmax(0,1fr);gap:.6em;align-items:center;padding:1.1em 1.3em;line-height:1.3;transition:background .3s,transform .9s var(--e-out),opacity .8s}
 .ses li:hover{background:rgba(245,245,243,.08)}
@@ -284,7 +296,7 @@ section{position:relative}
 @media (max-width:860px){.floor{grid-template-columns:minmax(0,1fr)}}
 .lvl{position:fixed;left:max(28px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%);z-index:45;display:grid;justify-items:center;gap:10px;color:var(--fg);mix-blend-mode:difference;pointer-events:none;opacity:0;transition:opacity .6s}
 .lvl.on{opacity:1}
-.lvl small{font-size:11px;letter-spacing:.2em}
+.lvl small{font-size:12px;letter-spacing:.06em}
 .lvl .d{font:700 34px/1 var(--display);height:1em;overflow:hidden;display:block;direction:ltr}
 .lvl .d>span{display:block;transition:transform .8s var(--e-out)}
 .lvl .d i{display:block;font-style:normal;height:1em}
@@ -324,15 +336,15 @@ section{position:relative}
 .ti.w.mute{color:var(--mute)}
 .ti img{display:block;width:100%;height:auto}
 .ti svg{display:block;width:100%;height:auto;overflow:visible}
-.ti.blob{border-radius:44px;background:radial-gradient(circle at 28% 35%,#fff 0%,rgba(255,255,255,.0) 38%),radial-gradient(circle at 75% 70%,var(--accent) 0%,rgba(232,75,37,.0) 55%),linear-gradient(135deg,#f08a6c,var(--accent) 55%,#7a2510);box-shadow:0 30px 80px rgba(232,75,37,.35)}
+.ti.blob{border-radius:44px;background:radial-gradient(circle at 28% 35%,#fff 0%,rgba(255,255,255,.0) 38%),radial-gradient(circle at 75% 70%,var(--accent) 0%,rgba(232,75,37,.0) 55%),linear-gradient(135deg,#f08a6c,var(--accent) 55%,#7a2510);box-shadow:0 30px 60px -10px rgba(0,0,0,.6)}
 .ti.card{border-radius:22px;background:var(--ink-3);border:1px solid var(--line);display:grid;place-items:center}
 .ti.card img{width:78%}
 .ti.dot{width:3px;height:3px;border-radius:50%;background:var(--fg)}
 .t-final{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:18px;text-align:center;pointer-events:none;opacity:0;padding-inline:max(var(--gutter),env(safe-area-inset-left,0px))}
-.t-final small{font-size:clamp(1rem,1.6vw,1.3rem);color:var(--mute);letter-spacing:.1em}
-.t-final b{font:700 clamp(3rem,10vw,9rem)/.9 var(--display);color:var(--fg)}
+.t-final small{font-size:clamp(1rem,1.6vw,1.3rem);color:var(--mute);letter-spacing:.05em}
+.t-final b{font:700 clamp(2.8rem,7.4vw,6rem)/.95 var(--display);color:var(--fg)}
 .t-final b span{color:var(--accent)}
-.t-hint{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:.85rem;letter-spacing:.2em;color:var(--mute);transition:opacity .4s}
+.t-hint{position:absolute;bottom:calc(30px + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:.9rem;letter-spacing:.06em;color:var(--mute);transition:opacity .4s}
 .t-hint i{display:block;width:1px;height:38px;margin:10px auto 0;background:linear-gradient(var(--accent),transparent);animation:drip 1.8s ease-in-out infinite;transform-origin:top}
 @keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
 
@@ -344,10 +356,9 @@ section{position:relative}
 /* about */
 .about{background:var(--paper);color:var(--ink);overflow:hidden}
 .about-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(48px,8vw,120px);align-items:center}
-.about h2{font-size:clamp(2.6rem,7vw,6rem)}
+.about h2{font-size:clamp(2.6rem,6.4vw,5.6rem)}
 .about .copy{display:grid;gap:24px;font-size:1.15rem;color:#2c2f35;max-width:54ch}
 .about .copy strong{color:var(--ink);font-weight:700}
-.about .eyebrow{color:#6b6e75}
 .about-visual{position:relative;aspect-ratio:1;max-width:500px;width:100%;justify-self:center}
 .about-visual .disc{position:absolute;inset:9%;border-radius:50%;background:var(--ink);display:grid;place-items:center}
 .about-visual .disc img{width:54%;height:auto}
@@ -362,8 +373,8 @@ section{position:relative}
 .fit h3{font-size:clamp(1.6rem,2.6vw,2.2rem);margin-bottom:26px}
 .fit ul{margin:0;padding:0;list-style:none;display:grid;gap:16px}
 .fit li{display:flex;gap:14px;font-size:1.08rem}
-.fit li::before{content:"✓";color:var(--accent);font-weight:700;flex:none}
-.fit.no li::before{content:"—";color:var(--mute-2)}
+.fit li::before{content:"";flex:none;width:18px;height:18px;margin-top:.3em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e84b25' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12.5 4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/contain no-repeat}
+.fit.no li::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239a9ca3' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M6 12h12'/%3E%3C/svg%3E")}
 .fit.no li{color:var(--mute)}
 @media (max-width:800px){.fit-grid{grid-template-columns:1fr}}
 
@@ -379,12 +390,12 @@ section{position:relative}
 
 /* contact */
 .contact{padding-block:var(--space) clamp(64px,8vw,110px)}
-.contact h2{font-size:clamp(3rem,10vw,9.5rem);line-height:.9}
+.contact h2{font-size:clamp(2.8rem,7.4vw,6rem);line-height:.95}
 .contact-grid{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(48px,7vw,110px);margin-top:clamp(56px,7vw,96px)}
 .channels{display:grid;gap:16px;align-content:start}
 .channel{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:24px 26px;border:1px solid var(--line);border-radius:22px;text-decoration:none;transition:border-color .25s,transform .35s var(--e-out)}
 .channel:hover{border-color:var(--accent);transform:translateX(-6px)}
-.channel .lbl{font-size:.82rem;letter-spacing:.14em;color:var(--mute);font-weight:400}
+.channel .lbl{font-size:.85rem;letter-spacing:.05em;color:var(--mute);font-weight:400}
 .channel .val{font:700 clamp(1.15rem,2vw,1.55rem)/1.2 var(--display);direction:ltr;unicode-bidi:isolate;text-align:right;overflow-wrap:anywhere}
 .channel .val.mail{font-size:clamp(1rem,1.5vw,1.2rem)}
 .channel .ic{flex:none;width:54px;height:54px;border-radius:50%;background:var(--accent);display:grid;place-items:center}
@@ -402,7 +413,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
 .chips{position:relative;display:flex;flex-wrap:wrap;gap:8px}
 .chips input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
 .chips label{border:1px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer;font-size:.95rem;color:var(--mute);transition:all .2s}
-.chips input:checked+label{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.chips input:checked+label{background:var(--accent);border-color:var(--accent);color:var(--ink);font-weight:700}
 .chips input:focus-visible+label{outline:2px solid var(--accent);outline-offset:3px}
 .form-note{font-size:.9rem;color:var(--mute)}
 .form-status{border-radius:14px;padding:16px 18px;font-size:1rem}
@@ -418,7 +429,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
 .foot img{height:76px;width:auto}
 
 /* floating whatsapp */
-.float-wa{position:fixed;left:calc(18px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:55;width:60px;height:60px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:0 14px 30px -8px rgba(232,75,37,.6);transform:scale(0);transition:transform .45s var(--e-out)}
+.float-wa{position:fixed;left:calc(18px + env(safe-area-inset-left,0px));bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:55;width:60px;height:60px;border-radius:50%;background:var(--accent);display:grid;place-items:center;box-shadow:0 14px 30px -8px rgba(0,0,0,.6);transform:scale(0);transition:transform .45s var(--e-out)}
 .float-wa.show{transform:scale(1)}
 .float-wa svg{width:28px;height:28px;fill:var(--accent-ink)}
 
@@ -486,15 +497,14 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
     <div class="wrap">
       <div class="hero-grid">
         <div>
-          <span class="eyebrow">מיתוג · פרינט · דיגיטל · אתרים · UX/UI</span>
-          <h1 style="margin-top:26px">
+          <h1>
             <span class="ln"><i>להיראות</i></span>
             <span class="ln"><i>בדיוק כמו</i></span>
             <span class="ln"><i class="accent">שדמיינת.</i></span>
           </h1>
           <p class="lede">האתר שלך פועל בשבילך גם כשסיימת מזמן לעבוד בשבילו. בנייה של נוכחות דיגיטלית שמרגישה טבעית, מדויקת, וכזאת שפשוט גורמת לעסק שלך לצמוח.</p>
           <div class="ctas">
-            <a href="#contact" class="btn btn-primary" data-magnet><span class="roll"><span>לשיחת היכרות ללא עלות</span><span>לשיחת היכרות ללא עלות</span></span> <span class="arrow">←</span></a>
+            <a href="#contact" class="btn btn-primary" data-magnet><span class="roll"><span>לשיחת היכרות ללא עלות</span><span>לשיחת היכרות ללא עלות</span></span> <span class="arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span></a>
             <a href="#services" class="btn btn-ghost"><span class="roll"><span>מה אני עושה</span><span>מה אני עושה</span></span></a>
           </div>
         </div>
@@ -527,17 +537,16 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   <section class="sec">
     <div class="wrap">
       <div class="sec-head">
-        <span class="eyebrow rv">בואו נדבר בכנות</span>
         <h2 class="split">העסק שלך טוב.|אז למה הוא <span class="accent">לא נראה</span> ככה?</h2>
         <p class="rv">אם לפחות אחד מהמשפטים האלה מוכר לך, הגעת למקום הנכון.</p>
       </div>
       <ul class="pain-list">
-        <li class="rv"><span class="x">✕</span>הלוגו נעשה "בינתיים" לפני כמה שנים, ומאז הוא פשוט נשאר.</li>
-        <li class="rv"><span class="x">✕</span>כשמבקשים ממך כרטיס ביקור או אתר, את מתביישת קצת לשלוח.</li>
-        <li class="rv"><span class="x">✕</span>כל פרסום יוצא בסגנון אחר, ואף אחד לא מזהה שזה את.</li>
-        <li class="rv"><span class="x">✕</span>יש לך אתר, אבל הוא לא מביא פניות. הוא סתם קיים.</li>
-        <li class="rv"><span class="x">✕</span>מתחרים עם פחות ניסיון גובים יותר, כי הם נראים יקרים יותר.</li>
-        <li class="rv"><span class="x">✕</span>צריך להסביר כל פעם מחדש מה את עושה ולמה זה שווה את המחיר.</li>
+        <li class="rv"><span class="x"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span>הלוגו נעשה "בינתיים" לפני כמה שנים, ומאז הוא פשוט נשאר.</li>
+        <li class="rv"><span class="x"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span>כשמבקשים ממך כרטיס ביקור או אתר, את מתביישת קצת לשלוח.</li>
+        <li class="rv"><span class="x"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span>כל פרסום יוצא בסגנון אחר, ואף אחד לא מזהה שזה את.</li>
+        <li class="rv"><span class="x"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span>יש לך אתר, אבל הוא לא מביא פניות. הוא סתם קיים.</li>
+        <li class="rv"><span class="x"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span>מתחרים עם פחות ניסיון גובים יותר, כי הם נראים יקרים יותר.</li>
+        <li class="rv"><span class="x"><svg class="ic-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></span>צריך להסביר כל פעם מחדש מה את עושה ולמה זה שווה את המחיר.</li>
       </ul>
     </div>
   </section>
@@ -554,27 +563,26 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   <section class="sec">
     <div class="wrap">
       <div class="sec-head">
-        <span class="eyebrow rv">הדרכים המוכרות</span>
         <h2 class="split">כנראה כבר ניסית|חלק מאלה.</h2>
       </div>
       <div class="paths">
         <article class="path rv">
-          <h3>לעשות לבד בקנבה</h3>
+          <h3><span>לעשות לבד בקנבה</span></h3>
           <p>חוסך כסף בהתחלה, ועולה לך בשעות ערב אינסופיות ובתוצאה שנראית כמו של כולם.</p>
           <div class="verdict">נראה "בסדר". לא נזכרים בו.</div>
         </article>
         <article class="path rv">
-          <h3>פרילנסר זול מהאינטרנט</h3>
+          <h3><span>פרילנסר זול מהאינטרנט</span></h3>
           <p>מקבלים לוגו, בלי אסטרטגיה, בלי שפה ובלי מישהו שבאמת הקשיב לך.</p>
           <div class="verdict">לוגו לבד הוא עוד לא מותג.</div>
         </article>
         <article class="path rv">
-          <h3>תבנית אתר מוכנה</h3>
+          <h3><span>תבנית אתר מוכנה</span></h3>
           <p>עולה לאוויר מהר, אבל לא בנויה סביב הלקוחות שלך ולא מובילה אותם לפעולה.</p>
           <div class="verdict">אתר שקיים, לא אתר שמוכר.</div>
         </article>
         <article class="path rv">
-          <h3>"נעשה את זה כשיהיה זמן"</h3>
+          <h3><span>"נעשה את זה כשיהיה זמן"</span></h3>
           <p>בינתיים לקוחות עוברים ליד, משווים, ובוחרים במי שנראה מקצועי יותר.</p>
           <div class="verdict">הדחייה היא הכי יקרה.</div>
         </article>
@@ -588,7 +596,6 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
       <div class="h-sticky">
         <div class="wrap">
           <div class="sec-head">
-            <span class="eyebrow">עושים סדר, בונים נוכחות</span>
             <h2>שלושה תחומים.<br>שפה אחת.</h2>
           </div>
         </div>
@@ -628,7 +635,6 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
         <canvas class="fx" id="deckField" aria-hidden="true"></canvas>
         <div class="wrap">
           <div class="sec-head">
-            <span class="eyebrow">מותג שלם, לא רק לוגו</span>
             <h2 id="deckTitle">שפה אחת.<br><span class="accent">כל הקלפים</span> על השולחן.</h2>
           </div>
         </div>
@@ -718,16 +724,15 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   <section class="sec">
     <div class="wrap">
       <div class="sec-head">
-        <span class="eyebrow rv">עכשיו תדמייני</span>
         <h2 class="split">ככה זה מרגיש|אחרי <span class="accent">DYNAMICS</span>.</h2>
       </div>
       <div class="imagine-grid" id="imagine">
-        <div><span class="check">✓</span>את שולחת את הקישור לאתר בגאווה, בלי להתנצל.</div>
-        <div><span class="check">✓</span>לקוחות מגיעים אלייך כבר מבינים מה את עושה ולמה את.</div>
-        <div><span class="check">✓</span>יש לך מחירון שאת לא מתביישת בו, כי הנראות מצדיקה אותו.</div>
-        <div><span class="check">✓</span>כל פוסט, כרטיס ומודעה נראים כמו חלק מאותו סיפור.</div>
-        <div><span class="check">✓</span>האתר עובד בשבילך גם בשתיים בלילה ומביא פניות.</div>
-        <div><span class="check">✓</span>את מפסיקה לחשוב על עיצוב, וחוזרת לעשות את מה שאת אוהבת.</div>
+        <div><span class="check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>את שולחת את הקישור לאתר בגאווה, בלי להתנצל.</div>
+        <div><span class="check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>לקוחות מגיעים אלייך כבר מבינים מה את עושה ולמה את.</div>
+        <div><span class="check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>יש לך מחירון שאת לא מתביישת בו, כי הנראות מצדיקה אותו.</div>
+        <div><span class="check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>כל פוסט, כרטיס ומודעה נראים כמו חלק מאותו סיפור.</div>
+        <div><span class="check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>האתר עובד בשבילך גם בשתיים בלילה ומביא פניות.</div>
+        <div><span class="check"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>את מפסיקה לחשוב על עיצוב, וחוזרת לעשות את מה שאת אוהבת.</div>
       </div>
     </div>
   </section>
@@ -740,7 +745,6 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
     <div class="wrap">
       <div class="about-grid">
         <div class="copy">
-          <span class="eyebrow rv">אודות</span>
           <h2 class="split">אנשים,|לא רק עסקים.</h2>
           <p class="rv"><strong>דיגיטל לא חייב להיות מורכב.</strong> הוא יכול להיות אנושי, זורם, ובעיקר כזה שעובד בשבילך.</p>
           <p class="rv">אני עוסקת במיתוג, עיצוב פרינט ודיגיטל, בניית אתרים ו-UX/UI. אני אוהבת עיצוב, ואוהבת אנשים לא פחות. תקשורת בין-אישית ותקשורת חזותית הן בעיניי שני צדדים של אותו דבר: להקשיב טוב, ואז לתרגם את מה ששמעתי לשפה שרואים.</p>
@@ -761,7 +765,6 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   <section class="sec">
     <div class="wrap">
       <div class="sec-head">
-        <span class="eyebrow rv">לפני שנתחיל</span>
         <h2 class="split">זה בשבילך?</h2>
       </div>
       <div class="fit-grid">
@@ -790,28 +793,27 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   <section class="sec faq" id="faq">
     <div class="wrap">
       <div class="sec-head">
-        <span class="eyebrow rv">שאלות שחוזרות</span>
         <h2 class="split">רגע, לפני|שאת מתקשרת.</h2>
       </div>
       <div class="faq-list rv">
         <details>
-          <summary>כמה זה עולה?<span class="pm">+</span></summary>
+          <summary>כמה זה עולה?<span class="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
           <p>כל פרויקט מתומחר לפי ההיקף שלו: מיתוג, אתר, או חבילה משולבת. בשיחת ההיכרות נבין מה בדיוק צריך, ותקבלי הצעת מחיר מסודרת ושקופה, בלי סעיפים נסתרים.</p>
         </details>
         <details>
-          <summary>כמה זמן לוקח תהליך?<span class="pm">+</span></summary>
+          <summary>כמה זמן לוקח תהליך?<span class="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
           <p>מיתוג לוקח בדרך כלל בין 3 ל-6 שבועות, ואתר תדמית בין 4 ל-8 שבועות. לוח הזמנים נקבע מראש, ואת מקבלת עדכון בכל שלב.</p>
         </details>
         <details>
-          <summary>אני עוד לא בטוחה מה אני צריכה. זה בסדר?<span class="pm">+</span></summary>
+          <summary>אני עוד לא בטוחה מה אני צריכה. זה בסדר?<span class="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
           <p>בהחלט. בשביל זה יש שיחת היכרות. הרבה פעמים מגיעים עם "צריך אתר" ומגלים שקודם צריך לדייק את המסר. נחליט יחד מה הכי נכון לשלב שבו העסק נמצא.</p>
         </details>
         <details>
-          <summary>כבר יש לי לוגו. אפשר לבנות רק אתר?<span class="pm">+</span></summary>
+          <summary>כבר יש לי לוגו. אפשר לבנות רק אתר?<span class="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
           <p>כן. אם הלוגו עובד, בונים סביבו. אם יש בו משהו שמעכב, אגיד לך את זה בכנות ונחשוב יחד אם כדאי לרענן.</p>
         </details>
         <details>
-          <summary>כמה סבבי תיקונים יש?<span class="pm">+</span></summary>
+          <summary>כמה סבבי תיקונים יש?<span class="pm"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span></summary>
           <p>מספר הסבבים מוגדר מראש בהצעת המחיר. בזכות שלב האפיון, ברוב הפרויקטים מגיעים לתוצאה מדויקת הרבה לפני שהסבבים נגמרים.</p>
         </details>
       </div>
@@ -823,8 +825,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
     <canvas class="fx" id="contactField" aria-hidden="true"></canvas>
     <div class="contact-shade" aria-hidden="true"></div>
     <div class="wrap">
-      <span class="eyebrow rv">צור קשר</span>
-      <h2 class="split" style="margin-top:20px">בואו נדבר|<span class="accent">תכל'ס.</span></h2>
+      <h2 class="split">בואו נדבר|<span class="accent">תכל'ס.</span></h2>
       <div class="contact-grid">
         <div class="channels rv">
           <a class="channel" href="tel:+972533179024">
@@ -864,7 +865,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
             <label for="f-msg">ספרו לנו קצת על מה שעל הפרק...</label>
             <textarea id="f-msg" name="message"></textarea>
           </div>
-          <button type="submit" class="btn btn-primary" id="submitBtn"><span class="roll"><span id="submitTxt">שליחה</span><span>שליחה</span></span> <span class="arrow">←</span></button>
+          <button type="submit" class="btn btn-primary" id="submitBtn"><span class="roll"><span id="submitTxt">שליחה</span><span>שליחה</span></span> <span class="arrow"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg></span></button>
           <p class="form-note">חוזרת אלייך תוך יום עסקים. הפרטים נשארים אצלי בלבד.</p>
           <div class="form-status" id="formStatus" role="status" hidden></div>
         </form>
@@ -941,7 +942,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   var hOuter=$('#hOuter'), hTrack=$('#hTrack'), floatWa=$('#floatWa'), band=$('#bandImg');
   var deckPin=$('#deckPin'), cards=$$('#deck .dk'), deckEl=$('#deck'), hint=$('#deckHint');
   var floors=$$('.floor'), gauges=$$('.gauge'), lvl=$('#lvl'), lvlD=$('#lvlD'), lvlBars=$$('.bars i',lvl), process=$('#process');
-  var imagine=$$('#imagine > div');
+  var imagine=$$('#imagine > div'), paths=$$('.path');
   var wide=matchMedia('(min-width: 901px)'), small=matchMedia('(max-width: 760px)');
 
   /* deck: each card rests with its own tilt, like a real stack */
@@ -976,7 +977,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
     if(reduce){
       words.forEach(function(w){w.classList.add('on')}); drawDeck(1);
       gauges.forEach(function(g){var v=+g.dataset.to; $('.gt i',g).style.setProperty('--v',v+'%'); $('bdi',g).textContent=v+'%';});
-      imagine.forEach(function(d){d.classList.add('on')}); return;
+      imagine.forEach(function(d){d.classList.add('on')}); paths.forEach(function(d){d.classList.add('struck')}); return;
     }
 
     marquee.style.transform='translateX('+((y*.45)%(marquee.scrollWidth/2))+'px)';
@@ -1003,6 +1004,7 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
     var lev=0; floors.forEach(function(f){ if(f.getBoundingClientRect().top<vh*.55) lev=+f.dataset.level; }); setLevel(lev);
 
     imagine.forEach(function(dv){ dv.classList.toggle('on',dv.getBoundingClientRect().top<vh*.7); });
+    paths.forEach(function(pt){ pt.classList.toggle('struck',pt.getBoundingClientRect().top<vh*.62); });
 
     var b=band.getBoundingClientRect();
     if(b.top<vh && b.bottom>0 && !small.matches) band.style.transform='scale(1.12) translateX('+((b.top/vh-.5)*-60)+'px)';
@@ -1209,10 +1211,12 @@ form.lead{position:relative;display:grid;gap:20px;background:var(--ink-2);border
   /* ---------- lead form: email via FormSubmit, WhatsApp as fallback ---------- */
   var form=$('#leadForm'), status=$('#formStatus'), btn=$('#submitBtn'), btnTxt=$('#submitTxt');
   function show(cls,html){ status.className='form-status '+cls; status.innerHTML=html; status.hidden=false; }
+  ['name','contact'].forEach(function(n){ form[n].addEventListener('input',function(){ this.removeAttribute('aria-invalid'); }); });
   form.addEventListener('submit',function(e){
     e.preventDefault();
     var name=form.name.value.trim(), contact=form.contact.value.trim(), msg=form.message.value.trim();
     var svc=$$('[name=service]:checked',form).map(function(c){return c.value}).join(', ');
+    form.name.setAttribute('aria-invalid',!name); form.contact.setAttribute('aria-invalid',!contact);
     if(!name||!contact){ show('err','צריך למלא שם ודרך ליצור קשר, ואז אפשר לשלוח.'); (name?form.contact:form.name).focus(); return; }
     if(form._honey.value) return;
     var text='היי אביגיל, השארתי פרטים באתר:%0Aשם: '+encodeURIComponent(name)+'%0Aליצירת קשר: '+encodeURIComponent(contact)+(svc?'%0Aתחום: '+encodeURIComponent(svc):'')+(msg?'%0A'+encodeURIComponent(msg):'');
