@@ -246,6 +246,7 @@ body.render #stage{transform:none!important}
   <label>🎙 Load narration<input id="audioFile" type="file" accept="audio/*"></label>
 </div>
 
+<script src="music.js"></script>
 <script>
 /* ---------- sync markers (seconds) — shift these to match the narration ---------- */
 const M = {
@@ -540,19 +541,40 @@ window.addEventListener('resize',fit);
 window.__ready=document.fonts.ready.then(()=>{layout();fit();render(0);return true});
 window.__render=t=>render(t);
 
+const MX={COLLIDE,HOPS,ORB0,PEAK,peakAt};
+window.__music=()=>Music.renderWav(M,MX);
+
 if(!RENDER){
-  const audio=new Audio(); let playing=false, t0=0, startClock=0, hasAudio=false;
+  const audio=new Audio(); let playing=false, sound=false, hasAudio=false, ctx=null, session=null, t0=0, startClock=0;
   fetch('narration.wav',{method:'HEAD'}).then(r=>{if(r.ok){audio.src='narration.wav';hasAudio=true}}).catch(()=>{});
   $('audioFile').onchange=e=>{const f=e.target.files[0];if(f){audio.src=URL.createObjectURL(f);hasAudio=true}};
-  const now=()=>hasAudio&&!audio.paused?audio.currentTime:t0+(performance.now()-startClock)/1000;
-  function tick(){if(!playing)return;let t=now();if(t>=M.end){t=M.end;stop()}draw(t);requestAnimationFrame(tick)}
+  // the music's audio clock drives the picture, so sound and motion never drift apart
+  const now=()=>session?ctx.currentTime-session.startTime:t0+(performance.now()-startClock)/1000;
+  function startSound(from){
+    if(!sound)return;
+    ctx=ctx||new (window.AudioContext||window.webkitAudioContext)(); ctx.resume();
+    session=Music.play(ctx,M,MX,from);
+    if(hasAudio){audio.currentTime=from;audio.play().catch(()=>{})}
+  }
+  function stopSound(){if(session){session.stop();session=null}audio.pause()}
+  function tick(){
+    if(!playing)return;
+    let t=now();
+    if(t>=M.end){stopSound();t0=0;startClock=performance.now();startSound(0);t=0}   // loop
+    draw(t);requestAnimationFrame(tick)
+  }
   function draw(t){render(t);$('scrub').value=t;$('time').textContent=t.toFixed(2)+'s'}
-  function start(){if(+$('scrub').value>=M.end-.01)$('scrub').value=0;t0=+$('scrub').value;startClock=performance.now();
-    if(hasAudio){audio.currentTime=t0;audio.play().catch(()=>{})}playing=true;$('play').textContent='❚❚ Pause';tick()}
-  function stop(){playing=false;audio.pause();$('play').textContent='▶ Play'}
-  $('play').onclick=()=>playing?stop():start();
+  function start(withSound=true){
+    sound=withSound;
+    if(+$('scrub').value>=M.end-.01)$('scrub').value=0;
+    t0=+$('scrub').value;startClock=performance.now();
+    startSound(t0);playing=true;$('play').textContent='❚❚ Pause';tick()
+  }
+  function stop(){playing=false;stopSound();$('play').textContent='▶ Play'}
+  $('play').onclick=()=>{if(playing&&sound)stop();else{stop();start(true)}};
   $('scrub').oninput=e=>{stop();draw(+e.target.value)};
-  addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();playing?stop():start()}});
+  addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();$('play').click()}});
+  window.__autoplayMuted=()=>{if(!matchMedia('(prefers-reduced-motion: reduce)').matches){start(false);$('play').textContent='▶ Play with sound'}};
 }
 </script>
 </body>

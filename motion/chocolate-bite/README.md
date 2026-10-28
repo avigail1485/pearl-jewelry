@@ -1,6 +1,7 @@
 # Chocolate Bite – motion graphics (16:9, 1920×1080, 14s)
 
 - `index.html` – the animation. Open it in a browser to preview (Play / scrub / "Load narration" to sync with an audio file).
+- `music.js` – the score: a lively 128 BPM tune (marimba, bouncy bass, pad that "breathes", drums with sidechain pump) built with the Web Audio API. Every sound effect is scheduled from the same sync markers as the animation, so it plays live in the browser and renders offline to `music.wav` with identical timing.
 - `render.js` – renders the MP4 frame by frame: `node render.js [narration.wav] [out.mp4]`
   (if `narration.wav` sits next to the script it is muxed in automatically).
 - Sync markers (`const M` at the top of the script) – times in seconds for "בום!", "לוּפִּים", "נגיסה" etc.; every keyword lands on the animation's peak frame.
