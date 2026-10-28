@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>טיפת שוקולד – מושן</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--cream:#FDE0CD;--choc:#2D1810;--pink:#E8457A;--gold:#C9A86A}
+html,body{margin:0;height:100%;background:#140b07;overflow:hidden}
+#viewport{position:fixed;inset:0 0 64px 0;display:flex;align-items:center;justify-content:center}
+#stage{position:relative;width:1920px;height:1080px;overflow:hidden;background:var(--cream);flex:none;transform-origin:center center}
+.layer{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.scene{position:absolute;inset:0}
+.t{position:absolute;left:0;right:0;text-align:center;white-space:nowrap;line-height:1.15}
+.round{font-family:'Varela Round',sans-serif}
+.thin{font-family:'Assistant',sans-serif;font-weight:200;letter-spacing:.02em}
+.line{display:flex;justify-content:center;gap:.26em;direction:rtl}
+.w{display:inline-block;transform-origin:50% 80%}
+.mask{overflow:hidden;padding:.1em 0 .16em}
+.mask>.in{display:block;will-change:transform}
+.stroke{-webkit-text-stroke:10px var(--choc);paint-order:stroke fill}
+#controls{position:fixed;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;gap:14px;padding:0 18px;
+  background:#1e120c;color:#FDE0CD;font:14px 'Assistant',sans-serif;direction:ltr}
+#controls button{background:#E8457A;color:#fff;border:0;border-radius:20px;padding:8px 18px;font:600 14px 'Assistant',sans-serif;cursor:pointer}
+#controls input[type=range]{flex:1;accent-color:#E8457A}
+#controls label{cursor:pointer;opacity:.8}
+#controls input[type=file]{display:none}
+body.render #controls{display:none}
+body.render #viewport{inset:0;display:block}
+body.render #stage{transform:none!important}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="chocGrad" cx="35%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#7A4429"/><stop offset=".45" stop-color="#4A2818"/><stop offset="1" stop-color="#2D1810"/>
+    </radialGradient>
+    <radialGradient id="pinkGrad" cx="35%" cy="30%" r="80%">
+      <stop offset="0" stop-color="#FF8DB0"/><stop offset=".5" stop-color="#E8457A"/><stop offset="1" stop-color="#B42A5C"/>
+    </radialGradient>
+    <linearGradient id="topGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#F26B95"/><stop offset="1" stop-color="#D93A6E"/>
+    </linearGradient>
+    <linearGradient id="leftGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#4E2C1D"/><stop offset="1" stop-color="#2D1810"/>
+    </linearGradient>
+    <linearGradient id="rightGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6A3B25"/><stop offset="1" stop-color="#3E2216"/>
+    </linearGradient>
+    <linearGradient id="shineGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="fadeR"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+    <pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="13" cy="13" r="5.5" fill="#E8457A"/></pattern>
+    <mask id="fadeMask" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#fadeR)"/></mask>
+
+    <filter id="fDrop1" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur id="fDrop1b" stdDeviation="0"/></filter>
+    <filter id="fBerry1" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur id="fBerry1b" stdDeviation="0"/></filter>
+    <filter id="fDrop2" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur id="fDrop2b" stdDeviation="0"/></filter>
+    <filter id="fBerry2" x="-150%" y="-150%" width="400%" height="400%"><feGaussianBlur id="fBerry2b" stdDeviation="0"/></filter>
+    <filter id="fWhip" x="-20%" y="0" width="140%" height="100%"><feGaussianBlur id="fWhipb" stdDeviation="0 0"/></filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <g id="dropShape">
+      <path d="M0,-118 C22,-78 78,-28 78,28 A78,78 0 0 1 -78,28 C-78,-28 -22,-78 0,-118Z" fill="url(#chocGrad)"/>
+      <ellipse cx="-30" cy="10" rx="13" ry="28" fill="#fff" opacity=".32" transform="rotate(18 -30 10)"/>
+      <circle cx="-16" cy="-34" r="6" fill="#fff" opacity=".5"/>
+    </g>
+    <g id="berryShape">
+      <path d="M0,100 C-55,72 -92,22 -88,-22 C-84,-62 -46,-78 0,-64 C46,-78 84,-62 88,-22 C92,22 55,72 0,100Z" fill="url(#pinkGrad)"/>
+      <g fill="#FDE0CD" opacity=".9">
+        <ellipse cx="-44" cy="-22" rx="3.5" ry="6"/><ellipse cx="-8" cy="-34" rx="3.5" ry="6"/><ellipse cx="30" cy="-24" rx="3.5" ry="6"/>
+        <ellipse cx="58" cy="-6" rx="3.5" ry="6"/><ellipse cx="-58" cy="10" rx="3.5" ry="6"/><ellipse cx="-22" cy="4" rx="3.5" ry="6"/>
+        <ellipse cx="16" cy="8" rx="3.5" ry="6"/><ellipse cx="44" cy="30" rx="3.5" ry="6"/><ellipse cx="-34" cy="42" rx="3.5" ry="6"/>
+        <ellipse cx="2" cy="44" rx="3.5" ry="6"/><ellipse cx="-4" cy="74" rx="3.5" ry="6"/>
+      </g>
+      <ellipse cx="-46" cy="-34" rx="12" ry="22" fill="#fff" opacity=".3" transform="rotate(35 -46 -34)"/>
+      <path d="M0,-62 L-42,-86 L-15,-70 L-24,-104 L0,-76 L24,-104 L15,-70 L42,-86Z" fill="#C9A86A"/>
+      <rect x="-3" y="-118" width="6" height="26" rx="3" fill="#C9A86A"/>
+    </g>
+    <g id="sparkle"><path d="M0,-30 C3,-6 6,-3 30,0 C6,3 3,6 0,30 C-3,6 -6,3 -30,0 C-6,-3 -3,-6 0,-30Z" fill="#C9A86A"/></g>
+    <g id="flake" stroke="#C9A86A" stroke-width="3" stroke-linecap="round" fill="none">
+      <path d="M0,-34V34M-29,-17L29,17M-29,17L29,-17"/>
+      <path d="M-8,-26L0,-18L8,-26M-8,26L0,18L8,26"/>
+    </g>
+    <clipPath id="cubeClip"><polygon points="0,-230 199,-115 199,115 0,230 -199,115 -199,-115"/></clipPath>
+    <mask id="biteMask" maskUnits="userSpaceOnUse" x="-400" y="-400" width="800" height="800">
+      <rect x="-400" y="-400" width="800" height="800" fill="#fff"/>
+      <g id="biteCuts" fill="#000">
+        <circle cx="150" cy="-150" r="72"/><circle cx="214" cy="-58" r="58"/><circle cx="76" cy="-206" r="56"/>
+      </g>
+    </mask>
+  </defs>
+</svg>
+
+<div id="viewport">
+<div id="stage">
+  <!-- constant decor: pop-art halftone corners, matte-gold frame -->
+  <svg class="layer" id="decor" viewBox="0 0 1920 1080">
+    <g id="halftone" opacity=".2">
+      <rect x="-420" y="-420" width="840" height="840" fill="url(#dots)" mask="url(#fadeMask)"/>
+      <rect x="1500" y="660" width="840" height="840" fill="url(#dots)" mask="url(#fadeMask)"/>
+    </g>
+    <g fill="none" stroke="#C9A86A">
+      <rect x="40" y="40" width="1840" height="1000" rx="6" stroke-width="1.5" opacity=".7"/>
+      <path d="M40,116V40H116M1804,40H1880V116M1880,964V1040H1804M116,1040H40V964" stroke-width="5" stroke-linecap="round"/>
+    </g>
+    <g id="floaters">
+      <circle class="fl" cx="150" cy="300" r="16" fill="none" stroke="#C9A86A" stroke-width="3"/>
+      <circle class="fl" cx="880" cy="120" r="9" fill="#E8457A"/>
+      <path class="fl" d="M1765,210h30m-15,-15v30" stroke="#C9A86A" stroke-width="4" stroke-linecap="round"/>
+      <circle class="fl" cx="130" cy="900" r="8" fill="#E8457A"/>
+      <circle class="fl" cx="1800" cy="860" r="20" fill="none" stroke="#E8457A" stroke-width="3"/>
+      <path class="fl" d="M865,985h26m-13,-13v26" stroke="#C9A86A" stroke-width="4" stroke-linecap="round"/>
+    </g>
+  </svg>
+
+  <!-- ===== SHOT 1 + SHOT 2a ===== -->
+  <div class="scene" id="s1">
+    <svg class="layer" viewBox="0 0 1920 1080">
+      <ellipse id="s1shadow" cx="500" cy="893" rx="70" ry="14" fill="#2D1810" opacity="0"/>
+      <g id="burst" transform="translate(960,540) scale(0)">
+        <polygon id="burstStar" fill="#FFF3E8" stroke="#2D1810" stroke-width="8" stroke-linejoin="round"/>
+        <g id="rays" stroke="#C9A86A" stroke-width="6" stroke-linecap="round"></g>
+        <g id="burstDots" fill="#E8457A"></g>
+      </g>
+      <g id="drop1"><g id="drop1m" filter="url(#fDrop1)"><g id="drop1s"><use href="#dropShape"/></g></g></g>
+      <g id="berry1"><g id="berry1m" filter="url(#fBerry1)"><g id="berry1s"><use href="#berryShape"/></g></g></g>
+    </svg>
+    <div class="t round stroke" id="a0" data-x="1340" data-y="250" style="font-size:160px;color:var(--pink)"><span class="w">וואו,</span></div>
+    <div class="t round" id="a1" data-x="1340" data-y="420" style="font-size:88px;color:var(--choc)">
+      <div class="line"><span class="w">אתם</span><span class="w">חייבים</span><span class="w">לשמוע!</span></div>
+    </div>
+    <div class="t thin" id="a2" data-x="1340" data-y="540" style="font-size:50px;color:var(--choc)">
+      <div class="line"><span class="w">מה</span><span class="w">עבר</span><span class="w">עליי...</span><span class="w">לפני</span><span class="w">שנייה</span><span class="w">הייתי</span><span class="w">סתם</span></div>
+    </div>
+    <div class="t round" id="a3" data-x="1340" data-y="660" style="font-size:80px;color:var(--choc)">
+      <div class="line"><span class="w">טיפת</span><span class="w">שוקולד</span><span class="w" style="color:var(--pink)">חמה</span><span class="w">ונוזלית</span></div>
+    </div>
+    <div class="t round stroke" id="boom" data-x="960" data-y="540" style="font-size:240px;color:var(--pink)"><span class="w">בום!</span></div>
+    <div class="t thin" id="b1" data-x="960" data-y="875" style="font-size:50px;color:var(--choc)">
+      <div class="line"><span class="w">פגשתי</span><span class="w">את</span><span class="w">התות</span></div>
+    </div>
+    <div class="t round" id="b2" data-x="960" data-y="970" style="font-size:64px;color:var(--choc)">
+      <div class="line"><span class="w">הכי</span><span class="w" style="color:var(--pink)">אדום</span><span class="w">והכי</span><span class="w" style="color:var(--pink)">מתוק</span><span class="w">בעולם!</span></div>
+    </div>
+  </div>
+
+  <!-- ===== SHOT 2b: the mold ===== -->
+  <div class="scene" id="s2">
+    <svg class="layer" viewBox="0 0 1920 1080">
+      <g id="mold" transform="translate(560,540)">
+        <rect id="moldOuter" x="-310" y="-310" width="620" height="620" rx="48" fill="none" stroke="#C9A86A" stroke-width="3" pathLength="1" stroke-dasharray="1 1"/>
+        <rect x="-286" y="-286" width="572" height="572" rx="34" fill="none" stroke="#C9A86A" stroke-width="1.5" stroke-dasharray="2 12" opacity=".8"/>
+        <g stroke="#C9A86A" stroke-width="2" stroke-linecap="round">
+          <path d="M-310,-360V-336M310,-360V-336M-360,-310H-336M-360,310H-336"/>
+        </g>
+        <circle id="track" r="210" fill="none" stroke="#C9A86A" stroke-width="2" pathLength="1" stroke-dasharray="1 1" transform="rotate(-90)"/>
+        <circle id="track2" r="210" fill="none" stroke="#E8457A" stroke-width="10" stroke-linecap="round" pathLength="1" stroke-dasharray=".12 .88" opacity="0"/>
+      </g>
+      <g id="blob" transform="translate(560,540) scale(0)">
+        <circle r="150" fill="url(#chocGrad)"/>
+        <path id="swirl" d="M-118,-30 C-70,-90 -30,30 20,-25 S100,-60 118,20 M-100,60 C-55,10 -10,110 40,60 S95,45 105,75" fill="none" stroke="#E8457A" stroke-width="26" stroke-linecap="round"/>
+      </g>
+      <g id="drop2"><g id="drop2m" filter="url(#fDrop2)"><g id="drop2s"><use href="#dropShape"/></g></g></g>
+      <g id="berry2"><g id="berry2m" filter="url(#fBerry2)"><g id="berry2s"><use href="#berryShape"/></g></g></g>
+    </svg>
+    <div class="t thin" id="c1" data-x="1340" data-y="330" style="font-size:46px;color:var(--choc)"><div class="mask"><span class="in">נכנסנו יחד לתבנית, והרגשתי כאילו אני בתוך</span></div></div>
+    <div class="t round stroke" id="loops" data-x="1340" data-y="520" style="font-size:160px;color:var(--pink)"><span class="w">לוּפִּים!</span></div>
+    <div class="t thin" id="c2" data-x="1340" data-y="720" style="font-size:56px;color:var(--choc)"><div class="mask"><span class="in">מתקן ענק בלונה פארק</span></div></div>
+  </div>
+
+  <!-- ===== SHOT 3 + SHOT 4 ===== -->
+  <div class="scene" id="s3">
+    <svg class="layer" viewBox="0 0 1920 1080">
+      <ellipse id="cubeShadow" cx="560" cy="790" rx="170" ry="22" fill="#2D1810" opacity=".14"/>
+      <g id="logoRings" transform="translate(960,430) scale(.62)" fill="none" stroke="#C9A86A">
+        <circle id="ring1" r="265" stroke-width="3" pathLength="1" stroke-dasharray="1 1" transform="rotate(-90)"/>
+        <circle id="ring2" r="290" stroke-width="1.2" pathLength="1" stroke-dasharray="1 1" transform="rotate(90)" opacity=".7"/>
+      </g>
+      <g id="flakes"></g>
+      <g id="cubeWrap" transform="translate(560,560)">
+        <g id="cube">
+          <g mask="url(#biteMask)">
+            <polygon points="-199,-115 0,0 0,230 -199,115" fill="url(#leftGrad)"/>
+            <polygon points="0,0 199,-115 199,115 0,230" fill="url(#rightGrad)"/>
+            <polygon points="-199,-115 0,0 0,46 -199,-69" fill="#D93A6E"/>
+            <polygon points="0,0 199,-115 199,-69 0,46" fill="#E8457A"/>
+            <polygon points="0,-230 199,-115 0,0 -199,-115" fill="url(#topGrad)"/>
+            <g transform="matrix(.866,-.5,.866,.5,-199,-115)" fill="none" stroke="#2D1810" stroke-width="12" stroke-linecap="round" opacity=".9">
+              <path d="M30,40 Q60,10 90,40 T150,40 T200,40"/>
+              <path d="M30,115 Q60,85 90,115 T150,115 T200,115"/>
+              <path d="M30,190 Q60,160 90,190 T150,190 T200,190"/>
+            </g>
+            <g clip-path="url(#cubeClip)">
+              <rect id="shine" x="-45" y="-320" width="90" height="640" fill="url(#shineGrad)" transform="translate(-400,0) rotate(28)"/>
+            </g>
+            <g fill="none" stroke="#C9A86A" stroke-width="3" stroke-linejoin="round" opacity=".9">
+              <polygon points="0,-230 199,-115 199,115 0,230 -199,115 -199,-115"/>
+              <path d="M-199,-115L0,0L199,-115M0,0V230"/>
+            </g>
+            <g id="face" transform="matrix(.866,.5,0,1,-199,-115)" opacity="0">
+              <g filter="url(#glow)">
+                <g id="eyeL" transform="translate(78,122)"><ellipse rx="17" ry="20" fill="#FFF6EE"/></g>
+                <g id="eyeR" transform="translate(152,122)"><ellipse rx="17" ry="20" fill="#FFF6EE"/></g>
+              </g>
+              <path id="smile" d="M82,168 Q115,200 148,168" fill="none" stroke="#FFF6EE" stroke-width="8" stroke-linecap="round" pathLength="1" stroke-dasharray="1 1"/>
+            </g>
+          </g>
+          <g id="glints">
+            <use href="#sparkle" transform="translate(0,-230)"/>
+            <use href="#sparkle" transform="translate(-199,-115) scale(.7)"/>
+            <use href="#sparkle" transform="translate(199,115) scale(.6)"/>
+          </g>
+          <g id="crumbs"></g>
+        </g>
+      </g>
+    </svg>
+    <div class="t thin" id="d1" data-x="1340" data-y="230" style="font-size:58px;color:var(--choc)"><div class="mask"><span class="in">התקררנו מהר</span></div></div>
+    <div class="t thin" id="d2" data-x="1340" data-y="310" style="font-size:42px;color:var(--choc);letter-spacing:.12em"><div class="mask"><span class="in">קוביה מבריקה · ומושלמת</span></div></div>
+    <div class="t round" id="d3" data-x="1340" data-y="480" style="font-size:64px;color:var(--choc)"><div class="mask"><span class="in">אני לא סתם שוקולד.</span></div></div>
+    <div class="t round" id="d4" data-x="1340" data-y="600" style="font-size:92px;color:var(--pink)"><div class="mask"><span class="in">הדבר הכי טעים,</span></div></div>
+    <div class="t round" id="d5" data-x="1340" data-y="710" style="font-size:92px;color:var(--pink)"><div class="mask"><span class="in">מגניב ומרגש</span></div></div>
+    <div class="t thin" id="d6" data-x="1340" data-y="820" style="font-size:48px;color:var(--choc)"><div class="mask"><span class="in">שתפגשו היום!</span></div></div>
+
+    <div class="t thin" id="e1" data-x="1340" data-y="300" style="font-size:60px;color:var(--choc)"><div class="mask"><span class="in">נו, למה אתם מחכים?</span></div></div>
+    <div class="t round" id="e2" data-x="1340" data-y="520" style="font-size:104px;color:var(--choc)">
+      <div class="line"><span class="w">תנו</span><span class="w">בי</span></div>
+    </div>
+    <div class="t round stroke" id="e3" data-x="1340" data-y="720" style="font-size:180px;color:var(--pink)"><span class="w">נגיסה!</span></div>
+
+    <div class="t round" id="f1" data-x="960" data-y="770" style="font-size:110px;color:var(--cream)"><div class="mask"><span class="in">שוקו<span style="color:var(--pink)">·</span>תות</span></div></div>
+    <div class="t thin" id="f2" data-x="960" data-y="880" style="font-size:46px;color:var(--gold);letter-spacing:.2em"><div class="mask"><span class="in">ביס אחד של שמחה</span></div></div>
+  </div>
+</div>
+</div>
+
+<div id="controls">
+  <button id="play">▶ Play</button>
+  <input id="scrub" type="range" min="0" max="14" step="0.001" value="0">
+  <span id="time">0.00s</span>
+  <label>🎙 Load narration<input id="audioFile" type="file" accept="audio/*"></label>
+</div>
+
+<script>
+/* ---------- sync markers (seconds) — shift these to match the narration ---------- */
+const M = {
+  dropLand: 0.9,   // drop settles after diagonal entry
+  boom:     3.35,  // "בום!" peak frame
+  whip:     4.55,  // whip-pan to the mold
+  loops:    5.8,   // "לוּפִּים" peak frame (orbit at max speed)
+  merge:    6.35,  // orbit collapses into one
+  cube:     7.0,   // cube forms
+  shine:    8.05,  // specular sweep ("מבריקה")
+  notJust:  8.75,  // "אני לא סתם שוקולד"
+  best:     9.5,   // "הדבר הכי טעים"
+  outro3:   10.85,
+  wink:     11.4,  // eyes + smile appear
+  bite:     12.5,  // "נגיסה" peak frame + bite mark
+  fade:     12.95, // background fades, logo converges
+  end:      14.0
+};
+
+/* ---------- easing: one elastic curve for every transition ---------- */
+function bezier(x1,y1,x2,y2){
+  const cx=3*x1,bx=3*(x2-x1)-cx,ax=1-cx-bx,cy=3*y1,by=3*(y2-y1)-cy,ay=1-cy-by;
+  const sx=t=>((ax*t+bx)*t+cx)*t, sy=t=>((ay*t+by)*t+cy)*t, dx=t=>(3*ax*t+2*bx)*t+cx;
+  return x=>{
+    if(x<=0)return 0; if(x>=1)return 1;
+    let t=x;
+    for(let i=0;i<8;i++){const d=sx(t)-x; if(Math.abs(d)<1e-7)return sy(t); const s=dx(t); if(Math.abs(s)<1e-6)break; t-=d/s;}
+    let lo=0,hi=1; t=x;
+    while(hi-lo>1e-7){if(sx(t)<x)lo=t;else hi=t; t=(lo+hi)/2;}
+    return sy(t);
+  };
+}
+const E = bezier(.34,1.56,.64,1);
+// fraction of a transition at which E hits its peak — used to land keywords on the peak frame
+const PEAK = (()=>{let best=0,bx=0;for(let i=0;i<=1000;i++){const v=E(i/1000);if(v>best){best=v;bx=i/1000}}return bx})();
+
+const cl=v=>v<0?0:v>1?1:v, seg=(t,a,b)=>cl((t-a)/(b-a)), mix=(a,b,p)=>a+(b-a)*p;
+const smooth=p=>p*p*(3-2*p), D=180/Math.PI;
+const $=id=>document.getElementById(id);
+const attr=(el,k,v)=>el.setAttribute(k,v);
+function mixHex(a,b,p){const A=parseInt(a.slice(1),16),B=parseInt(b.slice(1),16);
+  const c=s=>Math.round(mix((A>>s)&255,(B>>s)&255,p));return `rgb(${c(16)},${c(8)},${c(0)})`}
+const show=(el,v)=>{el.style.display=v?'':'none'};
+
+/* ---------- text helpers ---------- */
+function pop(el,t,t0,dur=.45,rise=70){
+  const p=seg(t,t0,t0+dur), e=E(p);
+  el.style.opacity=cl(p*4);
+  el.style.transform=`translateY(${(1-e)*rise}px) scale(${Math.max(0,e)})`;
+}
+function popWords(block,t,t0,step,dur){[...block.querySelectorAll('.w')].forEach((w,i)=>pop(w,t,t0+i*step,dur))}
+function reveal(block,t,t0,dur=.6){const e=E(seg(t,t0,t0+dur));block.querySelector('.in').style.transform=`translateY(${(1-e)*118}%)`}
+function exitUp(block,t,t0,dur=.32){const p=seg(t,t0,t0+dur);block.style.opacity=1-p;block.style.transform=`translateY(${-60*E(p)}px)`}
+const peakAt=(marker,dur)=>marker-PEAK*dur;   // start time so the peak frame lands on marker
+const spinIn=(p,deg)=>deg*(1-smooth(cl(p/PEAK)));  // rotation that settles exactly on the peak frame
+
+/* ---------- motion-blurred movers ---------- */
+function mover(id,f,t,shapeRot){
+  const a=f(t), b=f(t-1/60);
+  const vx=(a.x-b.x)*60, vy=(a.y-b.y)*60, v=Math.hypot(vx,vy);
+  const k=cl((v-600)/3400);
+  const th=v>1?Math.atan2(-vx,vy)*D:0;           // frame aligned with motion (local y = velocity)
+  const rot=shapeRot(a,vx,vy,v);
+  attr($(id),'transform',`translate(${a.x},${a.y}) scale(${a.s??1})`);
+  $(id).style.opacity=a.o??1;
+  attr($(id+'m'),'transform',`rotate(${th}) scale(${1-.12*k},${1+.32*k})`);
+  const sq=a.sq||0;
+  attr($(id+'s'),'transform',`rotate(${-th+rot}) translate(0,${a.base||0}) scale(${1+sq},${1-sq}) translate(0,${-(a.base||0)})`);
+  attr($(a.fid),'stdDeviation',`${(k*4).toFixed(2)} ${(k*30).toFixed(2)}`);
+}
+// drop: tip trails the motion, blended in with speed
+function dropRot(a,vx,vy,v){
+  if(!a.orient)return 0;
+  const w=cl((v-400)/1000); const dx=mix(0,-vx/(v||1),w), dy=mix(-1,-vy/(v||1),w);
+  return Math.atan2(dx,-dy)*D;
+}
+
+/* ---------- SHOT 1 + 2a paths ---------- */
+const G=760;  // drop rest height (centre)
+const HOPS=[[1.12,1.52,500,260,220],[1.66,2.06,260,700,250],[2.2,2.6,700,420,190]];
+const COLLIDE=peakAt(M.boom,.5);
+function drop1(t){
+  const o={fid:'fDrop1b',base:106,s:1.25};
+  if(t<HOPS[0][0]-.14){
+    const e=E(seg(t,.12,M.dropLand));
+    o.x=mix(120,500,e); o.y=mix(-300,G,e); o.orient=true;
+    const q=seg(t,M.dropLand-.2,M.dropLand+.25); if(q>0&&q<1)o.sq=Math.cos(q*Math.PI*2.5)*(1-q)*(1-q)*.22;
+    return o;
+  }
+  for(let i=0;i<HOPS.length;i++){
+    const [t0,t1,x0,x1,h]=HOPS[i];
+    if(t<t0){o.x=x0;o.y=G;o.sq=.2*Math.sin(seg(t,t0-.14,t0)*Math.PI);return o}
+    if(t<=t1){const p=(t-t0)/(t1-t0);o.x=mix(x0,x1,smooth(p));o.y=G-h*4*p*(1-p);o.sq=-.08*Math.sin(p*Math.PI);return o}
+    const nx=HOPS[i+1]?HOPS[i+1][0]-.14:2.86;
+    if(t<nx){const q=seg(t,t1,t1+.34);o.x=x1;o.y=G;o.sq=Math.cos(q*Math.PI*2.5)*(1-q)*(1-q)*.26;return o}
+  }
+  if(t<COLLIDE){const p=seg(t,2.86,COLLIDE);o.x=mix(420,1020,p);o.y=mix(G,540,p)-150*4*p*(1-p);o.orient=true;return o}
+  const e=E(seg(t,COLLIDE,COLLIDE+.6));
+  o.x=mix(1020,1450,e); o.y=mix(540,600,e)+Math.sin((t-COLLIDE)*5)*7;
+  const q=seg(t,COLLIDE,COLLIDE+.4); o.sq=Math.cos(q*Math.PI*2.5)*(1-q)*.3*(q>0&&q<1);
+  return o;
+}
+function berry1(t){
+  const o={fid:'fBerry1b'};
+  if(t<COLLIDE){const p=seg(t,2.72,COLLIDE),pp=p*p;o.x=mix(-240,900,pp);o.y=mix(1000,540,pp)-60*Math.sin(p*Math.PI);o.spin=-540*(1-pp);return o}
+  const e=E(seg(t,COLLIDE,COLLIDE+.6));
+  o.x=mix(900,470,e); o.y=mix(540,600,e)+Math.sin((t-COLLIDE)*5+1.7)*7; o.spin=mix(-30,-8,e);
+  return o;
+}
+
+/* ---------- SHOT 2b orbit ---------- */
+const ORB0=4.8, ORB1=2*M.loops-ORB0;   // speed peaks exactly at M.loops
+function orbit(t,phase,fid){
+  const p=seg(t,ORB0,ORB1), ph=-Math.PI/2+6*Math.PI*smooth(p)+phase;
+  const r=164*(1-E(seg(t,M.merge,M.merge+.5)));
+  const vanish=seg(t,M.merge+.35,M.merge+.55);
+  return {x:560+Math.cos(ph)*r,y:540+Math.sin(ph)*r,fid,orient:true,ph,s:.82*(1-vanish),o:1-vanish};
+}
+
+/* ---------- static generated bits ---------- */
+(function build(){
+  const star=[];for(let i=0;i<28;i++){const r=i%2?150:260,a=i/28*Math.PI*2;star.push(`${(Math.cos(a)*r).toFixed(1)},${(Math.sin(a)*r).toFixed(1)}`)}
+  attr($('burstStar'),'points',star.join(' '));
+  let rays='',dots='';
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2+.13;rays+=`<line class="ray" data-a="${a}" x1="0" y1="0" x2="0" y2="0"/>`;
+    dots+=`<circle class="bd" data-a="${a+.26}" r="10"/>`}
+  $('rays').innerHTML=rays; $('burstDots').innerHTML=dots;
+  const FL=[[300,330,.8],[830,360,.7],[260,720,.6],[860,730,.9],[430,230,.5],[720,850,.55]];
+  $('flakes').innerHTML=FL.map(([x,y,s],i)=>`<g class="flake" data-i="${i}" data-x="${x}" data-y="${y}" data-s="${s}"><use href="#flake"/></g>`).join('');
+  const CR=[[-80,-260,9],[60,-300,7],[140,-250,11],[210,-200,8],[90,-340,6],[250,-120,10],[-20,-320,8],[180,-330,6]];
+  $('crumbs').innerHTML=CR.map(([vx,vy,r],i)=>`<circle class="crumb" data-vx="${vx}" data-vy="${vy}" r="${r}" fill="${i%3?'#4A2818':'#E8457A'}"/>`).join('');
+})();
+
+/* ---------- main render (pure function of t) ---------- */
+function render(t){
+  // background fade + decor
+  const fp=smooth(seg(t,M.fade,M.fade+.55));
+  $('stage').style.background=mixHex('#FDE0CD','#2D1810',fp);
+  $('halftone').style.opacity=.2*(1-fp);
+  document.querySelectorAll('.fl').forEach((el,i)=>{
+    el.style.transform=`translateY(${Math.sin(t*1.6+i*1.3)*10}px)`; el.style.opacity=1-fp*.6});
+
+  const s1=$('s1'),s2=$('s2'),s3=$('s3');
+  show(s1,t<M.whip+.35); show(s2,t>=M.whip&&t<M.cube+.35); show(s3,t>=M.cube-.05);
+
+  /* whip pan + boom shake */
+  const wp=seg(t,M.whip,M.whip+.32), we=E(wp), wb=(wp>0&&wp<1)?Math.sin(Math.PI*wp)*55:0;
+  attr($('fWhipb'),'stdDeviation',`${wb.toFixed(1)} 0`);
+  const sh=seg(t,COLLIDE,COLLIDE+.45), amp=(sh>0&&sh<1)?(1-sh)*18:0;
+  s1.style.transform=`translate(${-1920*we+Math.sin(t*90)*amp}px,${Math.cos(t*77)*amp}px)`;
+  s2.style.transform=`translateX(${1920*(1-we)}px)`;
+  s1.style.filter=s2.style.filter=wb>.5?'url(#fWhip)':'none';
+
+  /* ---- SHOT 1 ---- */
+  if(t<M.whip+.35){
+    mover('drop1',drop1,t,dropRot);
+    mover('berry1',berry1,t,(a,vx,vy,v)=>a.spin||0);
+    const d=drop1(t), lift=cl((G-d.y)/300);
+    attr($('s1shadow'),'cx',d.x); attr($('s1shadow'),'rx',70*(1-lift*.5));
+    $('s1shadow').style.opacity=(t>M.dropLand-.1&&t<2.9)?.16*(1-lift):0;
+
+    popWords($('a0'),t,.05,0,.42);
+    popWords($('a1'),t,.3,.15,.42);
+    popWords($('a2'),t,.85,.07,.4);
+    popWords($('a3'),t,1.35,.16,.45);
+    ['a0','a1','a2','a3'].forEach((id,i)=>exitUp($(id),t,2.66+i*.05));
+
+    // BOOM: scale + rotation, peak on marker
+    const bs=peakAt(M.boom,.5), bp=seg(t,bs,bs+.5), be=E(bp);
+    const bw=$('boom').querySelector('.w');
+    bw.style.opacity=cl(bp*5);
+    bw.style.transform=`rotate(${spinIn(bp,-220)-6}deg) scale(${Math.max(0,be)*(1+Math.max(0,.04*Math.sin((t-M.boom)*9))*(t>M.boom))})`;
+    const ip=seg(t,COLLIDE,COLLIDE+.5), ie=E(ip);
+    attr($('burst'),'transform',`translate(960,540) rotate(${t*12}) scale(${Math.max(0,ie)})`);
+    const rp=seg(t,COLLIDE,COLLIDE+.55);
+    document.querySelectorAll('.ray').forEach(l=>{const a=+l.dataset.a,r0=270+rp*120,r1=r0+90*(1-rp)*(rp>0);
+      attr(l,'x1',Math.cos(a)*r0);attr(l,'y1',Math.sin(a)*r0);attr(l,'x2',Math.cos(a)*r1);attr(l,'y2',Math.sin(a)*r1);l.style.opacity=rp<1?1:0});
+    document.querySelectorAll('.bd').forEach(c=>{const a=+c.dataset.a,r=240+rp*230;
+      attr(c,'cx',Math.cos(a)*r);attr(c,'cy',Math.sin(a)*r);attr(c,'r',10*(1-rp));});
+    popWords($('b1'),t,M.boom+.2,.1,.42);
+    popWords($('b2'),t,M.boom+.5,.1,.42);
+  }
+
+  /* ---- SHOT 2b: mold + loops ---- */
+  if(t>=M.whip&&t<M.cube+.35){
+    const me=E(seg(t,M.whip+.15,M.whip+.7));
+    const mOut=seg(t,M.cube,M.cube+.3);
+    attr($('mold'),'transform',`translate(560,540) scale(${.78*mix(.7,1,me)*mix(1,.82,E(mOut))})`);
+    $('mold').style.opacity=1-mOut;
+    attr($('moldOuter'),'stroke-dashoffset',1-cl(seg(t,M.whip+.2,M.whip+.9)));
+    attr($('track'),'stroke-dashoffset',1-cl(seg(t,M.whip+.45,M.whip+1.05)));
+    // pink speed arc riding the track at the loop peak
+    const ap=seg(t,M.loops-.5,M.loops+.5);
+    $('track2').style.opacity=Math.sin(ap*Math.PI)*.9;
+    const op=orbit(t,0,'');
+    attr($('track2'),'transform',`rotate(${op.ph*D-60})`);
+
+    mover('drop2',t2=>orbit(t2,0,'fDrop2b'),t,dropRot);
+    mover('berry2',t2=>orbit(t2,Math.PI,'fBerry2b'),t,(a)=>a.ph*D);
+
+    const bl=E(seg(t,M.merge+.35,M.merge+.75));
+    attr($('blob'),'transform',`translate(560,540) scale(${.8*Math.max(0,bl)*(1-E(mOut)*.15)})`);
+    $('blob').style.opacity=1-seg(t,M.cube+.05,M.cube+.3);
+    attr($('swirl'),'transform',`rotate(${-t*400})`);
+
+    reveal($('c1'),t,M.whip+.35);
+    const ls=peakAt(M.loops,.6), lp=seg(t,ls,ls+.6), le=E(lp);
+    const lw=$('loops').querySelector('.w');
+    lw.style.opacity=cl(lp*4);
+    lw.style.transform=`rotate(${spinIn(lp,-360)}deg) scale(${Math.max(0,le)})`;
+    reveal($('c2'),t,M.loops+.25);
+    ['c1','loops','c2'].forEach((id,i)=>exitUp($(id),t,M.merge+.3+i*.05));
+  }
+
+  /* ---- SHOT 3 + 4 ---- */
+  if(t>=M.cube-.05){
+    // cube forms (squash & stretch into shape), gentle float
+    const cp=seg(t,M.cube,M.cube+.5), ce=E(cp);
+    const sx=Math.max(0,ce)*(1+.12*Math.sin(cp*Math.PI)), sy=Math.max(0,ce)*(1-.1*Math.sin(cp*Math.PI));
+    const bob=Math.sin((t-M.cube)*3.2)*8*cl((t-M.cube-.5)*2);
+    // logo convergence
+    const lg=E(seg(t,M.fade,M.fade+.6));
+    const cx=mix(560,960,lg), cy=mix(560,430,lg)+bob*(1-lg), cs=mix(.85,.5,lg);
+    attr($('cubeWrap'),'transform',`translate(${cx},${cy}) scale(${sx*cs},${sy*cs})`);
+    attr($('cubeShadow'),'rx',170*Math.max(0,ce)*(1-bob/60));
+    $('cubeShadow').style.opacity=.14*cl(cp*3)*(1-cl(lg*2));
+
+    // cooling frost sparkles
+    document.querySelectorAll('.flake').forEach(f=>{
+      const i=+f.dataset.i, st=M.cube+.1+i*.12, p=seg(t,st,st+1.1);
+      const s=+f.dataset.s*Math.max(0,E(cl(p*2.2)))*(1-smooth(seg(p,.6,1)));
+      attr(f,'transform',`translate(${f.dataset.x},${+f.dataset.y-p*40}) rotate(${p*90}) scale(${s})`);
+    });
+
+    // specular highlight sweep (twice)
+    const s1p=seg(t,M.shine,M.shine+.8), s2p=seg(t,M.best+.6,M.best+1.3);
+    const sp=s1p<1?s1p:s2p;
+    attr($('shine'),'transform',`translate(${mix(-380,380,smooth(sp))},0) rotate(28)`);
+    $('shine').style.opacity=(sp>0&&sp<1)?1:0;
+    const gl=Math.max(Math.sin(Math.PI*seg(t,M.shine+.35,M.shine+.85)),Math.sin(Math.PI*seg(t,M.best+.95,M.best+1.45)));
+    document.querySelectorAll('#glints use').forEach(u=>{
+      u.style.opacity=gl; u.style.transformBox='fill-box'; u.style.transformOrigin='center'; u.style.transform=`scale(${gl}) rotate(${gl*90}deg)`});
+
+    // wink: eyes + smile for a split second
+    const wi=E(seg(t,M.wink,M.wink+.35)), wo=seg(t,M.wink+.85,M.wink+1.05);
+    $('face').style.opacity=cl(seg(t,M.wink,M.wink+.1))*(1-wo);
+    const es=Math.max(0,wi)*(1-E(wo)*.2);
+    const blink=1-.9*Math.sin(Math.PI*seg(t,M.wink+.45,M.wink+.62));
+    attr($('eyeL'),'transform',`translate(78,122) scale(${es},${es*blink})`);
+    attr($('eyeR'),'transform',`translate(152,122) scale(${es})`);
+    attr($('smile'),'stroke-dashoffset',1-cl(seg(t,M.wink+.08,M.wink+.38)));
+
+    // the bite lands on the "נגיסה" peak frame
+    const bt=seg(t,M.bite-.06,M.bite+.04);
+    document.querySelectorAll('#biteCuts circle').forEach((c,i)=>{c.style.transformBox='fill-box';c.style.transformOrigin='center';c.style.transform=`scale(${bt})`});
+    const cr=t-M.bite;
+    document.querySelectorAll('.crumb').forEach(c=>{
+      const vx=+c.dataset.vx, vy=+c.dataset.vy;
+      const tt=Math.max(0,cr); attr(c,'cx',150+vx*tt*1.6); attr(c,'cy',-150+vy*tt*1.6+900*tt*tt);
+      c.style.opacity=(cr>0&&cr<.75)?1-cr/.75:0;
+    });
+
+    // logo rings
+    attr($('ring1'),'stroke-dashoffset',1-smooth(seg(t,M.fade+.2,M.fade+.8)));
+    attr($('ring2'),'stroke-dashoffset',1-smooth(seg(t,M.fade+.35,M.fade+.95)));
+    $('logoRings').style.opacity=t>M.fade?1:0;
+
+    // texts
+    reveal($('d1'),t,M.cube+.15); reveal($('d2'),t,M.shine-.2);
+    reveal($('d3'),t,M.notJust); reveal($('d4'),t,M.best); reveal($('d5'),t,M.best+.25); reveal($('d6'),t,M.best+.6);
+    ['d1','d2','d3','d4','d5','d6'].forEach((id,i)=>exitUp($(id),t,M.outro3+i*.04));
+    reveal($('e1'),t,M.outro3+.2);
+    popWords($('e2'),t,M.bite-.7,.16,.42);
+    const ns=peakAt(M.bite,.5), np=seg(t,ns,ns+.5), ne=E(np), nw=$('e3').querySelector('.w');
+    nw.style.opacity=cl(np*5);
+    nw.style.transform=`translateY(${(1-ne)*80}px) rotate(${spinIn(np,12)}deg) scale(${Math.max(0,ne)})`;
+    ['e1','e2','e3'].forEach((id,i)=>exitUp($(id),t,M.fade+i*.04));
+    reveal($('f1'),t,M.fade+.4); reveal($('f2'),t,M.fade+.6);
+  }
+}
+
+/* ---------- layout + playback ---------- */
+document.querySelectorAll('.t').forEach(el=>{el.style.top='0px'});
+function layout(){document.querySelectorAll('.t').forEach(el=>{
+  const x=+(el.dataset.x||960); Object.assign(el.style,{left:(x-640)+'px',right:'auto',width:'1280px'});
+  el.style.top=(+el.dataset.y-el.offsetHeight/2)+'px'})}
+const RENDER=new URLSearchParams(location.search).has('render');
+if(RENDER)document.body.classList.add('render');
+function fit(){if(RENDER)return;const vp=$('viewport');const s=Math.min(vp.clientWidth/1920,vp.clientHeight/1080);$('stage').style.transform=`scale(${s})`}
+window.addEventListener('resize',fit);
+
+window.__ready=document.fonts.ready.then(()=>{layout();fit();render(0);return true});
+window.__render=t=>render(t);
+
+if(!RENDER){
+  const audio=new Audio(); let playing=false, t0=0, startClock=0, hasAudio=false;
+  fetch('narration.wav',{method:'HEAD'}).then(r=>{if(r.ok){audio.src='narration.wav';hasAudio=true}}).catch(()=>{});
+  $('audioFile').onchange=e=>{const f=e.target.files[0];if(f){audio.src=URL.createObjectURL(f);hasAudio=true}};
+  const now=()=>hasAudio&&!audio.paused?audio.currentTime:t0+(performance.now()-startClock)/1000;
+  function tick(){if(!playing)return;let t=now();if(t>=M.end){t=M.end;stop()}draw(t);requestAnimationFrame(tick)}
+  function draw(t){render(t);$('scrub').value=t;$('time').textContent=t.toFixed(2)+'s'}
+  function start(){if(+$('scrub').value>=M.end-.01)$('scrub').value=0;t0=+$('scrub').value;startClock=performance.now();
+    if(hasAudio){audio.currentTime=t0;audio.play().catch(()=>{})}playing=true;$('play').textContent='❚❚ Pause';tick()}
+  function stop(){playing=false;audio.pause();$('play').textContent='▶ Play'}
+  $('play').onclick=()=>playing?stop():start();
+  $('scrub').oninput=e=>{stop();draw(+e.target.value)};
+  addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();playing?stop():start()}});
+}
+</script>
+</body>
+</html>
