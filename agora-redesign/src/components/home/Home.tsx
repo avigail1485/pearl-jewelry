@@ -1,8 +1,10 @@
-import { Bell, ChevronLeft, Search, SlidersHorizontal, ArrowUpLeft, ShieldCheck } from "lucide-react"
+import { Bell, Camera, ChevronLeft, Search, ArrowUpLeft, ShieldCheck } from "lucide-react"
+import { usePhotoSearch } from "../search/PhotoSearch"
 import { items } from "../../data/items"
-import { stats, wantedRequests } from "../../data/meta"
+import { categories, stats, wantedRequests } from "../../data/meta"
+import type { Item } from "../../data/types"
 import { emptyFilters, useNav } from "../../nav"
-import { ItemCard, isFresh } from "../item/ItemCard"
+import { ItemCard } from "../item/ItemCard"
 import Logo from "../ui/Logo"
 
 function Section({ title, onAll, children }: { title: string; onAll?: () => void; children: React.ReactNode }) {
@@ -22,6 +24,14 @@ function Section({ title, onAll, children }: { title: string; onAll?: () => void
   )
 }
 
+/** One item from each category in turn, so "just posted" shows a real mix rather than one category. */
+function mixed(list: Item[], n: number) {
+  const queues = categories.map((c) => list.filter((i) => i.category === c.label)).filter((q) => q.length)
+  const out: Item[] = []
+  while (out.length < n && queues.some((q) => q.length)) for (const q of queues) if (q.length && out.length < n) out.push(q.shift()!)
+  return out
+}
+
 function Carousel({ list }: { list: typeof items }) {
   return (
     <div className="no-scrollbar flex snap-x gap-3 overflow-x-auto scroll-px-5 px-5 pb-1">
@@ -36,7 +46,11 @@ function Carousel({ list }: { list: typeof items }) {
 
 export default function Home() {
   const nav = useNav()
-  const byCat = (c: string) => items.filter((i) => i.category === c)
+  const photo = usePhotoSearch()
+  // Each item appears on the home screen once: the category rows skip what "just posted" already shows
+  const fresh = mixed(items, 10)
+  const shown = new Set(fresh.map((i) => i.id))
+  const byCat = (c: string) => items.filter((i) => i.category === c && !shown.has(i.id))
   const openCat = (category: string) => nav.push({ name: "results", filters: { ...emptyFilters, category } })
 
   return (
@@ -59,24 +73,27 @@ export default function Home() {
         </div>
 
         {/* One big, obvious search entry — the top complaint in store reviews */}
-        <button
-          type="button"
-          onClick={() => nav.push({ name: "search" })}
-          className="flex h-[60px] items-center gap-3 rounded-full bg-white pe-2 ps-5 text-right shadow-[0_2px_14px_rgba(22,24,29,.10)] ring-1 ring-inset ring-line"
-        >
-          <Search size={20} className="shrink-0" />
-          <span className="flex min-w-0 flex-1 flex-col leading-tight">
-            <span className="text-[15px] font-semibold">מה תרצו לקבל?</span>
-            <span className="truncate text-[13px] text-mute">כל הארץ · כל הקטגוריות · בחינם</span>
-          </span>
-          <span className="flex h-11 w-11 items-center justify-center rounded-full ring-1 ring-inset ring-line">
-            <SlidersHorizontal size={18} />
-          </span>
-        </button>
+        <div className="flex h-[60px] items-center rounded-full bg-white pe-2 shadow-[0_2px_14px_rgba(22,24,29,.10)] ring-1 ring-inset ring-line">
+          <button type="button" onClick={() => nav.push({ name: "search" })} className="flex h-full min-w-0 flex-1 items-center gap-3 rounded-full ps-5 text-right">
+            <Search size={20} className="shrink-0" />
+            <span className="flex min-w-0 flex-1 flex-col leading-tight">
+              <span className="text-[15px] font-semibold">מה תרצו לקבל?</span>
+              <span className="truncate text-[13px] text-mute">חיפוש במילים או לפי תמונה</span>
+            </span>
+          </button>
+          <button
+            type="button"
+            onClick={photo.open}
+            aria-label="חיפוש לפי תמונה"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lavender text-blue hover:bg-lavender-2"
+          >
+            <Camera size={19} />
+          </button>
+        </div>
       </header>
 
       <Section title="עלו עכשיו" onAll={() => nav.push({ name: "results", filters: emptyFilters })}>
-        <Carousel list={items.filter(isFresh).concat(items.filter((i) => !isFresh(i))).slice(0, 10)} />
+        <Carousel list={fresh} />
       </Section>
 
       <Section title="ריהוט וכלי בית" onAll={() => openCat("ריהוט וכלי בית")}>
@@ -138,6 +155,8 @@ export default function Home() {
           ))}
         </div>
       </Section>
+
+      {photo.element}
 
       <footer className="mx-5 flex items-start gap-3 rounded-3xl p-5 ring-1 ring-inset ring-line">
         <ShieldCheck size={22} className="mt-0.5 shrink-0 text-blue" />

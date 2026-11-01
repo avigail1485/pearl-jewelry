@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Bell, BookOpen, ChevronLeft, HelpCircle, LogOut, Palette, Plus, Search } from "lucide-react"
+import { Bell, BookOpen, ChevronLeft, HelpCircle, LogOut, Plus, Search } from "lucide-react"
 import { items } from "../../data/items"
 import { useNav, type Route } from "../../nav"
 import { ItemRow } from "../item/ItemCard"
@@ -13,7 +13,6 @@ export default function ProfileScreen() {
   const rows: { icon: typeof Bell; label: string; detail?: string; to?: Route; onClick?: () => void }[] = [
     { icon: Bell, label: "התראות חכמות", detail: nav.alerts.length ? `${nav.alerts.length} פעילות` : undefined, to: { name: "alerts" } },
     { icon: BookOpen, label: "כללי הקהילה", to: { name: "rules" } },
-    { icon: Palette, label: "פלטה וטיפוגרפיה (לצוות)", to: { name: "palette" } },
     { icon: HelpCircle, label: "עזרה ויצירת קשר", onClick: () => nav.toast("פנייתכם נשלחה לצוות אגורה") },
   ]
 

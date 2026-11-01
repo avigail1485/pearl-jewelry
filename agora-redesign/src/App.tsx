@@ -11,7 +11,6 @@ import SavedScreen from "./components/profile/SavedScreen"
 import ProfileScreen from "./components/profile/ProfileScreen"
 import AlertsScreen from "./components/profile/AlertsScreen"
 import RulesScreen from "./components/profile/RulesScreen"
-import PaletteScreen from "./components/profile/PaletteScreen"
 
 const key = (r: Route) => (r.name === "item" ? `item-${r.item.id}` : r.name === "results" ? `res-${JSON.stringify(r.filters)}` : r.name)
 
@@ -26,13 +25,12 @@ function Screen() {
   let body: ReactNode
   let tab: Tab | undefined
   switch (route.name) {
-    case "search": body = <SearchScreen />; tab = "search"; break
+    case "search": body = <SearchScreen initial={route.initial} />; tab = "search"; break
     case "results": body = <ResultsScreen filters={route.filters} />; tab = "search"; break
     case "saved": body = <SavedScreen />; tab = "saved"; break
     case "profile": body = <ProfileScreen />; tab = "profile"; break
     case "alerts": body = <AlertsScreen />; tab = "profile"; break
     case "rules": body = <RulesScreen />; tab = "profile"; break
-    case "palette": body = <PaletteScreen />; tab = "profile"; break
     default: body = <Home />; tab = "home"
   }
   return (

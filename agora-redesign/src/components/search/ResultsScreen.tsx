@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { Bell, LayoutGrid, List, SearchX, SlidersHorizontal, X } from "lucide-react"
+import { Bell, Camera, LayoutGrid, List, SearchX, SlidersHorizontal, Sparkles, X } from "lucide-react"
+import { usePhotoSearch } from "./PhotoSearch"
 import { filterItems } from "../../data/filter"
 import { conditions } from "../../data/meta"
 import { describeFilters, useNav, type Filters } from "../../nav"
@@ -12,12 +13,13 @@ import FilterSheet from "./FilterSheet"
 
 export default function ResultsScreen({ filters }: { filters: Filters }) {
   const nav = useNav()
+  const photo = usePhotoSearch()
   const [view, setView] = useState<"grid" | "list">("grid")
   const [sheet, setSheet] = useState(false)
   const list = filterItems(filters)
   const set = (f: Filters) => nav.replace({ name: "results", filters: f })
   const active = (filters.city !== "כל הארץ" ? 1 : 0) + filters.conditions.length + (filters.sort !== "new" ? 1 : 0)
-  const title = filters.query ? `"${filters.query}"` : filters.sub || filters.category || "כל הפריטים"
+  const title = filters.photo ? `דומים ל${filters.photo.label}` : filters.query ? `"${filters.query}"` : filters.sub || filters.category || "כל הפריטים"
   const alertOn = nav.alerts.some((a) => describeFilters(a) === describeFilters(filters))
 
   return (
@@ -35,15 +37,30 @@ export default function ResultsScreen({ filters }: { filters: Filters }) {
           </button>
         }
       >
-        <button type="button" onClick={() => nav.push({ name: "search" })} className="flex h-11 min-w-0 flex-1 flex-col justify-center rounded-full bg-lavender px-4 text-right leading-tight">
-          <span className="truncate text-[14px] font-semibold">{title}</span>
-          <span className="truncate text-[12px] text-mute">
-            {filters.city}
-            {filters.category && filters.sub ? ` · ${filters.category}` : ""}
+        <button
+          type="button"
+          onClick={() => (filters.photo ? photo.open() : nav.push({ name: "search", initial: filters.query }))}
+          className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-full bg-lavender pe-4 ps-1.5 text-right leading-tight"
+        >
+          {filters.photo && <img src={filters.photo.url} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />}
+          <span className="flex min-w-0 flex-col">
+            <span className="truncate text-[14px] font-semibold">{title}</span>
+            <span className="truncate text-[12px] text-mute">
+              {filters.photo ? "חיפוש לפי תמונה · לחצו לתמונה אחרת" : filters.city}
+              {!filters.photo && filters.category && filters.sub ? ` · ${filters.category}` : ""}
+            </span>
           </span>
         </button>
       </TopBar>
 
+      {filters.photo && (
+        <p className="mx-4 mb-3 flex items-center gap-2 rounded-2xl bg-lavender px-3 py-2 text-[13px] text-ink-2">
+          <Sparkles size={15} className="shrink-0 text-blue" />
+          {filters.photo.demo
+            ? "תוצאה לדוגמה: AI לא זמין בתצוגה הזו. בקישור החי התמונה מזוהה באמת."
+            : `ה-AI זיהה "${filters.photo.label}"${filters.sub ? ` (${filters.sub})` : filters.category ? ` (${filters.category})` : ""}. הכי דומים מופיעים ראשונים.`}
+        </p>
+      )}
       <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-3">
         {filters.city !== "כל הארץ" && (
           <Chip selected onClick={() => set({ ...filters, city: "כל הארץ" })} icon={<X size={14} />}>
@@ -123,6 +140,7 @@ export default function ResultsScreen({ filters }: { filters: Filters }) {
           }}
         />
       )}
+      {photo.element}
     </div>
   )
 }

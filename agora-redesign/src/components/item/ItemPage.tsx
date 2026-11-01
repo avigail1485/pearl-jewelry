@@ -103,7 +103,7 @@ export default function ItemPage({ item }: { item: Item }) {
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-[15px] font-semibold">מוסר: {item.giver}</p>
-              <p className="text-[13px] text-mute">טלפון מאומת · עונה בדרך כלל תוך שעות</p>
+              <p className="text-[13px] text-mute">טלפון מאומת · מוסר/ת באגורה</p>
             </div>
           </section>
 

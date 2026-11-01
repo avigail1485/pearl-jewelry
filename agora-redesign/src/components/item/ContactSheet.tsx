@@ -45,7 +45,7 @@ export default function ContactSheet({ item, onClose }: { item: Item; onClose: (
               </Chip>
             ))}
           </div>
-          <Button block icon={<Send size={18} />} disabled={!msg.trim()} onClick={() => setStep("phone")}>
+          <Button block icon={<Send size={18} />} disabled={!msg.trim()} onClick={() => setStep(nav.verified ? "done" : "phone")}>
             שליחה
           </Button>
           <p className="text-center text-[12px] text-mute">ההודעה נשלחת בתוך האפליקציה. בלי שיחות בתשלום.</p>
@@ -71,7 +71,14 @@ export default function ContactSheet({ item, onClose }: { item: Item; onClose: (
             שלחנו קוד בן 4 ספרות אל <span dir="ltr">{phone}</span>
           </p>
           <input inputMode="numeric" dir="ltr" maxLength={4} aria-label="קוד אימות" value={code} onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))} placeholder="– – – –" className={`${inputCls} text-center text-[26px] tracking-[0.5em]`} />
-          <Button block disabled={code.length < 4} onClick={() => setStep("done")}>
+          <Button
+            block
+            disabled={code.length < 4}
+            onClick={() => {
+              nav.setVerified(true)
+              setStep("done")
+            }}
+          >
             אישור ושליחה
           </Button>
           <button type="button" onClick={() => nav.toast("שלחנו קוד חדש")} className="text-[14px] font-semibold text-blue-ink">

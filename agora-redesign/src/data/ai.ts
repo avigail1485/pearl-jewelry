@@ -100,3 +100,39 @@ export function errorCode(e: unknown): AiError {
   if (code === "rate_limited") return "rate_limited"
   return "failed"
 }
+
+// ── Search by photo ──────────────────────────────────────────────
+
+export type PhotoQuery = { isItem: boolean; label: string; category: string; sub: string; keywords: string[]; demo?: boolean }
+
+const searchPrompt = `משתמש בלוח "אגורה" (חפצים למסירה בחינם) צילם חפץ ורוצה למצוא חפצים דומים.
+זהה את החפץ המרכזי בתמונה והחזר אובייקט JSON אחד בלבד, בעברית:
+{"isItem": boolean, "label": string, "category": string, "sub": string, "keywords": string[]}
+
+- isItem: false אם אין בתמונה חפץ (אדם, נוף, צילום מסך).
+- label: שם קצר לחפץ, 1-3 מילים (למשל "שידת מגירות").
+- category: בדיוק אחת מהקטגוריות ברשימה. sub: בדיוק אחת מתתי-הקטגוריות שלה, או "".
+- keywords: 2-4 מילות חיפוש קצרות בצורת יחיד, כמו שאנשים כותבים בלוח (למשל ["שידה", "מגירות"]).
+
+הקטגוריות:
+${catalog}`
+
+export async function photoQuery(file: File, signal: AbortSignal): Promise<PhotoQuery> {
+  const vision = await getVision()
+  if (!vision) {
+    await new Promise((r, j) => {
+      const t = setTimeout(r, 1600)
+      signal.addEventListener("abort", () => (clearTimeout(t), j({ code: "cancelled" })))
+    })
+    return { isItem: true, label: "שידת מגירות", category: "ריהוט וכלי בית", sub: "שידות וכונניות", keywords: ["שידה", "מגירות"], demo: true }
+  }
+  const raw = await vision.json<Partial<PhotoQuery>>(searchPrompt, { images: [file], modelTier: "quick", signal })
+  const cat = categories.find((c) => c.label === raw.category)
+  return {
+    isItem: raw.isItem !== false,
+    label: String(raw.label ?? "").slice(0, 40),
+    category: cat?.label ?? "",
+    sub: cat && cat.subs.includes(String(raw.sub)) ? String(raw.sub) : "",
+    keywords: Array.isArray(raw.keywords) ? raw.keywords.map(String).filter(Boolean).slice(0, 4) : [],
+  }
+}

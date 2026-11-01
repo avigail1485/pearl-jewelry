@@ -1,13 +1,24 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from "react"
 import type { Condition, Item, WantedRequest } from "./data/types"
 
-export type Filters = { query: string; category?: string; sub?: string; city: string; conditions: Condition[]; sort: "new" | "condition" }
+export type Filters = {
+  query: string
+  category?: string
+  sub?: string
+  city: string
+  conditions: Condition[]
+  sort: "new" | "condition"
+  /** Set when the search came from a photo: what the AI saw, and the photo itself */
+  photo?: { url: string; label: string; demo?: boolean }
+  /** Photo search: rank by these words, within the detected category */
+  keywords?: string[]
+}
 
 export const emptyFilters: Filters = { query: "", city: "כל הארץ", conditions: [], sort: "new" }
 
 export type Route =
   | { name: "home" }
-  | { name: "search" }
+  | { name: "search"; initial?: string }
   | { name: "results"; filters: Filters }
   | { name: "item"; item: Item }
   | { name: "give"; forRequest?: WantedRequest }
@@ -16,7 +27,6 @@ export type Route =
   | { name: "profile" }
   | { name: "alerts" }
   | { name: "rules" }
-  | { name: "palette" }
 
 export type Tab = "home" | "search" | "saved" | "profile"
 
@@ -34,6 +44,9 @@ type Nav = {
   removeAlert: (i: number) => void
   recent: string[]
   addRecent: (q: string) => void
+  /** Phone verified once per session; contacting more givers skips the SMS step */
+  verified: boolean
+  setVerified: (v: boolean) => void
 }
 
 const NavCtx = createContext<Nav | null>(null)
@@ -51,6 +64,7 @@ export function NavProvider({ children }: { children: ReactNode }) {
   const [saved, setSaved] = useState<string[]>([])
   const [alerts, setAlerts] = useState<Filters[]>([])
   const [recent, setRecent] = useState<string[]>(["שידה", "מיטת תינוק"])
+  const [verified, setVerified] = useState(false)
   const timer = useRef<number | undefined>(undefined)
 
   const toast = useCallback((msg: string) => {
@@ -98,7 +112,7 @@ export function NavProvider({ children }: { children: ReactNode }) {
 
   return (
     <NavCtx.Provider
-      value={{ route: stack[stack.length - 1], push, replace, back, goTab, toast, saved, toggleSaved, alerts, addAlert, removeAlert, recent, addRecent }}
+      value={{ route: stack[stack.length - 1], push, replace, back, goTab, toast, saved, toggleSaved, alerts, addAlert, removeAlert, recent, addRecent, verified, setVerified }}
     >
       {children}
       {toastMsg && (
@@ -111,7 +125,7 @@ export function NavProvider({ children }: { children: ReactNode }) {
 }
 
 export function describeFilters(f: Filters) {
-  const parts = [f.query || f.sub || f.category || "כל הפריטים"]
+  const parts = [f.photo ? `דומים ל${f.photo.label}` : f.query || f.sub || f.category || "כל הפריטים"]
   if (f.city !== "כל הארץ") parts.push(f.city)
   if (f.conditions.length) parts.push(f.conditions.join(", "))
   return parts.join(" · ")

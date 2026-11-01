@@ -1,13 +1,15 @@
 import { useMemo, useState } from "react"
-import { ChevronDown, ChevronLeft, Clock, Search, X } from "lucide-react"
+import { Camera, ChevronDown, ChevronLeft, Clock, Search, Sparkles, X } from "lucide-react"
+import { usePhotoSearch } from "./PhotoSearch"
 import { categories, popularSearches } from "../../data/meta"
 import { items } from "../../data/items"
 import { emptyFilters, useNav, type Filters } from "../../nav"
 import TopBar from "../ui/TopBar"
 
-export default function SearchScreen() {
+export default function SearchScreen({ initial = "" }: { initial?: string }) {
   const nav = useNav()
-  const [q, setQ] = useState("")
+  const photo = usePhotoSearch()
+  const [q, setQ] = useState(initial)
   const [open, setOpen] = useState<string | null>(null)
 
   const go = (f: Partial<Filters>) => {
@@ -44,9 +46,13 @@ export default function SearchScreen() {
             placeholder="למשל: ספה, מיטת תינוק, מקרר"
             className="min-w-0 flex-1 bg-transparent outline-none placeholder:text-mute [&::-webkit-search-cancel-button]:hidden"
           />
-          {q && (
+          {q ? (
             <button type="button" aria-label="ניקוי" onClick={() => setQ("")} className="text-mute hover:text-ink">
               <X size={18} />
+            </button>
+          ) : (
+            <button type="button" aria-label="חיפוש לפי תמונה" onClick={photo.open} className="text-blue hover:text-blue-hover">
+              <Camera size={19} />
             </button>
           )}
         </form>
@@ -83,6 +89,20 @@ export default function SearchScreen() {
         </ul>
       ) : (
         <div className="flex flex-col gap-7 px-5 pb-8 pt-2">
+          <button type="button" onClick={photo.open} className="flex items-center gap-3 rounded-3xl bg-lavender p-4 text-right hover:bg-lavender-2">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue text-white">
+              <Camera size={22} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-1.5 text-[16px] font-bold">
+                חיפוש לפי תמונה
+                <Sparkles size={14} className="text-blue" />
+              </span>
+              <span className="block text-[13px] text-ink-2">צלמו חפץ, וה-AI ימצא חפצים דומים למסירה</span>
+            </span>
+            <ChevronLeft size={18} className="text-mute" />
+          </button>
+
           {nav.recent.length > 0 && (
             <section>
               <h2 className="mb-1 text-[15px] font-bold">חיפושים אחרונים</h2>
@@ -138,6 +158,7 @@ export default function SearchScreen() {
           </section>
         </div>
       )}
+      {photo.element}
     </div>
   )
 }
