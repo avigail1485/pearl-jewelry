@@ -85,7 +85,7 @@ export default function Home() {
             type="button"
             onClick={photo.open}
             aria-label="חיפוש לפי תמונה"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-lavender text-blue hover:bg-lavender-2"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full ring-1 ring-inset ring-line hover:bg-lavender"
           >
             <Camera size={19} />
           </button>

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Bell, Camera, LayoutGrid, List, SearchX, SlidersHorizontal, Sparkles, X } from "lucide-react"
+import { Bell, LayoutGrid, List, SearchX, SlidersHorizontal, X } from "lucide-react"
 import { usePhotoSearch } from "./PhotoSearch"
 import { filterItems } from "../../data/filter"
 import { conditions } from "../../data/meta"
@@ -40,27 +40,18 @@ export default function ResultsScreen({ filters }: { filters: Filters }) {
         <button
           type="button"
           onClick={() => (filters.photo ? photo.open() : nav.push({ name: "search", initial: filters.query }))}
-          className="flex h-11 min-w-0 flex-1 items-center gap-2 rounded-full bg-lavender pe-4 ps-1.5 text-right leading-tight"
+          className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-lavender px-4 text-right leading-tight"
         >
-          {filters.photo && <img src={filters.photo.url} alt="" className="h-8 w-8 shrink-0 rounded-full object-cover" />}
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-[14px] font-semibold">{title}</span>
             <span className="truncate text-[12px] text-mute">
-              {filters.photo ? "חיפוש לפי תמונה · לחצו לתמונה אחרת" : filters.city}
+              {filters.photo ? "חיפוש לפי תמונה" : filters.city}
               {!filters.photo && filters.category && filters.sub ? ` · ${filters.category}` : ""}
             </span>
           </span>
         </button>
       </TopBar>
 
-      {filters.photo && (
-        <p className="mx-4 mb-3 flex items-center gap-2 rounded-2xl bg-lavender px-3 py-2 text-[13px] text-ink-2">
-          <Sparkles size={15} className="shrink-0 text-blue" />
-          {filters.photo.demo
-            ? "תוצאה לדוגמה: AI לא זמין בתצוגה הזו. בקישור החי התמונה מזוהה באמת."
-            : `ה-AI זיהה "${filters.photo.label}"${filters.sub ? ` (${filters.sub})` : filters.category ? ` (${filters.category})` : ""}. הכי דומים מופיעים ראשונים.`}
-        </p>
-      )}
       <div className="no-scrollbar flex gap-2 overflow-x-auto px-4 pb-3">
         {filters.city !== "כל הארץ" && (
           <Chip selected onClick={() => set({ ...filters, city: "כל הארץ" })} icon={<X size={14} />}>

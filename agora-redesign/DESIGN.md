@@ -19,7 +19,7 @@ This file replaces the in-app palette screen. It is for designers and developers
 Rough share of the screen: white + ink 82%, lavender 10%, blue 6%, lime 2%.
 
 ## Type — Google Sans only
-Self-hosted variable font (`src/assets/fonts`, weights 400–700, Hebrew + Latin), declared in `src/fonts.css`.
+Google Sans 17pt, the files supplied by design (Regular + SemiBold), subset to Hebrew + Latin in `src/assets/fonts`, declared in `src/fonts.css`. Regular covers 400–500, SemiBold covers 600–700.
 Screen title 26/700 · section 19/700 · card title 15/600 · body 15/400 · secondary 13/400.
 
 ## AI

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react"
-import { Camera, ChevronDown, ChevronLeft, Clock, Search, Sparkles, X } from "lucide-react"
+import { Camera, ChevronDown, ChevronLeft, Clock, Search, X } from "lucide-react"
 import { usePhotoSearch } from "./PhotoSearch"
 import { categories, popularSearches } from "../../data/meta"
 import { items } from "../../data/items"
@@ -51,7 +51,7 @@ export default function SearchScreen({ initial = "" }: { initial?: string }) {
               <X size={18} />
             </button>
           ) : (
-            <button type="button" aria-label="חיפוש לפי תמונה" onClick={photo.open} className="text-blue hover:text-blue-hover">
+            <button type="button" aria-label="חיפוש לפי תמונה" onClick={photo.open} className="text-ink-2 hover:text-ink">
               <Camera size={19} />
             </button>
           )}
@@ -89,17 +89,11 @@ export default function SearchScreen({ initial = "" }: { initial?: string }) {
         </ul>
       ) : (
         <div className="flex flex-col gap-7 px-5 pb-8 pt-2">
-          <button type="button" onClick={photo.open} className="flex items-center gap-3 rounded-3xl bg-lavender p-4 text-right hover:bg-lavender-2">
-            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-blue text-white">
-              <Camera size={22} />
+          <button type="button" onClick={photo.open} className="-mb-3 flex items-center gap-3 border-b border-line pb-4 text-right">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-lavender">
+              <Camera size={17} />
             </span>
-            <span className="min-w-0 flex-1">
-              <span className="flex items-center gap-1.5 text-[16px] font-bold">
-                חיפוש לפי תמונה
-                <Sparkles size={14} className="text-blue" />
-              </span>
-              <span className="block text-[13px] text-ink-2">צלמו חפץ, וה-AI ימצא חפצים דומים למסירה</span>
-            </span>
+            <span className="flex-1 text-[15px]">חיפוש לפי תמונה</span>
             <ChevronLeft size={18} className="text-mute" />
           </button>
 

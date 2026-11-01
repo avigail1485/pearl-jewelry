@@ -9,7 +9,7 @@ export type Filters = {
   conditions: Condition[]
   sort: "new" | "condition"
   /** Set when the search came from a photo: what the AI saw, and the photo itself */
-  photo?: { url: string; label: string; demo?: boolean }
+  photo?: { label: string; demo?: boolean }
   /** Photo search: rank by these words, within the detected category */
   keywords?: string[]
 }
