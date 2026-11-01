@@ -1,61 +1,41 @@
-import { Home, Search, Plus, LayoutGrid, User } from "lucide-react"
-import { useNav, type Route } from "../../nav"
+import { Home, Search, Plus, Heart, User } from "lucide-react"
+import { useNav, type Tab } from "../../nav"
 
-type NavId = "home" | "search" | "myitems" | "profile"
-
-const items: { id: NavId; label: string; icon: typeof Home }[] = [
-  { id: "home", label: "בית", icon: Home },
+const tabs: { id: Tab; label: string; icon: typeof Home }[] = [
+  { id: "home", label: "ראשי", icon: Home },
   { id: "search", label: "חיפוש", icon: Search },
-  { id: "myitems", label: "הפריטים שלי", icon: LayoutGrid },
+  { id: "saved", label: "שמורים", icon: Heart },
   { id: "profile", label: "פרופיל", icon: User },
 ]
 
-export default function BottomNav({ active }: { active: NavId }) {
+export default function BottomNav({ active }: { active?: Tab }) {
   const nav = useNav()
-
-  const go = (id: NavId) => {
-    if (id === active) return
-    if (id === "home") return nav.reset()
-    nav.reset({ name: "home" })
-    nav.push({ name: id } as Route)
-  }
-
-  const renderItem = (it: (typeof items)[number]) => {
-    const isActive = active === it.id
-    const Icon = it.icon
+  const tab = (t: (typeof tabs)[number]) => {
+    const on = active === t.id
+    const Icon = t.icon
     return (
       <button
-        key={it.id}
+        key={t.id}
         type="button"
-        onClick={() => go(it.id)}
-        aria-current={isActive ? "page" : undefined}
-        className={`flex h-16 min-w-14 flex-1 flex-col items-center justify-center gap-1 rounded-xl transition-colors duration-200 ${
-          isActive ? "text-brand-strong" : "text-mute hover:text-deep"
-        }`}
+        onClick={() => nav.goTab(t.id)}
+        aria-current={on ? "page" : undefined}
+        className={`flex h-14 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] ${on ? "font-bold text-blue-ink" : "font-medium text-mute hover:text-ink"}`}
       >
-        <Icon size={22} strokeWidth={isActive ? 2.25 : 1.75} />
-        <span className={`text-[11px] ${isActive ? "font-bold" : "font-medium"}`}>{it.label}</span>
+        <Icon size={22} strokeWidth={on ? 2.25 : 1.75} className={on ? "text-blue" : ""} />
+        {t.label}
       </button>
     )
   }
-
   return (
-    <div className="absolute inset-x-0 bottom-0 z-20 bg-paper px-3 pb-2 pt-1" style={{ boxShadow: "0 -1px 0 rgba(28, 31, 35, 0.06)" }}>
-      <nav aria-label="ניווט ראשי" className="mx-auto flex w-full max-w-[430px] items-end justify-center">
-        {items.slice(0, 2).map(renderItem)}
-        <button
-          type="button"
-          onClick={() => nav.push({ name: "give" })}
-          aria-label="מסירת חפץ חדש"
-          className="flex h-16 min-w-16 flex-1 flex-col items-center justify-center gap-1 text-deep transition-transform duration-200 active:scale-95"
-        >
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-paper shadow-[0_6px_16px_rgba(255,122,26,0.35)]">
-            <Plus size={24} strokeWidth={2.5} />
-          </span>
-          <span className="text-center text-[11px] font-semibold">למסור</span>
-        </button>
-        {items.slice(2).map(renderItem)}
-      </nav>
-    </div>
+    <nav aria-label="ניווט ראשי" className="absolute inset-x-0 bottom-0 z-30 flex items-center border-t border-line bg-white px-2 pb-[max(env(safe-area-inset-bottom),6px)] pt-1">
+      {tabs.slice(0, 2).map(tab)}
+      <button type="button" onClick={() => nav.push({ name: "give" })} aria-label="למסור חפץ" className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold text-ink">
+        <span className="flex h-9 w-12 items-center justify-center rounded-2xl bg-blue text-white">
+          <Plus size={22} strokeWidth={2.5} />
+        </span>
+        למסור
+      </button>
+      {tabs.slice(2).map(tab)}
+    </nav>
   )
 }

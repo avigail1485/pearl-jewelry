@@ -1,28 +1,15 @@
 import type { ReactNode } from "react"
 
-type ChipProps = {
-  children: ReactNode
-  selected?: boolean
-  onClick?: () => void
-  icon?: ReactNode
-  as?: "button" | "span"
-}
-
-export default function Chip({ children, selected, onClick, icon, as = "button" }: ChipProps) {
-  const cls = `inline-flex items-center gap-1.5 whitespace-nowrap rounded-[var(--radius-pill)] px-4 py-2 text-[14px] font-medium transition-all duration-200 min-h-[40px] ${
-    selected ? "bg-brand text-paper" : "bg-paper text-deep hover:bg-brand-tint"
-  }`
-  const style = selected ? undefined : { boxShadow: "var(--shadow-raised)" }
-  if (as === "span") {
-    return (
-      <span className={cls} style={style}>
-        {icon}
-        {children}
-      </span>
-    )
-  }
+export default function Chip({ children, selected, onClick, icon }: { children: ReactNode; selected?: boolean; onClick?: () => void; icon?: ReactNode }) {
   return (
-    <button type="button" onClick={onClick} aria-pressed={selected} className={cls} style={style}>
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={selected}
+      className={`inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full px-3.5 text-[14px] font-medium transition-colors ${
+        selected ? "bg-ink text-white" : "bg-white text-ink ring-1 ring-inset ring-line hover:ring-ink/30"
+      }`}
+    >
       {icon}
       {children}
     </button>

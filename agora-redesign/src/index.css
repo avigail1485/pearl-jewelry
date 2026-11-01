@@ -2,144 +2,59 @@
 @import 'tailwindcss';
 
 /*
-  Agora palette v2
-  ─ Neutral: very light, truly neutral gray canvas; white cards on top
-  ─ Primary: fresh modern green (actions, active state, focus)
-  ─ Secondary: warm modern orange (highlights, badges, "new", the give button)
+  Agora palette v3 (from the Lingua reference)
+  Blue    #3869FE — primary actions, active states, links. Used sparingly.
+  Lime    #D4FA60 — a single highlight: the "new" badge and the arrow on the request card.
+  Lavender#EFF3FF — soft surfaces: search field, chips, info cards.
+  White + near-black ink carry everything else, so photos stay the hero (Airbnb approach).
 */
 @theme {
   --font-sans: 'Google Sans', system-ui, sans-serif;
-  --font-display: 'Google Sans', system-ui, sans-serif;
 
-  /* Neutrals */
-  --color-canvas: #eceef1;      /* outside the phone shell (desktop) */
-  --color-ground: #f5f6f8;      /* app background — very light neutral gray */
-  --color-paper: #ffffff;       /* cards, sheets, inputs */
-  --color-surface: #eef0f3;     /* soft fills, icon wells */
-  --color-fill: #eef0f3;
-  --color-fill-2: #e6e8ec;      /* image placeholders, skeletons */
-  --color-line: #e3e5e9;
-  --color-line-strong: #c9cdd3;
-  --color-deep: #1c1f23;        /* headings / primary text */
-  --color-ink: #1c1f23;
-  --color-ink-soft: #4b5059;
-  --color-mute: #6b7079;        /* secondary text (AA on ground) */
-  --color-base: #ffffff;
+  --color-blue: #3869fe;
+  --color-blue-hover: #2c5cf0;
+  --color-blue-ink: #2850d8;   /* blue for small text — AA on white */
+  --color-lime: #d4fa60;
+  --color-lavender: #eff3ff;
+  --color-lavender-2: #e2e9ff;
 
-  /* Primary — modern green */
-  --color-brand: #00b46e;
-  --color-brand-hover: #009a5e;
-  --color-brand-strong: #00804e; /* green text on white, AA */
-  --color-brand-tint: #e3f7ee;
-  --color-brand-ink: #00663e;
-
-  /* Secondary — trendy orange */
-  --color-accent: #ff7a1a;
-  --color-accent-hover: #f2650a;
-  --color-accent-tint: #fff0e3;
-  --color-accent-ink: #b34a00;
-
-  --color-status-repair: #b34a00;
-  --color-status-repair-tint: #fff0e3;
-
-  --radius-card: 24px;
-  --radius-btn: 999px;
-  --radius-chip: 999px;
-  --radius-pill: 999px;
+  --color-page: #ffffff;
+  --color-canvas: #f2f4f8;     /* outside the phone frame on desktop */
+  --color-ink: #16181d;
+  --color-ink-2: #43474f;
+  --color-mute: #6c717b;
+  --color-line: #e8eaf0;
+  --color-photo: #eceef3;
 }
 
-:root {
-  --shadow-raised: 0 0 0 1px rgba(28, 31, 35, 0.06), 0 1px 2px rgba(28, 31, 35, 0.04);
-  --shadow-float: 0 0 0 1px rgba(28, 31, 35, 0.05), 0 10px 28px rgba(28, 31, 35, 0.1);
-  --shadow-inset: inset 0 0 0 1px rgba(28, 31, 35, 0.1);
-  --shadow-soft: inset 0 0 0 1px rgba(28, 31, 35, 0.18);
-  --shadow-gentle: inset 0 0 0 1px rgba(28, 31, 35, 0.08);
-}
-
-.lucide {
-  stroke-width: 1.75;
-}
-
-html,
-body,
-#root {
-  height: 100%;
-}
-
-html {
-  direction: rtl;
-}
-
+@layer base {
+html, body, #root { height: 100%; }
+html { direction: rtl; }
 body {
   margin: 0;
   font-family: var(--font-sans);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.5;
   color: var(--color-ink);
   background: var(--color-canvas);
   -webkit-font-smoothing: antialiased;
 }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+.lucide { stroke-width: 1.75; }
 
-button,
-input,
-select,
-textarea {
-  font-family: inherit;
-}
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
 
-button {
-  cursor: pointer;
+:focus-visible { outline: 2px solid var(--color-blue); outline-offset: 2px; }
 }
 
-.font-display {
-  font-family: var(--font-display);
-  letter-spacing: -0.01em;
-}
+@keyframes screen-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.screen-in { animation: screen-in 200ms ease-out; }
+@keyframes sheet-in { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
+.sheet-in { animation: sheet-in 220ms cubic-bezier(.2,.8,.2,1); }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+.toast-in { animation: toast-in 180ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .screen-in, .sheet-in, .toast-in { animation: none; } }
 
-.no-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-brand);
-  outline-offset: 2px;
-}
-
-@keyframes screen-in {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-.screen-in {
-  animation: screen-in 220ms ease-out;
-}
-
-@keyframes toast-in {
-  from {
-    opacity: 0;
-    transform: translate(-50%, 12px);
-  }
-  to {
-    opacity: 1;
-    transform: translate(-50%, 0);
-  }
-}
-.toast-in {
-  animation: toast-in 200ms ease-out;
-}
-
-.safe-top {
-  padding-top: max(env(safe-area-inset-top), 20px);
-}
-.safe-top-pos {
-  top: max(env(safe-area-inset-top), 20px);
-}
+.pt-safe { padding-top: max(env(safe-area-inset-top), 16px); }
