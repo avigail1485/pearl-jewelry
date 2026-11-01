@@ -1,4 +1,3 @@
-import { Heart } from "lucide-react"
 import { items } from "../../data/items"
 import { useNav } from "../../nav"
 import { ItemCard } from "../item/ItemCard"
@@ -21,7 +20,7 @@ export default function SavedScreen() {
         </div>
       ) : (
         <EmptyState
-          icon={<Heart size={28} />}
+          art="saved"
           title="עוד לא שמרתם חפצים"
           text="לחצו על הלב בכל חפץ כדי לשמור אותו כאן ולחזור אליו אחר כך."
           action={<Button className="mt-2" onClick={() => nav.goTab("home")}>לגלות חפצים</Button>}

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { CheckCircle2 } from "lucide-react"
+import Illustration from "../ui/Illustration"
 import { conditions } from "../../data/meta"
 import { items } from "../../data/items"
 import { emptyFilters, useNav } from "../../nav"
@@ -32,7 +32,7 @@ export default function RequestFlow() {
     return (
       <div className="screen-in no-scrollbar flex h-full flex-col overflow-y-auto bg-white px-5 pb-6 pt-16">
         <div className="flex flex-col items-center gap-3 text-center">
-          <CheckCircle2 size={60} className="text-blue" strokeWidth={1.5} />
+          <Illustration name="request" size={170} />
           <h1 className="text-[24px] font-bold">הבקשה פורסמה</h1>
           <p className="max-w-[300px] text-[15px] text-ink-2">מוסרים ב{city} ובסביבה יראו אותה. הפעלנו לכם גם התראה על "{what}".</p>
         </div>

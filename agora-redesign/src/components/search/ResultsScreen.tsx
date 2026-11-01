@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Bell, LayoutGrid, List, SearchX, SlidersHorizontal, X } from "lucide-react"
+import { Bell, LayoutGrid, List, SlidersHorizontal, X } from "lucide-react"
 import { usePhotoSearch } from "./PhotoSearch"
 import { filterItems } from "../../data/filter"
 import { conditions } from "../../data/meta"
@@ -95,7 +95,7 @@ export default function ResultsScreen({ filters }: { filters: Filters }) {
 
       {list.length === 0 ? (
         <EmptyState
-          icon={<SearchX size={28} />}
+          art="no-results"
           title="לא מצאנו כרגע"
           text="אפשר להרחיב את האזור, לנקות סינונים, או לפרסם בקשה ונודיע לכם כשיעלה משהו מתאים."
           action={

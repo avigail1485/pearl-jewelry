@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react"
 import { Camera, CheckCircle2, ChevronDown, HandHeart, ImagePlus, Pencil, Sparkles, Star, X } from "lucide-react"
 import { errorCode, recognize } from "../../data/ai"
 import AiPanel, { ScanOverlay, type AiState } from "./AiPanel"
+import Illustration from "../ui/Illustration"
 import { categories, cities, conditions } from "../../data/meta"
 import type { Condition, WantedRequest } from "../../data/types"
 import { useNav } from "../../nav"
@@ -98,7 +99,7 @@ export default function GiveFlow({ forRequest }: { forRequest?: WantedRequest })
     return (
       <div className="screen-in flex h-full flex-col bg-white px-5 pb-6 pt-16">
         <div className="flex flex-1 flex-col items-center gap-3 text-center">
-          <CheckCircle2 size={64} className="text-blue" strokeWidth={1.5} />
+          <Illustration name="published" size={190} />
           <h1 className="text-[26px] font-bold">החפץ פורסם</h1>
           <p className="max-w-[300px] text-[15px] text-ink-2">
             "{f.title}" מופיע עכשיו בלוח. מי שהפעיל התראה על {f.category} ב{f.city} יקבל הודעה.
@@ -181,9 +182,9 @@ export default function GiveFlow({ forRequest }: { forRequest?: WantedRequest })
               <button
                 type="button"
                 onClick={() => fileRef.current?.click()}
-                className="flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 rounded-3xl border-2 border-dashed border-lavender-2 bg-lavender text-blue-ink hover:border-blue"
+                className="flex w-full flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-lavender-2 bg-white px-4 py-6 text-blue-ink hover:border-blue"
               >
-                {aiMode ? <Sparkles size={36} strokeWidth={1.5} /> : <Camera size={36} strokeWidth={1.5} />}
+                <Illustration name="photo" size={150} />
                 <span className="text-[15px] font-semibold">{aiMode ? "צלמו, וה-AI ימלא את השאר" : "הוספת תמונות"}</span>
                 <span className="text-[13px] text-mute">מהמצלמה או מהגלריה</span>
               </button>

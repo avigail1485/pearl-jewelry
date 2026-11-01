@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { ArrowRight, CheckCircle2, Send, ShieldCheck } from "lucide-react"
+import { ArrowRight, Send } from "lucide-react"
+import Illustration from "../ui/Illustration"
 import type { Item } from "../../data/types"
 import { useNav } from "../../nav"
 import Sheet from "../ui/Sheet"
@@ -54,9 +55,7 @@ export default function ContactSheet({ item, onClose }: { item: Item; onClose: (
       {step === "phone" && (
         <div className="flex flex-col gap-4">
           {backLink("message", "חזרה להודעה")}
-          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-lavender text-blue">
-            <ShieldCheck size={26} />
-          </span>
+          <Illustration name="verified" size={130} />
           <p className="text-center text-[14px] text-ink-2">אימות חד-פעמי שומר על הקהילה בטוחה. המספר לא מוצג לאף אחד.</p>
           <input type="tel" inputMode="tel" dir="ltr" aria-label="מספר טלפון" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="050-000-0000" className={`${inputCls} text-center text-[18px]`} />
           <Button block disabled={phone.replace(/\D/g, "").length < 9} onClick={() => setStep("code")}>
@@ -88,7 +87,7 @@ export default function ContactSheet({ item, onClose }: { item: Item; onClose: (
       )}
       {step === "done" && (
         <div className="flex flex-col items-center gap-3 py-2 text-center">
-          <CheckCircle2 size={52} className="text-blue" strokeWidth={1.5} />
+          <Illustration name="message-sent" size={150} />
           <p className="text-[15px] text-ink-2">{item.giver} יקבל התראה. כשיענה, תקבלו הודעה. אפשר להמשיך לחפש בינתיים.</p>
           <Button block className="mt-2" onClick={onClose}>
             חזרה לפריט

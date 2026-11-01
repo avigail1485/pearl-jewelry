@@ -11,7 +11,7 @@ export default function AlertsScreen() {
       <TopBar title="התראות חכמות" />
       {nav.alerts.length === 0 ? (
         <EmptyState
-          icon={<Bell size={28} />}
+          art="alerts"
           title="אין התראות פעילות"
           text='מחפשים משהו מסוים? בתוצאות החיפוש לחצו "התראה על חדשים", ונודיע לכם ברגע שיעלה.'
           action={<Button className="mt-2" onClick={() => nav.push({ name: "search" })}>לחיפוש</Button>}

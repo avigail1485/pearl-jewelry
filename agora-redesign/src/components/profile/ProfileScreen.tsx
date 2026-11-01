@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Bell, BookOpen, ChevronLeft, HelpCircle, LogOut, Plus, Search, ShieldCheck } from "lucide-react"
 import { items } from "../../data/items"
 import { stats } from "../../data/meta"
+import Illustration from "../ui/Illustration"
 import { useNav, type Route } from "../../nav"
 import { ItemRow } from "../item/ItemCard"
 import Button from "../ui/Button"
@@ -69,6 +70,7 @@ export default function ProfileScreen() {
       </section>
 
       <section className="mx-5 flex flex-col gap-3 rounded-3xl bg-white p-5 shadow-card ring-1 ring-inset ring-line" aria-label="קהילת אגורה">
+        <Illustration name="community" size={120} className="-mt-1" />
         <h2 className="flex items-center gap-2 text-[15px] font-bold">
           <ShieldCheck size={18} className="text-blue" />
           קהילת אגורה

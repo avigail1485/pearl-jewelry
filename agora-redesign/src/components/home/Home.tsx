@@ -83,14 +83,26 @@ export default function Home() {
       </div>
       <div ref={sentinel} aria-hidden="true" className="h-px" />
 
-      <header className={`sticky top-0 z-20 bg-white/95 px-5 pb-4 pt-1 backdrop-blur transition-shadow ${scrolled ? "shadow-header" : ""}`}>
+      <header className={`sticky top-0 z-20 bg-white/95 px-5 pb-4 backdrop-blur transition-all ${scrolled ? "pt-3 shadow-header" : "pt-1"}`}>
+        <div className="flex items-center">
+        {/* Collapsed header: once the top row scrolls away, the logo (right) and bell (left) slide in beside the search */}
+        <button
+          type="button"
+          onClick={() => nav.goTab("home")}
+          aria-label="אגורה, דף הבית"
+          tabIndex={scrolled ? 0 : -1}
+          aria-hidden={!scrolled}
+          className={`flex shrink-0 items-center justify-center overflow-hidden transition-all duration-200 ${scrolled ? "me-2.5 w-9 opacity-100" : "me-0 w-0 opacity-0"}`}
+        >
+          <Logo size={26} />
+        </button>
         {/* One big, obvious search entry — the top complaint in store reviews */}
-        <div className="flex h-[60px] items-center rounded-full bg-white pe-2 shadow-search ring-1 ring-inset ring-line">
+        <div className={`flex min-w-0 flex-1 items-center rounded-full bg-white pe-2 shadow-search ring-1 ring-inset ring-line transition-all duration-200 ${scrolled ? "h-[52px]" : "h-[60px]"}`}>
           <button type="button" onClick={() => nav.push({ name: "search" })} className="flex h-full min-w-0 flex-1 items-center gap-3 rounded-full ps-5 text-right">
             <Search size={20} className="shrink-0" />
             <span className="flex min-w-0 flex-1 flex-col leading-tight">
               <span className="text-[15px] font-semibold">מה תרצו לקבל?</span>
-              <span className="truncate text-[13px] text-mute">חיפוש במילים או לפי תמונה</span>
+              {!scrolled && <span className="truncate text-[13px] text-mute">חיפוש במילים או לפי תמונה</span>}
             </span>
           </button>
           <button
@@ -101,6 +113,18 @@ export default function Home() {
           >
             <Camera size={19} />
           </button>
+        </div>
+        <button
+          type="button"
+          onClick={() => nav.push({ name: "alerts" })}
+          aria-label="התראות חכמות"
+          tabIndex={scrolled ? 0 : -1}
+          aria-hidden={!scrolled}
+          className={`relative flex h-10 shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-inset ring-line transition-all duration-200 hover:bg-lavender ${scrolled ? "ms-2.5 w-10 opacity-100" : "ms-0 w-0 opacity-0 ring-0"}`}
+        >
+          <Bell size={19} />
+          {nav.alerts.length > 0 && <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-blue" />}
+        </button>
         </div>
       </header>
 
