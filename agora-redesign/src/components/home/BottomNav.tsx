@@ -27,7 +27,7 @@ export default function BottomNav({ active }: { active?: Tab }) {
     )
   }
   return (
-    <nav aria-label="ניווט ראשי" className="absolute inset-x-0 bottom-0 z-30 flex items-center border-t border-line bg-white px-2 pb-[max(env(safe-area-inset-bottom),6px)] pt-1">
+    <nav aria-label="ניווט ראשי" className="absolute inset-x-0 bottom-0 z-30 flex items-center bg-white px-2 shadow-bar pb-[max(env(safe-area-inset-bottom),6px)] pt-1">
       {tabs.slice(0, 2).map(tab)}
       <button type="button" onClick={() => nav.push({ name: "give" })} aria-label="למסור חפץ" className="flex h-14 flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-semibold text-ink">
         <span className="flex h-9 w-12 items-center justify-center rounded-2xl bg-blue text-white">

@@ -1,7 +1,8 @@
-import { Bell, Camera, ChevronLeft, Search, ArrowUpLeft, ShieldCheck } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { Bell, Camera, ChevronLeft, Search, ArrowUpLeft } from "lucide-react"
 import { usePhotoSearch } from "../search/PhotoSearch"
 import { items } from "../../data/items"
-import { categories, stats, wantedRequests } from "../../data/meta"
+import { categories, wantedRequests } from "../../data/meta"
 import type { Item } from "../../data/types"
 import { emptyFilters, useNav } from "../../nav"
 import { ItemCard } from "../item/ItemCard"
@@ -47,6 +48,16 @@ function Carousel({ list }: { list: typeof items }) {
 export default function Home() {
   const nav = useNav()
   const photo = usePhotoSearch()
+  // Header shadow only once content scrolls under it
+  const sentinel = useRef<HTMLDivElement>(null)
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const el = sentinel.current
+    if (!el) return
+    const io = new IntersectionObserver(([e]) => setScrolled(!e.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
   // Each item appears on the home screen once: the category rows skip what "just posted" already shows
   const fresh = mixed(items, 10)
   const shown = new Set(fresh.map((i) => i.id))
@@ -54,9 +65,8 @@ export default function Home() {
   const openCat = (category: string) => nav.push({ name: "results", filters: { ...emptyFilters, category } })
 
   return (
-    <div className="flex flex-col gap-8 pb-8">
-      <header className="pt-safe flex flex-col gap-4 bg-white px-5">
-        <div className="flex items-center justify-between">
+    <div className="flex flex-col pb-8">
+      <div className="pt-safe flex items-center justify-between bg-white px-5 pb-4">
           <button type="button" onClick={() => nav.goTab("home")} className="flex items-center gap-2" aria-label="אגורה, דף הבית">
             <Logo />
             <span className="text-[20px] font-bold tracking-tight">אגורה</span>
@@ -70,10 +80,12 @@ export default function Home() {
             <Bell size={19} />
             {nav.alerts.length > 0 && <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-blue" />}
           </button>
-        </div>
+      </div>
+      <div ref={sentinel} aria-hidden="true" className="h-px" />
 
+      <header className={`sticky top-0 z-20 bg-white/95 px-5 pb-4 pt-1 backdrop-blur transition-shadow ${scrolled ? "shadow-header" : ""}`}>
         {/* One big, obvious search entry — the top complaint in store reviews */}
-        <div className="flex h-[60px] items-center rounded-full bg-white pe-2 shadow-[0_2px_14px_rgba(22,24,29,.10)] ring-1 ring-inset ring-line">
+        <div className="flex h-[60px] items-center rounded-full bg-white pe-2 shadow-search ring-1 ring-inset ring-line">
           <button type="button" onClick={() => nav.push({ name: "search" })} className="flex h-full min-w-0 flex-1 items-center gap-3 rounded-full ps-5 text-right">
             <Search size={20} className="shrink-0" />
             <span className="flex min-w-0 flex-1 flex-col leading-tight">
@@ -92,6 +104,7 @@ export default function Home() {
         </div>
       </header>
 
+      <div className="flex flex-col gap-8 pt-4">
       <Section title="עלו עכשיו" onAll={() => nav.push({ name: "results", filters: emptyFilters })}>
         <Carousel list={fresh} />
       </Section>
@@ -104,7 +117,7 @@ export default function Home() {
         <button
           type="button"
           onClick={() => nav.push({ name: "request" })}
-          className="flex w-full items-center gap-4 rounded-3xl bg-blue p-5 text-right text-white transition-transform active:scale-[0.99]"
+          className="flex w-full items-center gap-4 rounded-3xl bg-blue p-5 text-right text-white shadow-blue transition-transform active:scale-[0.99]"
         >
           <span className="flex flex-1 flex-col gap-1">
             <span className="text-[18px] font-bold leading-tight">לא מצאתם? בקשו חפץ</span>
@@ -156,14 +169,10 @@ export default function Home() {
         </div>
       </Section>
 
+      </div>
+
       {photo.element}
 
-      <footer className="mx-5 flex items-start gap-3 rounded-3xl p-5 ring-1 ring-inset ring-line">
-        <ShieldCheck size={22} className="mt-0.5 shrink-0 text-blue" />
-        <p className="text-[14px] leading-relaxed text-ink-2">
-          <b className="text-ink">{stats.members}</b> גולשים נותנים ומקבלים חפצים בחינם. בלי תשלום, בלי מספרי 1-900. יוצרים קשר בהודעה בתוך האפליקציה.
-        </p>
-      </footer>
     </div>
   )
 }

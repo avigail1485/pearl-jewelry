@@ -29,7 +29,7 @@ export default function SearchScreen({ initial = "" }: { initial?: string }) {
     <div className="flex min-h-full flex-col bg-white">
       <TopBar>
         <form
-          className="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-full bg-lavender px-4 ring-blue focus-within:bg-white focus-within:ring-2"
+          className="flex h-12 min-w-0 flex-1 items-center gap-2 rounded-full bg-white px-4 shadow-search ring-1 ring-inset ring-line focus-within:ring-2 focus-within:ring-blue"
           onSubmit={(e) => {
             e.preventDefault()
             go({ query: q.trim() })

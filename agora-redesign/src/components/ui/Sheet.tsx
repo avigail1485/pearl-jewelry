@@ -8,7 +8,7 @@ export default function Sheet({ title, onClose, children, footer }: { title: str
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="sheet-in flex max-h-[88%] w-full flex-col rounded-t-[28px] bg-white"
+        className="sheet-in flex max-h-[88%] w-full flex-col rounded-t-[28px] bg-white shadow-[0_-12px_40px_-12px_rgba(22,24,29,.3)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
@@ -19,7 +19,7 @@ export default function Sheet({ title, onClose, children, footer }: { title: str
           <span className="w-9" />
         </div>
         <div className="no-scrollbar flex-1 overflow-y-auto px-5 py-5">{children}</div>
-        {footer && <div className="border-t border-line px-5 py-4">{footer}</div>}
+        {footer && <div className="relative bg-white px-5 py-4 shadow-bar">{footer}</div>}
       </div>
     </div>
   )

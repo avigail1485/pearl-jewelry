@@ -84,7 +84,7 @@ export default function RequestFlow() {
           </Field>
         </div>
       </div>
-      <div className="border-t border-line px-5 pb-[max(env(safe-area-inset-bottom),14px)] pt-3">
+      <div className="relative z-10 bg-white px-5 shadow-bar pb-[max(env(safe-area-inset-bottom),14px)] pt-3">
         <Button block onClick={submit}>
           פרסום הבקשה
         </Button>

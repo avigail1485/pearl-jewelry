@@ -1,6 +1,7 @@
 import { useState } from "react"
-import { Bell, BookOpen, ChevronLeft, HelpCircle, LogOut, Plus, Search } from "lucide-react"
+import { Bell, BookOpen, ChevronLeft, HelpCircle, LogOut, Plus, Search, ShieldCheck } from "lucide-react"
 import { items } from "../../data/items"
+import { stats } from "../../data/meta"
 import { useNav, type Route } from "../../nav"
 import { ItemRow } from "../item/ItemCard"
 import Button from "../ui/Button"
@@ -65,6 +66,24 @@ export default function ProfileScreen() {
             </Button>
           </div>
         )}
+      </section>
+
+      <section className="mx-5 flex flex-col gap-3 rounded-3xl bg-white p-5 shadow-card ring-1 ring-inset ring-line" aria-label="קהילת אגורה">
+        <h2 className="flex items-center gap-2 text-[15px] font-bold">
+          <ShieldCheck size={18} className="text-blue" />
+          קהילת אגורה
+        </h2>
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <p className="text-[22px] font-bold leading-tight">{stats.members}</p>
+            <p className="text-[13px] text-mute">גולשים נותנים ומקבלים</p>
+          </div>
+          <div>
+            <p className="text-[22px] font-bold leading-tight">{stats.given}</p>
+            <p className="text-[13px] text-mute">חפצים נמסרו</p>
+          </div>
+        </div>
+        <p className="text-[13px] text-ink-2">הכל בחינם, בלי מספרי 1-900. יוצרים קשר בהודעה בתוך האפליקציה.</p>
       </section>
 
       <ul className="mx-5">

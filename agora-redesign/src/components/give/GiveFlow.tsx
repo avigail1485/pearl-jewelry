@@ -301,7 +301,7 @@ export default function GiveFlow({ forRequest }: { forRequest?: WantedRequest })
         )}
       </div>
 
-      <div className="border-t border-line px-5 pb-[max(env(safe-area-inset-bottom),14px)] pt-3">
+      <div className="relative z-10 bg-white px-5 shadow-bar pb-[max(env(safe-area-inset-bottom),14px)] pt-3">
         {step === 1 && (
           <div className="flex flex-col gap-1">
             {!(aiMode && ai.status === "done") && (

@@ -25,6 +25,13 @@
   --color-mute: #6c717b;
   --color-line: #e8eaf0;
   --color-photo: #eceef3;
+
+  /* Soft elevation — always low-contrast, tinted with ink, never a hard edge */
+  --shadow-search: 0 6px 20px -6px rgba(22, 24, 29, 0.14), 0 1px 3px rgba(22, 24, 29, 0.05);
+  --shadow-header: 0 8px 16px -12px rgba(22, 24, 29, 0.22);
+  --shadow-bar: 0 -8px 24px -10px rgba(22, 24, 29, 0.14);
+  --shadow-card: 0 4px 16px -6px rgba(22, 24, 29, 0.12);
+  --shadow-blue: 0 12px 28px -12px rgba(56, 105, 254, 0.55);
 }
 
 @layer base {

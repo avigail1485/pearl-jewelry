@@ -138,12 +138,12 @@ export default function ItemPage({ item }: { item: Item }) {
       </div>
 
       {/* Sticky action bar (Airbnb pattern) */}
-      <div className="absolute inset-x-0 bottom-0 z-20 flex items-center gap-3 border-t border-line bg-white px-5 pb-[max(env(safe-area-inset-bottom),14px)] pt-3">
+      <div className="absolute inset-x-0 bottom-0 z-20 flex items-center gap-3 bg-white px-5 shadow-bar pb-[max(env(safe-area-inset-bottom),14px)] pt-3">
         <div className="min-w-0 flex-1 leading-tight">
           <p className="text-[16px] font-bold">בחינם</p>
           <p className="truncate text-[13px] text-mute">איסוף מ{item.city}</p>
         </div>
-        <Button icon={<MessageCircle size={19} />} onClick={() => setContact(true)} className="px-6">
+        <Button icon={<MessageCircle size={19} />} onClick={() => setContact(true)} className="px-6 shadow-blue">
           אני רוצה את זה
         </Button>
       </div>

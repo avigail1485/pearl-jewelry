@@ -40,7 +40,7 @@ export default function ResultsScreen({ filters }: { filters: Filters }) {
         <button
           type="button"
           onClick={() => (filters.photo ? photo.open() : nav.push({ name: "search", initial: filters.query }))}
-          className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-lavender px-4 text-right leading-tight"
+          className="flex h-11 min-w-0 flex-1 items-center rounded-full bg-white px-4 text-right leading-tight shadow-search ring-1 ring-inset ring-line"
         >
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-[14px] font-semibold">{title}</span>
