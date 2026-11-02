@@ -81,7 +81,7 @@
   navlinks.addEventListener('click', e => { if (e.target.closest('a')) { navlinks.classList.remove('open'); menuBtn.setAttribute('aria-expanded', 'false'); } });
 
   /* ---------- router with the ink curtain ---------- */
-  const ROUTES = ['home', 'learn', 'studio', 'system'];
+  const ROUTES = ['home', 'maker', 'learn', 'studio', 'system'];
   const hooks = {};
   let current = null, busy = false;
   function target() {
@@ -723,6 +723,8 @@ draw(t) depends only on time, then add an MP4 export.`;
     $('#replayMotion').addEventListener('click', () => { $$('#motionGrid .mtrack').forEach(t => t.classList.remove('go')); on = false; setTimeout(flip, 60); loop(); });
     hooks.system = () => { setTimeout(flip, 300); loop(); };
   })();
+
+  window.OS = { L, RL, toast, copyText, lang, onLang, rollify, hooks };
 
   /* ---------- boot ---------- */
   rollify();

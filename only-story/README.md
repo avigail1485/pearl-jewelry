@@ -10,3 +10,11 @@ A static, dependency-free site. Hebrew first (RTL), with an English switch and l
 - `brand-paths.js`, `assets/` — the logo symbol and wordmark exported from the brand Figma file
 
 Run it with any static server, e.g. `python3 -m http.server` inside this folder, then open `/index.html`.
+
+## Brand → Site builder (`#maker`)
+- `builder.js` — reads a logo (PNG/SVG/JPG, removes a white background), a brand book (PDF via pdf.js from cdnjs),
+  design tokens (JSON/CSS) or images in the browser; extracts colors, fonts (with free substitutes for paid ones) and radius,
+  assigns color roles, and drives the live preview, device sizes and export.
+- `sitegen.js` — generates a standalone HTML site from the brand: four directions (fluid, kinetic, system, collage) and
+  effects (preloader, split-letter headline, logo zoom on scroll, word-fill manifesto, stacking cards, pinned horizontal
+  gallery, bento, counters, velocity marquee, custom cursor, magnetic buttons, smooth scroll, grain).

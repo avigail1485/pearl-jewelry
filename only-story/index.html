@@ -39,6 +39,7 @@
     <symbol id="i-code" viewBox="0 0 24 24"><path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/></symbol>
     <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 9h16M4 15h16"/></symbol>
     <symbol id="i-cc" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M10.5 10.2a2.2 2.2 0 1 0 0 3.6M17 10.2a2.2 2.2 0 1 0 0 3.6"/></symbol>
+    <symbol id="i-frame" viewBox="0 0 24 24"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></symbol>
     <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
   </defs>
 </svg>
@@ -54,10 +55,11 @@
       <svg class="wm" viewBox="0 0 764.22 96.43" aria-hidden="true"><use href="#os-wm"/></svg>
     </a>
     <nav class="navlinks" id="navlinks" aria-label="Primary">
-      <a class="navlink" href="#tracks" data-route="home"><span class="n">01</span><span class="rl he">מסלולים</span><span class="rl en">Tracks</span></a>
-      <a class="navlink" href="#learn" data-route="learn"><span class="n">02</span><span class="rl he">שיעור לדוגמה</span><span class="rl en">Sample lesson</span></a>
-      <a class="navlink" href="#studio" data-route="studio"><span class="n">03</span><span class="rl he">סטודיו</span><span class="rl en">Studio</span></a>
-      <a class="navlink" href="#system" data-route="system"><span class="n">04</span><span class="rl he">מערכת עיצוב</span><span class="rl en">Design system</span></a>
+      <a class="navlink" href="#maker" data-route="maker"><span class="n">01</span><span class="rl he">בונה אתרים</span><span class="rl en">Site builder</span><span class="new">NEW</span></a>
+      <a class="navlink" href="#tracks" data-route="home"><span class="n">02</span><span class="rl he">מסלולים</span><span class="rl en">Tracks</span></a>
+      <a class="navlink" href="#learn" data-route="learn"><span class="n">03</span><span class="rl he">שיעור לדוגמה</span><span class="rl en">Sample lesson</span></a>
+      <a class="navlink" href="#studio" data-route="studio"><span class="n">04</span><span class="rl he">סטודיו</span><span class="rl en">Studio</span></a>
+      <a class="navlink" href="#system" data-route="system"><span class="n">05</span><span class="rl he">מערכת עיצוב</span><span class="rl en">Design system</span></a>
     </nav>
     <div class="nav-meta">
       <span class="clock" id="clock"></span>
@@ -98,6 +100,7 @@
       <nav class="index" aria-label="Tracks">
         <a class="idx-row" href="#tracks"><span class="mono">01</span><span class="t"><span class="he">אתרים ברמת ליגה</span><span class="en">League-level websites</span></span><span class="small"><span class="he">6 פרקים</span><span class="en">6 chapters</span></span><svg class="ic flip" aria-hidden="true"><use href="#i-arrow"/></svg></a>
         <a class="idx-row" href="#tracks"><span class="mono">02</span><span class="t"><span class="he">סרטונים מדליקים</span><span class="en">Motion that stops the scroll</span></span><span class="small"><span class="he">6 פרקים</span><span class="en">6 chapters</span></span><svg class="ic flip" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+        <a class="idx-row" href="#maker"><span class="mono">03</span><span class="t"><span class="he">בונה אתרים מהמותג</span><span class="en">Brand-to-site builder</span></span><span class="small"><span class="he">חדש</span><span class="en">New</span></span><svg class="ic flip" aria-hidden="true"><use href="#i-arrow"/></svg></a>
       </nav>
     </div>
   </section>
@@ -205,6 +208,56 @@
         </div>
       </div>
       <div class="foot"><svg class="wm" viewBox="0 0 764.22 96.43" aria-label="ONLY STORY"><use href="#os-wm"/></svg><span class="mono">© 2026 · <span class="he">מילים בתנועה, בכל כתב</span><span class="en">Words in motion, in every script</span></span></div>
+    </div>
+  </section>
+</div>
+
+<!-- ================= MAKER: brand → site ================= -->
+<div class="page" data-page="maker" hidden>
+  <section class="wrap grid mk-hero" aria-labelledby="mkTitle">
+    <div class="mk-intro">
+      <span class="label"><span class="he">בונה אתרים מהמותג · בטא</span><span class="en">Brand-to-site builder · beta</span></span>
+      <h1 class="xl" id="mkTitle"><span class="he">מעלים מותג.<br>מקבלים <span class="hl">אתר.</span></span><span class="en">Drop a brand.<br>Get a <span class="hl">site.</span></span></h1>
+      <p class="body"><span class="he">לוגו, ספר מותג ב־PDF או קובץ דיזיין סיסטם. אנחנו קוראים את הצבעים, הגופנים והאופי, ובונים מהם אתר שלם עם תנועה, גלילה ואפקטים, שאפשר לערוך ולייצא.</span><span class="en">A logo, a PDF brand book or a design-system file. We read the colors, type and character, and build a full site with motion, scroll and effects that you can edit and export.</span></p>
+    </div>
+    <div class="mk-dropcol">
+      <label class="mk-drop" id="mkDrop">
+        <input type="file" id="mkFiles" multiple accept="image/*,.svg,.pdf,application/pdf,.json,application/json,.css,.scss,.txt,.md">
+        <span class="mk-types" aria-hidden="true"><span class="chip">LOGO</span><span class="chip">PDF</span><span class="chip">JSON</span><span class="chip">CSS</span></span>
+        <span class="mk-dt"><span class="he">גררו לכאן את קבצי המותג</span><span class="en">Drop your brand files here</span></span>
+        <span class="small"><span class="he">לוגו (PNG, SVG) · ספר מותג (PDF) · טוקנים (JSON, CSS) · תמונות. הכל נקרא בדפדפן שלכם, ושום קובץ לא נשלח לשרת.</span><span class="en">Logo (PNG, SVG) · brand book (PDF) · tokens (JSON, CSS) · images. Everything is read in your browser and no file is sent to a server.</span></span>
+        <span class="btn btn-ink no-arr" aria-hidden="true"><span class="rl he">בחירת קבצים</span><span class="rl en">Choose files</span></span>
+      </label>
+      <div class="mk-samplerow"><span class="label"><span class="he">או נסו מותג לדוגמה</span><span class="en">Or try a sample brand</span></span><div class="mk-samples" id="mkSamples"></div></div>
+    </div>
+  </section>
+
+  <section class="mk-work wrap" id="mkWork" aria-label="Workspace">
+    <div class="mk-bar">
+      <div class="mk-steps" role="tablist" id="mkSteps">
+        <button role="tab" type="button" aria-selected="true" data-step="brand"><span class="mono">01</span><span class="he">מותג</span><span class="en">Brand</span></button>
+        <button role="tab" type="button" aria-selected="false" data-step="content"><span class="mono">02</span><span class="he">תוכן ומבנה</span><span class="en">Content</span></button>
+        <button role="tab" type="button" aria-selected="false" data-step="design"><span class="mono">03</span><span class="he">עיצוב ואפקטים</span><span class="en">Design</span></button>
+        <button role="tab" type="button" aria-selected="false" data-step="export"><span class="mono">04</span><span class="he">ייצוא</span><span class="en">Export</span></button>
+      </div>
+      <div class="mk-tools">
+        <div class="seg" role="group" aria-label="Device" id="mkDevice"><button type="button" data-d="desktop" aria-pressed="true"><span class="he">מחשב</span><span class="en">Desktop</span></button><button type="button" data-d="tablet" aria-pressed="false"><span class="he">טאבלט</span><span class="en">Tablet</span></button><button type="button" data-d="phone" aria-pressed="false"><span class="he">טלפון</span><span class="en">Phone</span></button></div>
+        <button class="ibtn" type="button" id="mkReplay" data-label-he="להריץ מחדש" data-label-en="Replay"><svg class="ic flip" aria-hidden="true"><use href="#i-undo"/></svg></button>
+        <button class="ibtn" type="button" id="mkFullBtn" data-label-he="מסך מלא" data-label-en="Full screen"><svg class="ic" aria-hidden="true"><use href="#i-frame"/></svg></button>
+      </div>
+    </div>
+    <div class="mk-grid">
+      <aside class="mk-side">
+        <div class="mk-panel" id="mkPanel"></div>
+        <button class="btn btn-ink" type="button" id="mkNext"><span class="rl he">לשלב הבא</span><span class="rl en">Next step</span><span class="arr"><svg class="ic flip" aria-hidden="true"><use href="#i-arrow"/></svg></span></button>
+      </aside>
+      <div class="mk-browser">
+        <div class="mk-chrome"><span class="dots"><i></i><i></i><i></i></span><span class="mk-url"><span class="lock-ic"><svg class="ic sm" aria-hidden="true"><use href="#i-lock"/></svg></span><span id="mkUrl" dir="ltr">nordlys.studio</span></span><span class="mono mk-live">LIVE</span></div>
+        <div class="mk-frame-wrap" id="mkFrameWrap">
+          <iframe id="mkFrame" title="Generated site preview" sandbox="allow-scripts"></iframe>
+          <div class="mk-gen" id="mkGen" aria-live="polite"><div class="mk-gen-in"><svg class="mk-gen-sym" aria-hidden="true"><use href="#os-sym"/></svg><div class="mk-gen-steps" id="mkGenNow"></div><div class="track2" id="mkGenBar"><div class="fill"></div><div class="ph"></div></div></div></div>
+        </div>
+      </div>
     </div>
   </section>
 </div>
@@ -366,5 +419,7 @@
 <script src="brand-paths.js"></script>
 <script src="engine.js"></script>
 <script src="app.js"></script>
+<script src="sitegen.js"></script>
+<script src="builder.js"></script>
 </body>
 </html>
