@@ -3,6 +3,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { DUR, EASE, reducedMotion } from '../core/motion';
 import { mountBrandField } from '../ui/brand-field';
+import { mountHeroCar } from './hero-car';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
@@ -11,6 +12,8 @@ export async function initHero() {
   const hero = document.querySelector<HTMLElement>('.hero')!;
   const fieldHost = hero.querySelector<HTMLElement>('.brand-field')!;
   const field = mountBrandField(fieldHost);
+  const car = mountHeroCar(hero.querySelector<HTMLElement>('.hero-car')!);
+  (window as unknown as { __car?: typeof car }).__car = car;
   const reduce = reducedMotion();
 
   await document.fonts.ready;
@@ -36,7 +39,7 @@ export async function initHero() {
     start: 'top top',
     end: 'bottom top',
     scrub: true,
-    onUpdate: (st) => field.setScroll(st.progress),
+    onUpdate: (st) => { field.setScroll(st.progress); car?.setScroll(st.progress); },
   });
   gsap.to(hero.querySelector('.hero__copy'), {
     yPercent: -35,

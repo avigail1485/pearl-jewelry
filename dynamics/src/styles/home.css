@@ -7,7 +7,9 @@
   isolation: isolate;
 }
 .brand-field { position: absolute; inset: 0; z-index: 0; }
-.brand-field__reveal, .brand-field__lines {
+.hero-car { position: absolute; inset: 0; z-index: 1; }
+.hero-car__canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.brand-field__lines {
   position: absolute; inset: 0; width: 100%; height: 100%; display: block;
 }
 .brand-field__lines { pointer-events: none; }
@@ -30,7 +32,7 @@
 }
 
 .hero__copy {
-  position: relative; z-index: 1;
+  position: relative; z-index: 2;
   align-content: end;
   row-gap: var(--s-3);
   padding-block: var(--s-16) var(--s-12);
