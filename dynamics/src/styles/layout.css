@@ -1,0 +1,31 @@
+.site-header {
+  position: fixed; inset-block-start: 0; inset-inline: 0;
+  z-index: var(--z-hud);
+  padding-block: var(--s-3);
+}
+.site-logo { grid-column: 1 / span 3; display: block; width: fit-content; }
+.site-logo img { display: block; height: var(--s-4); width: auto; }
+.hero {
+  min-height: 100svh;
+  align-content: end;
+  row-gap: var(--s-3);
+  padding-block: var(--s-16) var(--s-12);
+}
+.hero__title { grid-column: 1 / span 10; text-wrap: balance; }
+.hero__domains { grid-column: 1 / span 8; color: var(--white); }
+.hero__hint { grid-column: 1 / span 4; color: var(--brand); }
+@media (max-width: 767px) {
+  .hero__title, .hero__domains, .hero__hint { grid-column: 1 / -1; }
+}
+
+/* כפתור יצירת קשר: קטן וקבוע בתחתית. צורה נגזרת מה-C הנטויה (מקבילית). */
+.contact-fab {
+  position: fixed; z-index: var(--z-hud);
+  inset-block-end: var(--s-3); inset-inline-start: var(--grid-margin);
+  padding: var(--s-1) var(--s-3);
+  background: var(--brand); color: var(--black);
+  font-weight: 700; text-decoration: none;
+  clip-path: polygon(var(--s-1) 0, 100% 0, calc(100% - var(--s-1)) 100%, 0 100%);
+  transition: background-color var(--d-short) var(--ease-brake), color var(--d-short) var(--ease-brake);
+}
+.contact-fab:hover { background: var(--white); }

@@ -1,0 +1,10 @@
+@import '@fontsource/google-sans/hebrew-400.css';
+@import '@fontsource/google-sans/hebrew-500.css';
+@import '@fontsource/google-sans/hebrew-700.css';
+@import '@fontsource/google-sans/latin-400.css';
+@import '@fontsource/google-sans/latin-500.css';
+@import '@fontsource/google-sans/latin-700.css';
+@import './tokens.css';
+@import './type.css';
+@import './grid.css';
+@import './base.css';

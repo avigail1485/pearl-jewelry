@@ -1,0 +1,47 @@
+.specimen { padding-block: var(--s-12); }
+.sp-sec { row-gap: var(--s-4); padding-block: var(--s-12); border-block-start: var(--line) solid var(--grey); }
+.sp-label { grid-column: 1 / -1; color: var(--brand); }
+.sp-full { grid-column: 1 / -1; }
+.sp-fonts [data-ok='false'] { color: var(--brand); }
+
+.sp-logo { margin: 0; grid-column: span 4; min-height: var(--s-16); display: grid; place-items: center; padding: var(--s-4); }
+.sp-logo img { max-width: 100%; max-height: var(--s-12); }
+.sp-logo--dark { background: var(--black); }
+.sp-logo--light { background: var(--white); }
+.sp-logo--light.is-missing-asset::after { color: var(--ink); }
+.sp-logo--c { background: var(--ink); outline: var(--line) solid var(--grey); }
+.sp-pattern { margin: 0; background: var(--ink); min-height: var(--s-16); display: grid; place-items: center; }
+.sp-pattern img { width: 100%; height: auto; }
+
+.sp-swatch { grid-column: span 2; display: grid; gap: var(--s-1); align-content: start; }
+.sp-chip { display: block; aspect-ratio: 1; background: var(--c); outline: var(--line) solid var(--grey); }
+.sp-contrast { display: grid; gap: var(--s-2); }
+.sp-on-brand { background: var(--brand); color: var(--black); padding: var(--s-2) var(--s-3); }
+.sp-on-brand-big { background: var(--brand); color: var(--white); padding: var(--s-2) var(--s-3); }
+.sp-brand-on-ink { color: var(--brand); }
+
+.sp-row { grid-column: 1 / -1; display: grid; gap: var(--s-1); padding-block: var(--s-2); border-block-end: var(--line) solid var(--grey-depth); }
+.sp-meta { color: var(--grey); color: color-mix(in srgb, var(--white) 55%, var(--ink)); }
+
+.sp-gear { grid-column: span 4; display: grid; gap: var(--s-2); align-content: start; padding-block-end: var(--s-6); }
+.sp-gear__n { color: var(--brand); }
+.sp-tags { display: flex; flex-wrap: wrap; gap: var(--s-1) var(--s-2); }
+.sp-tags li { border: var(--line) solid var(--white); padding: 0 var(--s-1); }
+.sp-cue { color: var(--brand); }
+.sp-micro { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4); }
+
+.sp-cta {
+  grid-column: 1 / span 6; justify-self: start;
+  background: var(--brand); color: var(--black); text-decoration: none;
+  padding: var(--s-2) var(--s-6);
+  clip-path: polygon(var(--s-2) 0, 100% 0, calc(100% - var(--s-2)) 100%, 0 100%);
+}
+
+@media (max-width: 1023px) {
+  .sp-logo, .sp-gear { grid-column: span 6; }
+  .sp-swatch { grid-column: span 4; }
+}
+@media (max-width: 767px) {
+  .sp-logo, .sp-gear, .sp-cta { grid-column: 1 / -1; }
+  .sp-swatch { grid-column: span 6; }
+}

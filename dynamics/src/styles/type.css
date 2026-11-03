@@ -1,0 +1,57 @@
+/* טיפוגרפיה. סולם יחיד עם clamp(); אין גדלים ידניים ברכיבים.
+   Tel Aviv Brutalist נטען כ-TTF כפי שהוא (הרישיון אוסר שינוי). */
+@font-face {
+  font-family: 'Tel Aviv Brutalist';
+  src: url('/assets/fonts/TelAvivBrutalist-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Tel Aviv Brutalist';
+  src: url('/assets/fonts/TelAvivBrutalist-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Tel Aviv Brutalist';
+  src: url('/assets/fonts/TelAvivBrutalist-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --font-display: 'Tel Aviv Brutalist', 'Google Sans', system-ui, sans-serif;
+  --font-body: 'Google Sans', system-ui, sans-serif;
+
+  /* 360px → 2560px */
+  --t-mega: clamp(3.5rem, 1.6rem + 9.5vw, 14rem);     /* מספרי הילוכים, רגעי שיא */
+  --t-h1: clamp(2.5rem, 1.5rem + 5vw, 8rem);
+  --t-h2: clamp(2rem, 1.4rem + 3vw, 5.5rem);
+  --t-h3: clamp(1.5rem, 1.2rem + 1.4vw, 3rem);
+  --t-sub: clamp(1.125rem, 1rem + 0.6vw, 1.75rem);
+  --t-body: clamp(1rem, 0.95rem + 0.25vw, 1.25rem);
+  --t-small: clamp(0.875rem, 0.85rem + 0.12vw, 1rem);
+  --t-hud: clamp(0.75rem, 0.72rem + 0.15vw, 0.9375rem);
+
+  --lh-display: 1;     /* 0.95–1.05 */
+  --lh-body: 1.55;
+}
+
+.t-mega, .t-h1, .t-h2, .t-h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: var(--lh-display);
+  letter-spacing: 0;
+}
+.t-mega { font-size: var(--t-mega); }
+.t-h1 { font-size: var(--t-h1); }
+.t-h2 { font-size: var(--t-h2); }
+.t-h3 { font-size: var(--t-h3); }
+.t-sub { font-family: var(--font-display); font-weight: 400; font-size: var(--t-sub); line-height: 1.05; }
+.t-hud { font-family: var(--font-display); font-weight: 300; font-size: var(--t-hud); line-height: 1.2; }
+.t-body { font-family: var(--font-body); font-weight: 400; font-size: var(--t-body); line-height: var(--lh-body); }
+.t-small { font-family: var(--font-body); font-weight: 400; font-size: var(--t-small); line-height: var(--lh-body); }
+.t-num { font-variant-numeric: tabular-nums; direction: ltr; unicode-bidi: isolate; }

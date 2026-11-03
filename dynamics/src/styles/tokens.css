@@ -1,0 +1,48 @@
+/* מערכת העיצוב של DYNAMICS. כל ערך ברכיבים עובר דרך הטוקנים האלה. */
+:root {
+  /* צבע: חמישה ערכים בלבד */
+  --brand: #E84B25;
+  --ink: #1D1D1B;
+  --black: #000000;
+  --grey: #575756;
+  --white: #FFFFFF;
+  --grey-depth: rgb(87 87 86 / 0.36); /* --grey באטימות 36%, כמו בגרפיקה */
+
+  /* יחידת בסיס 8px */
+  --u: 8px;
+  --s-1: calc(var(--u) * 1);   /* 8 */
+  --s-2: calc(var(--u) * 2);   /* 16 */
+  --s-3: calc(var(--u) * 3);   /* 24 */
+  --s-4: calc(var(--u) * 4);   /* 32 */
+  --s-6: calc(var(--u) * 6);   /* 48 */
+  --s-8: calc(var(--u) * 8);   /* 64 */
+  --s-12: calc(var(--u) * 12); /* 96 */
+  --s-16: calc(var(--u) * 16); /* 128 */
+  --s-24: calc(var(--u) * 24); /* 192 */
+
+  /* רשת 12 עמודות */
+  --grid-cols: 12;
+  --grid-margin: clamp(var(--s-2), 4vw, var(--s-12));
+  --grid-gutter: clamp(var(--s-1), 1.6vw, var(--s-4));
+  --grid-max: 2400px;
+
+  /* קווים: דקים כמו קווי המתאר בגרפיקה */
+  --line: 1px;
+  --line-bold: 2px;
+
+  /* תזמון. המקור המלא ב-src/core/motion.ts */
+  --ease-brake: cubic-bezier(0.16, 1, 0.3, 1);   /* כניסה חדה, עצירה רכה */
+  --ease-launch: cubic-bezier(0.7, 0, 0.84, 0);  /* האצה */
+  --d-snap: 160ms;
+  --d-short: 320ms;
+  --d-base: 640ms;
+  --d-long: 1200ms;
+
+  --z-canvas: 0;
+  --z-content: 10;
+  --z-hud: 50;
+  --z-cursor: 90;
+  --z-grid: 100;
+
+  color-scheme: dark;
+}
