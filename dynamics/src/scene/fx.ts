@@ -39,7 +39,7 @@ export function buildSmoke(max = 160) {
       void main() {
         float a = texture2D(map, gl_PointCoord).a * vA;
         if (a < 0.003) discard;
-        gl_FragColor = vec4(vec3(0.62, 0.61, 0.6), a);
+        gl_FragColor = vec4(vec3(0.78, 0.77, 0.76), a);
         #include <colorspace_fragment>
       }`,
   });
@@ -71,8 +71,8 @@ export function buildSmoke(max = 160) {
         p.x += p.vx * dt + worldShift; p.y += p.vy * dt; p.z += p.vz * dt;
         const t = p.life / p.max;
         pos.set([p.x, p.y, p.z], i * 3);
-        size[i] = p.s * (1 + t * 5);
-        alpha[i] = Math.sin(Math.PI * Math.min(1, t * 1.4)) * 0.38 * (1 - t);
+        size[i] = p.s * (1.4 + t * 7);
+        alpha[i] = Math.sin(Math.PI * Math.min(1, t * 1.6)) * 0.7 * (1 - t * 0.8);
       });
       geo.attributes.position.needsUpdate = true;
       geo.attributes.aSize.needsUpdate = true;
@@ -82,7 +82,7 @@ export function buildSmoke(max = 160) {
 }
 
 // ---------- ניצוצות ----------
-export function buildSparks(max = 90) {
+export function buildSparks(max = 220) {
   const pos = new Float32Array(max * 6);
   const col = new Float32Array(max * 6);
   const parts = Array.from({ length: max }, () => ({ alive: false, x: 0, y: 0, z: 0, vx: 0, vy: 0, life: 0, max: 0.5 }));
@@ -104,7 +104,7 @@ export function buildSparks(max = 90) {
         cursor = (cursor + 1) % max;
         Object.assign(p, {
           alive: true, x: xMin + Math.random() * (xMax - xMin), y: 0.03, z: (Math.random() - 0.5) * 0.9,
-          vx: push * (3 + Math.random() * 5), vy: 0.6 + Math.random() * 1.8, life: 0, max: 0.25 + Math.random() * 0.45,
+          vx: push * (4 + Math.random() * 7), vy: 0.8 + Math.random() * 2.4, life: 0, max: 0.35 + Math.random() * 0.55,
         });
       }
     },
@@ -119,7 +119,7 @@ export function buildSparks(max = 90) {
         if (p.y <= 0.005) p.vy = Math.abs(p.vy) * 0.35;
         const t = p.life / p.max;
         const c = hot.clone().lerp(brand, t).multiplyScalar(1 - t);
-        pos.set([p.x, p.y, p.z, p.x - p.vx * 0.025, p.y - p.vy * 0.025, p.z], o);
+        pos.set([p.x, p.y, p.z, p.x - p.vx * 0.05, p.y - p.vy * 0.05, p.z], o);
         col.set([c.r, c.g, c.b, c.r * 0.3, c.g * 0.3, c.b * 0.3], o);
       });
       geo.attributes.position.needsUpdate = true;

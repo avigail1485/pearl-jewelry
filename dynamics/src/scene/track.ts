@@ -35,7 +35,7 @@ export function buildTrack(backdropTex: THREE.Texture | null): Track {
     uBrand: { value: new THREE.Color('#E84B25') },
   };
   const ground = new THREE.Mesh(
-    new THREE.PlaneGeometry(200, 60, 1, 1).rotateX(-Math.PI / 2).translate(0, 0, -20),
+    new THREE.PlaneGeometry(200, 90, 1, 1).rotateX(-Math.PI / 2).translate(0, 0, -5),
     new THREE.ShaderMaterial({
       uniforms,
       vertexShader: /* glsl */ `
@@ -54,17 +54,19 @@ export function buildTrack(backdropTex: THREE.Texture | null): Track {
           // קו מירוץ: גומי כהה סביב z=0
           col *= 1.0 - 0.35 * exp(-pow(p.y / 0.7, 2.0)) * (0.7 + 0.3 * fbm(p * vec2(0.6, 8.0)));
           // קווי שוליים לבנים
-          float edgeNear = smoothstep(0.06, 0.04, abs(p.y - 1.25));
+          float edgeNear = smoothstep(0.07, 0.05, abs(p.y - 3.4));
           float edgeFar = smoothstep(0.06, 0.04, abs(p.y + 4.4));
-          col = mix(col, vec3(0.55), (edgeNear + edgeFar) * (0.85 + 0.15 * fine));
+          col = mix(col, vec3(0.5), (edgeNear + edgeFar) * (0.85 + 0.15 * fine));
           // קרב (שפה) כתום־לבן ליד המצלמה
-          if (p.y > 1.32 && p.y < 1.9) {
-            float stripe = step(0.5, fract(p.x / 1.6));
-            vec3 kerb = mix(vec3(0.62), uBrand * 0.8, stripe);
-            col = kerb * (0.85 + 0.15 * fine) * (0.75 + 0.25 * smoothstep(1.9, 1.5, p.y));
+          if (p.y > 3.5 && p.y < 4.3) {
+            float stripe = step(0.5, fract(p.x / 1.8));
+            vec3 kerb = mix(vec3(0.55), uBrand * 0.75, stripe);
+            col = kerb * (0.82 + 0.18 * fine) * (0.7 + 0.3 * smoothstep(4.3, 3.8, p.y));
           }
-          // דשא כהה מחוץ למסלול
-          if (p.y > 1.9 || p.y < -4.5) col = vec3(0.012, 0.016, 0.011) + (g - 0.5) * 0.01;
+          // שטח בריחה: אספלט בהיר ומחוספס יותר
+          if (p.y >= 4.3) col = vec3(0.034, 0.032, 0.03) + (g - 0.5) * 0.02 + (fine - 0.5) * 0.02;
+          // דשא כהה מאחורי המסלול
+          if (p.y < -4.5) col = vec3(0.012, 0.014, 0.011) + (g - 0.5) * 0.01;
           return col;
         }
 

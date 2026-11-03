@@ -152,9 +152,9 @@ export async function mountHeroCar(host: HTMLElement) {
     rig.position.x = carX.x;
 
     // אפקטים
-    if (demo.smoke > 0.02) smoke.emit(car.wheelBase.rear.x + carX.x + 0.15, 0.06, Math.ceil(demo.smoke * 140 * dt), 1.2);
+    if (demo.smoke > 0.02) smoke.emit(car.wheelBase.rear.x + carX.x + 0.15, 0.06, Math.ceil(demo.smoke * 220 * dt), 1.4);
     smoke.update(dt, speed * dt);
-    if (demo.sparks > 0.02) sparks.emit(-1.2 + carX.x, 1.3 + carX.x, Math.ceil(demo.sparks * 260 * dt), 1);
+    if (demo.sparks > 0.02) sparks.emit(-1.2 + carX.x, 1.3 + carX.x, Math.ceil(demo.sparks * 520 * dt), 1);
     sparks.update(dt);
     brakes.set(demo.brake * 0.9);
     car.setLights(lightLevel.v);
