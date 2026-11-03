@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { finePointer, reducedMotion } from '../core/motion';
 import { scrollState } from '../scroll/smooth';
 import { buildPhotoCar } from '../scene/car-photo';
+import { asset } from '../core/assets';
 import { buildTrack } from '../scene/track';
 import { buildBrakeGlow, buildSmoke, buildSparks } from '../scene/fx';
 
@@ -31,8 +32,8 @@ export async function mountHeroCar(host: HTMLElement) {
 
   const loader = new THREE.TextureLoader();
   const [car, backTex] = await Promise.all([
-    buildPhotoCar(new URL('/assets/car/car.webp', location.href).href),
-    loader.loadAsync(new URL('/assets/car/track-night.webp', location.href).href).then((t) => { t.colorSpace = THREE.SRGBColorSpace; return t; }),
+    buildPhotoCar(asset('assets/car/car.webp')),
+    loader.loadAsync(asset('assets/car/track-night.webp')).then((t) => { t.colorSpace = THREE.SRGBColorSpace; return t; }),
   ]);
 
   const scene = new THREE.Scene();

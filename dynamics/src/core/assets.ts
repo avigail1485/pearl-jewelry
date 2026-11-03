@@ -1,18 +1,21 @@
+/** נתיב לנכס מתיקיית public, יחסי לבסיס הבנייה (עובד גם כשהאתר לא יושב בשורש הדומיין). */
+export const asset = (path: string) => `${import.meta.env.BASE_URL}${path.replace(/^\//, '')}`;
+
 /** נכסי הלקוחה. אם קובץ חסר מסמנים זאת בבירור במקום להחליף בשקט. */
 export const ASSETS = {
-  logoOnDark: '/assets/brand/logo-on-dark.svg',
-  logoOnLight: '/assets/brand/logo-on-light.svg',
-  cMark: '/assets/brand/logo-c-mark.svg',
-  pattern: '/assets/brand/brand-pattern.svg',
+  logoOnDark: asset('/assets/brand/logo-on-dark.svg'),
+  logoOnLight: asset('/assets/brand/logo-on-light.svg'),
+  cMark: asset('/assets/brand/logo-c-mark.svg'),
+  pattern: asset('/assets/brand/brand-pattern.svg'),
   fonts: {
-    bold: '/assets/fonts/TelAvivBrutalist-Bold.ttf',
-    regular: '/assets/fonts/TelAvivBrutalist-Regular.ttf',
-    light: '/assets/fonts/TelAvivBrutalist-Light.ttf',
+    bold: asset('/assets/fonts/TelAvivBrutalist-Bold.ttf'),
+    regular: asset('/assets/fonts/TelAvivBrutalist-Regular.ttf'),
+    light: asset('/assets/fonts/TelAvivBrutalist-Light.ttf'),
   },
 } as const;
 
 export function markMissingAssets(root: ParentNode = document) {
-  root.querySelectorAll<HTMLImageElement>('img[src^="/assets/"]').forEach((img) => {
+  root.querySelectorAll<HTMLImageElement>('img[src*="assets/"]').forEach((img) => {
     const flag = () => {
       img.dataset.missing = img.getAttribute('src') ?? '';
       const box = img.closest<HTMLElement>('a, figure');

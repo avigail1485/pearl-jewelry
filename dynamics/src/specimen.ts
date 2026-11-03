@@ -1,7 +1,7 @@
 import './styles/index.css';
 import './styles/specimen.css';
 import { he } from './content/he';
-import { ASSETS, fontStatus, markMissingAssets } from './core/assets';
+import { ASSETS, asset, fontStatus, markMissingAssets } from './core/assets';
 import { mountGridOverlay } from './ui/grid-overlay';
 
 const root = document.getElementById('specimen')!;
@@ -38,8 +38,8 @@ root.innerHTML = `
     <figure class="sp-logo sp-logo--dark"><img src="${ASSETS.logoOnDark}" alt="DYNAMICS על רקע כהה" /></figure>
     <figure class="sp-logo sp-logo--light"><img src="${ASSETS.logoOnLight}" alt="DYNAMICS על רקע בהיר" /></figure>
     <figure class="sp-logo sp-logo--c"><img src="${ASSETS.cMark}" alt="ה-C של DYNAMICS" /></figure>
-    <figure class="sp-logo sp-logo--dark sp-logo--stack"><img src="/assets/brand/logo-stacked-on-dark.svg" alt="DYNAMICS, גרסה מוערמת" /></figure>
-    <figure class="sp-logo sp-logo--light sp-logo--stack"><img src="/assets/brand/logo-stacked-on-light.svg" alt="DYNAMICS, גרסה מוערמת על בהיר" /></figure>
+    <figure class="sp-logo sp-logo--dark sp-logo--stack"><img src="${asset('assets/brand/logo-stacked-on-dark.svg')}" alt="DYNAMICS, גרסה מוערמת" /></figure>
+    <figure class="sp-logo sp-logo--light sp-logo--stack"><img src="${asset('assets/brand/logo-stacked-on-light.svg')}" alt="DYNAMICS, גרסה מוערמת על בהיר" /></figure>
     <figure class="sp-pattern sp-pattern--src"><img src="${ASSETS.pattern}" alt="גרפיקת המותג, מקור המסלול" /></figure>
     <figure class="sp-pattern sp-pattern--track" id="track-preview" aria-label="קו המירוץ הראשי מסומן"></figure>
   </section>

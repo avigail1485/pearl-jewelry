@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import { resolve } from 'node:path';
 
 export default defineConfig({
+  // נתיבים יחסיים: האתר עובד גם מתת־תיקייה ובעמוד לייב מתארח
+  base: './',
   build: {
     target: 'es2022',
     rollupOptions: {
