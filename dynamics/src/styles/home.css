@@ -2,6 +2,8 @@
 .hero {
   position: relative;
   min-height: 100svh;
+  height: 100svh;
+  background: var(--black);
   display: grid;
   overflow: clip;
   isolation: isolate;
@@ -33,6 +35,7 @@
 
 .hero__copy {
   position: relative; z-index: 2;
+  transform-origin: 70% 60%;
   align-content: end;
   row-gap: var(--s-3);
   padding-block: var(--s-16) var(--s-12);

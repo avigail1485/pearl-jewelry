@@ -2,19 +2,22 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { SplitText } from 'gsap/SplitText';
 import { DUR, EASE, reducedMotion } from '../core/motion';
-import { mountBrandField } from '../ui/brand-field';
 import { mountHeroCar } from './hero-car';
 
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
-/** פתיחה: שדה הקווים, כניסת הכותרת וגלילה ראשונה. הטקסט קיים ב-DOM מהרגע הראשון. */
+/**
+ * פתיחה: רכב על מסלול לילה, כניסת הכותרת, וגלילה פנימה.
+ * הפתיחה ננעלת לאורך 150vh של גלילה: המצלמה נוסעת לתוך הסצנה, והכותרת מתרחקת ונעלמת.
+ * הטקסט קיים ב-DOM מהרגע הראשון.
+ */
 export async function initHero() {
   const hero = document.querySelector<HTMLElement>('.hero')!;
-  const fieldHost = hero.querySelector<HTMLElement>('.brand-field')!;
-  const field = mountBrandField(fieldHost);
   let car: Awaited<ReturnType<typeof mountHeroCar>> = null;
+  let pending = 0;
   mountHeroCar(hero.querySelector<HTMLElement>('.hero-car')!).then((c) => {
     car = c;
+    car?.setScroll(pending);
     (window as unknown as { __car?: typeof car }).__car = c;
   });
   const reduce = reducedMotion();
@@ -24,29 +27,27 @@ export async function initHero() {
   const split = SplitText.create(title, { type: 'words', mask: 'words', aria: 'auto' });
   const domains = hero.querySelectorAll<HTMLElement>('.hero__domains span');
   const hint = hero.querySelector<HTMLElement>('.hero__hint')!;
+  const copy = hero.querySelector<HTMLElement>('.hero__copy')!;
 
-  if (reduce) {
-    field.play();
-    return;
-  }
+  if (reduce) return;
 
   gsap.timeline({ defaults: { ease: EASE.brake } })
-    .add(() => field.play())
-    .from(split.words, { yPercent: 110, duration: DUR.long, stagger: { each: 0.07, from: 'start' } }, 0.25)
-    .from(domains, { yPercent: 100, autoAlpha: 0, duration: DUR.base, stagger: 0.06 }, 0.75)
-    .from(hint, { autoAlpha: 0, duration: DUR.base }, 1.3);
+    .from(split.words, { yPercent: 110, duration: DUR.long, stagger: { each: 0.07, from: 'start' } }, 0.4)
+    .from(domains, { yPercent: 100, autoAlpha: 0, duration: DUR.base, stagger: 0.06 }, 0.9)
+    .from(hint, { autoAlpha: 0, duration: DUR.base }, 1.4);
 
-  // גלילה: השדה מתקרב, הכותרת מתרחקת למעלה. scrub = הגלילה היא הגז.
-  ScrollTrigger.create({
-    trigger: hero,
-    start: 'top top',
-    end: 'bottom top',
-    scrub: true,
-    onUpdate: (st) => { field.setScroll(st.progress); car?.setScroll(st.progress); },
+  // גלילה פנימה: הפתיחה ננעלת, המצלמה נכנסת, הכותרת נשאבת לעומק ונעלמת
+  const tl = gsap.timeline({
+    scrollTrigger: {
+      trigger: hero,
+      start: 'top top',
+      end: '+=150%',
+      pin: true,
+      scrub: true,
+      onUpdate: (st) => { pending = st.progress; car?.setScroll(st.progress); },
+    },
   });
-  gsap.to(hero.querySelector('.hero__copy'), {
-    yPercent: -35,
-    ease: 'none',
-    scrollTrigger: { trigger: hero, start: 'top top', end: 'bottom top', scrub: true },
-  });
+  tl.to(copy, { scale: 1.7, autoAlpha: 0, filter: 'blur(10px)', ease: 'power2.in', duration: 0.5 }, 0)
+    .to(hint, { autoAlpha: 0, duration: 0.15 }, 0)
+    .to({}, { duration: 0.45 });
 }
