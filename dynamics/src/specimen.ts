@@ -38,7 +38,10 @@ root.innerHTML = `
     <figure class="sp-logo sp-logo--dark"><img src="${ASSETS.logoOnDark}" alt="DYNAMICS על רקע כהה" /></figure>
     <figure class="sp-logo sp-logo--light"><img src="${ASSETS.logoOnLight}" alt="DYNAMICS על רקע בהיר" /></figure>
     <figure class="sp-logo sp-logo--c"><img src="${ASSETS.cMark}" alt="ה-C של DYNAMICS" /></figure>
-    <figure class="sp-full sp-pattern"><img src="${ASSETS.pattern}" alt="גרפיקת המותג, מקור המסלול" /></figure>
+    <figure class="sp-logo sp-logo--dark sp-logo--stack"><img src="/assets/brand/logo-stacked-on-dark.svg" alt="DYNAMICS, גרסה מוערמת" /></figure>
+    <figure class="sp-logo sp-logo--light sp-logo--stack"><img src="/assets/brand/logo-stacked-on-light.svg" alt="DYNAMICS, גרסה מוערמת על בהיר" /></figure>
+    <figure class="sp-pattern sp-pattern--src"><img src="${ASSETS.pattern}" alt="גרפיקת המותג, מקור המסלול" /></figure>
+    <figure class="sp-pattern sp-pattern--track" id="track-preview" aria-label="קו המירוץ הראשי מסומן"></figure>
   </section>
 
   <section class="sp-sec grid" aria-label="צבעים">
@@ -89,6 +92,19 @@ root.innerHTML = `
 `;
 
 markMissingAssets(root);
+
+// בדיקת מקור המסלול: מסמנים את קו המירוץ הראשי (ה-path הלבן הארוך) ואת קווי העזר.
+fetch(ASSETS.pattern).then((r) => r.text()).then((svg) => {
+  const fig = document.getElementById('track-preview')!;
+  fig.innerHTML = svg;
+  const whites = [...fig.querySelectorAll<SVGPathElement>('path[stroke="white"]')];
+  const main = whites.reduce((a, b) => (b.getTotalLength() > a.getTotalLength() ? b : a));
+  whites.forEach((p) => p.setAttribute('opacity', '0.35'));
+  main.setAttribute('stroke', 'var(--white)');
+  main.setAttribute('stroke-width', '4');
+  main.removeAttribute('opacity');
+  fig.dataset.main = main.getAttribute('d')!.slice(0, 12);
+});
 mountGridOverlay();
 
 fontStatus().then((s) => {
