@@ -1,5 +1,9 @@
 import * as THREE from 'three';
-import type { CarParts } from './car';
+/** פרופיל הגוף שממנו נגזרת השלדה. */
+export interface CarProfile {
+  halfWidthAt: (x: number) => number;
+  heightAt: (x: number) => { bottom: number; top: number };
+}
 
 /**
  * "רנטגן": החלקים הפנימיים כקווי מתאר לבנים דקים עם נגיעות כתום (סעיף 4).
@@ -58,7 +62,7 @@ export interface XRay {
   update: (time: number, rpm: number) => void;
 }
 
-export function buildXRay(car: CarParts): XRay {
+export function buildXRay(car: CarProfile): XRay {
   const group = new THREE.Group();
   const white = new THREE.LineBasicMaterial({ color: '#FFFFFF', transparent: true, opacity: 0.85 });
   const dim = new THREE.LineBasicMaterial({ color: '#FFFFFF', transparent: true, opacity: 0.28 });

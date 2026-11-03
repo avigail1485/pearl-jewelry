@@ -12,8 +12,11 @@ export async function initHero() {
   const hero = document.querySelector<HTMLElement>('.hero')!;
   const fieldHost = hero.querySelector<HTMLElement>('.brand-field')!;
   const field = mountBrandField(fieldHost);
-  const car = mountHeroCar(hero.querySelector<HTMLElement>('.hero-car')!);
-  (window as unknown as { __car?: typeof car }).__car = car;
+  let car: Awaited<ReturnType<typeof mountHeroCar>> = null;
+  mountHeroCar(hero.querySelector<HTMLElement>('.hero-car')!).then((c) => {
+    car = c;
+    (window as unknown as { __car?: typeof car }).__car = c;
+  });
   const reduce = reducedMotion();
 
   await document.fonts.ready;

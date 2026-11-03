@@ -2,16 +2,15 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { finePointer, reducedMotion } from '../core/motion';
 import { scrollState } from '../scroll/smooth';
-import { buildCar, makeMaterials } from '../scene/car';
-import { makeContactShadow, makeStudioEnv } from '../scene/env';
-import { buildXRay, cutShell, lensUniforms } from '../scene/xray';
+import { buildPhotoCar } from '../scene/car-photo';
 
 /**
- * הרכב במרכז הפתיחה.
- * חלון חיתוך מעוגל עוקב אחרי הסמן וחושף את השלדה, המנוע והטורבו בקווי רנטגן.
- * הגלגלים הקדמיים פונים לסמן, הרכב נוטה קלות לפי התנועה, והגלילה מניעה אותו.
+ * הרכב במרכז הפתיחה, פוטוריאליסטי ומתפקד כמו רכב אמיתי:
+ * - הגלילה היא הגז: הגלגלים מסתובבים לפי מהירות הגלילה, עם טשטוש תנועה.
+ * - מתלים: בהאצה האף מתרומם, בבלימה הוא צולל, וחוזר בקפיץ מרוסן.
+ * - פנסים דולקים. לחיצה על הרכב = לחיצה על הגז.
  */
-export function mountHeroCar(host: HTMLElement) {
+export async function mountHeroCar(host: HTMLElement) {
   const reduce = reducedMotion();
   const fine = finePointer();
 
@@ -23,29 +22,19 @@ export function mountHeroCar(host: HTMLElement) {
     return null;
   }
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.05;
   renderer.setClearColor(0x000000, 0);
   renderer.domElement.className = 'hero-car__canvas';
   renderer.domElement.setAttribute('aria-hidden', 'true');
   host.append(renderer.domElement);
 
   const scene = new THREE.Scene();
-  const env = makeStudioEnv(renderer);
-  const mats = makeMaterials(env);
-  const car = buildCar(mats);
-  car.shellMaterials.forEach(cutShell);
-  const xray = buildXRay(car);
-  car.root.add(xray.group);
+  const car = await buildPhotoCar(new URL('/assets/car/car.webp', location.href).href);
 
-  const rig = new THREE.Group(); // הטיה ופרלקסה
+  const rig = new THREE.Group();
   rig.add(car.root);
   scene.add(rig);
-  scene.add(makeContactShadow(6.4, 2.6));
-  car.root.position.x = 0.15;
 
   const camera = new THREE.PerspectiveCamera(20, 1, 0.1, 100);
-  const target = new THREE.Vector3(0, 0.42, 0);
 
   // ---------- מידות ומצלמה ----------
   let w = 1, h = 1, dpr = 1;
@@ -56,91 +45,81 @@ export function mountHeroCar(host: HTMLElement) {
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
     const landscape = w > h;
-    const frac = landscape ? 0.6 : 0.98; // החלק מרוחב המסך שהרכב תופס
-    const L = 5.5;
+    const frac = landscape ? 0.62 : 0.96;
+    const L = 5.0;
     const tanH = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const dist = L / (frac * 2 * tanH * camera.aspect);
     const visH = 2 * dist * tanH;
-    // הרכב מעט מעל המרכז, הכותרת יושבת מתחתיו
-    target.y = 0.42 - visH * (landscape ? 0.14 : 0.12);
-    camera.position.set(0, target.y + dist * 0.16, dist);
-    camera.lookAt(target);
+    // מבט ישר מהצד (בלי הטיה, כדי לא לעוות את התמונה); הרכב מעט מעל המרכז
+    const y = 0.62 - visH * (landscape ? 0.13 : 0.1);
+    camera.position.set(0, y, dist);
+    camera.lookAt(0, y, 0);
     camera.updateProjectionMatrix();
-    const half = Math.min(w * 0.095, 175);
-    lensUniforms.uLensHalf.value.set(half * dpr * lens.open, half * 0.62 * dpr * lens.open);
-    lensUniforms.uLensRadius.value = 28 * dpr;
-    lensUniforms.uLensEdge.value = 1.6 * dpr;
   };
 
-  // ---------- מצב ----------
+  // ---------- קלט ----------
   const look = { x: 0, y: 0 };
-  const lens = { x: w / 2, y: h / 2, open: 0 };
-  const pointer = { x: 0, y: 0, inside: false, last: -1e9 };
-  const lookX = gsap.quickTo(look, 'x', { duration: 1.2, ease: 'brake' });
-  const lookY = gsap.quickTo(look, 'y', { duration: 1.2, ease: 'brake' });
-  const lensX = gsap.quickTo(lens, 'x', { duration: 0.55, ease: 'brake' });
-  const lensY = gsap.quickTo(lens, 'y', { duration: 0.55, ease: 'brake' });
-
-  const onMove = (e: PointerEvent) => {
+  const pointer = { inside: false, last: -1e9 };
+  const lookX = gsap.quickTo(look, 'x', { duration: 1.4, ease: 'brake' });
+  const lookY = gsap.quickTo(look, 'y', { duration: 1.4, ease: 'brake' });
+  const section = host.closest('section') ?? host;
+  section.addEventListener('pointermove', (e) => {
     const r = host.getBoundingClientRect();
     const x = e.clientX - r.left, y = e.clientY - r.top;
-    pointer.x = x; pointer.y = y; pointer.inside = true; pointer.last = performance.now();
-    lookX((x / r.width) * 2 - 1);
-    lookY((y / r.height) * 2 - 1);
-    lensX(x); lensY(y);
-    gsap.to(lens, { open: 1, duration: 0.5, ease: 'brake', overwrite: 'auto' });
-  };
-  const onLeave = () => { pointer.inside = false; };
-  const section = host.closest('section') ?? host;
-  section.addEventListener('pointermove', onMove);
-  section.addEventListener('pointerdown', onMove);
-  section.addEventListener('pointerleave', onLeave);
+    pointer.inside = true; pointer.last = performance.now();
+    lookX((x / r.width) * 2 - 1); lookY((y / r.height) * 2 - 1);
+  });
+  section.addEventListener('pointerleave', () => { pointer.inside = false; });
 
-  // נקודות הקצה של הרכב על המסך, למסלול החלון האוטומטי
-  const project = (v: THREE.Vector3) => {
-    const p = v.clone();
-    car.root.localToWorld(p);
-    p.project(camera);
-    return { x: (p.x * 0.5 + 0.5) * w, y: (-p.y * 0.5 + 0.5) * h };
-  };
-
+  // ---------- פיזיקה קטנה ----------
   let scrollP = 0;
-  let wheelSpin = 0;
+  let spin = 0;
+  let speed = 0; // יחידות לשנייה, מוחלק
+  let prevSpeed = 0;
+  const pitch = { x: 0, v: 0 };
+  const lightLevel = { v: 0 };
+  const rev = { boost: 0 };
   let visible = true;
-  const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; });
-  io.observe(host);
+  new IntersectionObserver(([e]) => { visible = e.isIntersecting; }).observe(host);
 
-  const tick = (time: number, dt: number) => {
+  // לחיצה = גז: הגלגלים מסתחררים, הפנסים מהבהבים, האף מתרומם
+  renderer.domElement.addEventListener('pointerdown', () => {
+    gsap.fromTo(rev, { boost: 1 }, { boost: 0, duration: 1.6, ease: 'brake', overwrite: true });
+    gsap.fromTo(lightLevel, { v: 1.6 }, { v: 1, duration: 0.6, ease: 'brake' });
+  });
+  gsap.to(lightLevel, { v: 1, duration: 1.2, delay: 0.8, ease: 'brake' });
+
+  const tick = (time: number, dtMs: number) => {
     if (!visible) return;
-    const idle = !pointer.inside || performance.now() - pointer.last > 3000;
+    const dt = Math.min(dtMs, 50) / 1000;
 
-    // בלי סמן: החלון נוסע לאורך הרכב מימין לשמאל, כמו סריקה
-    if (idle && !reduce) {
-      const a = project(new THREE.Vector3(2.0, 0.42, 0.3));
-      const b = project(new THREE.Vector3(-2.2, 0.32, 0.3));
-      const t = (Math.sin(time * 0.35) + 1) / 2;
-      lensX(a.x + (b.x - a.x) * t);
-      lensY(a.y + (b.y - a.y) * t - Math.sin(t * Math.PI) * h * 0.02);
-      if (lens.open < 1) lens.open = Math.min(1, lens.open + dt / 900);
-      if (!fine) { lookX((t - 0.5) * -0.8); lookY(0); }
-    }
+    // מהירות: גלילה + גז
+    const target = scrollState.velocity * 0.9 + rev.boost * 9;
+    speed += (target - speed) * Math.min(1, dt * 6);
+    const accel = (speed - prevSpeed) / Math.max(dt, 1e-3);
+    prevSpeed = speed;
 
-    // הטיה, היגוי וגלילה
-    rig.rotation.y = look.x * 0.14 + scrollP * 0.55;
-    rig.rotation.x = look.y * 0.035;
-    rig.position.x = -scrollP * 2.2;
-    car.steer.forEach((s) => { s.rotation.y = THREE.MathUtils.damp(s.rotation.y, -look.x * 0.38, 6, dt / 1000); });
-    // הגלגלים מסתובבים לפי מהירות הגלילה (נסיעה שמאלה = סיבוב חיובי סביב z)
-    wheelSpin += (scrollState.velocity * 0.02) * (dt / 16.67);
-    Object.values(car.wheels).forEach((wh) => { wh.rotation.z = wheelSpin; });
-    // רטט מנוע בסרק
-    car.root.position.y = reduce ? 0 : Math.sin(time * 38) * 0.0015;
+    // גלגלים: ω = v / r. נסיעה שמאלה = סיבוב נגד כיוון השעון
+    const omega = speed / 0.39;
+    spin += omega * dt;
+    car.setWheelAngle(-spin, THREE.MathUtils.clamp(Math.abs(omega) * 0.018, 0, 0.9));
 
-    xray.update(time, 9 + Math.abs(scrollState.velocity) * 0.4);
+    // מתלים: קפיץ מרוסן; האצה מרימה את האף, בלימה מורידה אותו
+    const pitchTarget = THREE.MathUtils.clamp(-accel * 0.0009, -0.012, 0.012);
+    pitch.v += ((pitchTarget - pitch.x) * 140 - pitch.v * 14) * dt;
+    pitch.x += pitch.v * dt;
+    car.body.rotation.z = reduce ? 0 : pitch.x;
+    const idle = reduce ? 0 : Math.sin(time * 42) * 0.0011 * (1 - Math.min(Math.abs(speed) / 6, 1));
+    car.body.position.y = idle - Math.abs(pitch.x) * 0.4;
 
-    const half = Math.min(w * 0.095, 175) * lens.open;
-    lensUniforms.uLensHalf.value.set(half * dpr, half * 0.62 * dpr);
-    lensUniforms.uLensCenter.value.set(lens.x * dpr, (h - lens.y) * dpr);
+    // פרלקסה ויציאה בגלילה
+    rig.position.x = look.x * 0.06 - scrollP * 2.6;
+    rig.position.y = -look.y * 0.025;
+
+    car.setLights(lightLevel.v);
+
+    // בלי סמן (מגע): הטיה איטית מעצמה
+    if (!fine && !reduce && (!pointer.inside || performance.now() - pointer.last > 3000)) lookX(Math.sin(time * 0.3) * 0.5);
 
     renderer.render(scene, camera);
   };
@@ -148,7 +127,7 @@ export function mountHeroCar(host: HTMLElement) {
   resize();
   addEventListener('resize', resize);
   if (reduce) {
-    lens.open = 0;
+    car.setLights(1);
     renderer.render(scene, camera);
   } else {
     gsap.ticker.add(tick);
