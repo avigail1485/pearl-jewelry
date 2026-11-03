@@ -1,0 +1,74 @@
+/* ---------- פתיחה ---------- */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: grid;
+  overflow: clip;
+  isolation: isolate;
+}
+.brand-field { position: absolute; inset: 0; z-index: 0; }
+.brand-field__reveal, .brand-field__lines {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+}
+.brand-field__lines { pointer-events: none; }
+.bf-line {
+  fill: none;
+  stroke: var(--white);
+  stroke-width: var(--line);
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1;
+}
+.bf-line--main { stroke-width: var(--line-bold); }
+.bf-runner {
+  fill: none;
+  stroke: var(--brand);
+  stroke-width: 3px;
+  stroke-linecap: round;
+  stroke-dasharray: 0.08 1.2;
+  stroke-dashoffset: 1.08;
+  filter: drop-shadow(0 0 6px var(--brand));
+}
+
+.hero__copy {
+  position: relative; z-index: 1;
+  align-content: end;
+  row-gap: var(--s-3);
+  padding-block: var(--s-16) var(--s-12);
+  pointer-events: none;
+}
+.hero__copy a { pointer-events: auto; }
+.hero__title { grid-column: 1 / span 8; text-wrap: balance; }
+.hero__domains { grid-column: 1 / span 8; }
+.hero__domains span { display: inline-block; }
+.hero__hint { grid-column: 1 / span 4; color: var(--brand); }
+@media (max-width: 767px) {
+  .hero__title, .hero__domains, .hero__hint { grid-column: 1 / -1; }
+}
+
+/* ---------- רצועות ---------- */
+.band {
+  padding-block: var(--s-16);
+  overflow: clip;
+  border-block: var(--line) solid var(--grey);
+}
+.marquee { overflow: clip; direction: ltr; }
+.marquee__track { display: flex; width: max-content; will-change: transform; }
+.marquee__item { direction: rtl; display: flex; align-items: center; white-space: nowrap; padding-inline-end: 0; }
+.marquee--outline .marquee__item {
+  color: transparent;
+  -webkit-text-stroke: var(--line) var(--white);
+}
+.marquee__c {
+  display: inline-block;
+  width: 0.62em; height: 0.36em;
+  margin-inline: 0.35em;
+  background: var(--brand);
+  -webkit-mask: url('/assets/brand/logo-c-mark.svg') center / contain no-repeat;
+  mask: url('/assets/brand/logo-c-mark.svg') center / contain no-repeat;
+}
+
+/* ---------- משפט ---------- */
+.statement { min-height: 100svh; align-content: center; padding-block: var(--s-24); }
+.statement__text { grid-column: 1 / span 10; }
+.statement__text em { font-style: normal; color: var(--brand); }
+@media (max-width: 767px) { .statement__text { grid-column: 1 / -1; } }

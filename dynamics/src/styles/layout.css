@@ -5,19 +5,6 @@
 }
 .site-logo { grid-column: 1 / span 3; display: block; width: fit-content; }
 .site-logo img { display: block; height: var(--s-4); width: auto; }
-.hero {
-  min-height: 100svh;
-  align-content: end;
-  row-gap: var(--s-3);
-  padding-block: var(--s-16) var(--s-12);
-}
-.hero__title { grid-column: 1 / span 10; text-wrap: balance; }
-.hero__domains { grid-column: 1 / span 8; color: var(--white); }
-.hero__hint { grid-column: 1 / span 4; color: var(--brand); }
-@media (max-width: 767px) {
-  .hero__title, .hero__domains, .hero__hint { grid-column: 1 / -1; }
-}
-
 /* כפתור יצירת קשר: קטן וקבוע בתחתית. צורה נגזרת מה-C הנטויה (מקבילית). */
 .contact-fab {
   position: fixed; z-index: var(--z-hud);

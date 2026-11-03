@@ -1,30 +1,28 @@
-/** מילון משכים ו-easing יחיד. כניסות חדות, עצירות רכות, כמו בלימה. */
+import { gsap } from 'gsap';
+import { CustomEase } from 'gsap/CustomEase';
+
+gsap.registerPlugin(CustomEase);
+
+/** מילון משכים יחיד (שניות). */
 export const DUR = {
   snap: 0.16,
   short: 0.32,
   base: 0.64,
   long: 1.2,
+  draw: 2.4,
   ignitionHold: 1.4,
   idleToNeutral: 2,
   overviewRise: 4.5,
 } as const;
 
-/** CustomEase-שווה ערך בלי תוסף: cubic-bezier כפונקציה. */
-const bezier = (x1: number, y1: number, x2: number, y2: number) => (t: number) => {
-  // ניוטון-רפסון ל-x(t)=t
-  let u = t;
-  for (let i = 0; i < 6; i++) {
-    const x = 3 * (1 - u) ** 2 * u * x1 + 3 * (1 - u) * u ** 2 * x2 + u ** 3 - t;
-    const dx = 3 * (1 - u) ** 2 * x1 + 6 * (1 - u) * u * (x2 - x1) + 3 * u ** 2 * (1 - x2);
-    if (Math.abs(dx) < 1e-6) break;
-    u -= x / dx;
-  }
-  u = Math.min(1, Math.max(0, u));
-  return 3 * (1 - u) ** 2 * u * y1 + 3 * (1 - u) * u ** 2 * y2 + u ** 3;
-};
-
+/** Easing מותאם: כניסות חדות, עצירות רכות, כמו בלימה. אין ברירות מחדל. */
 export const EASE = {
-  brake: bezier(0.16, 1, 0.3, 1),
-  launch: bezier(0.7, 0, 0.84, 0),
-  shift: bezier(0.9, 0, 0.1, 1),
+  brake: CustomEase.create('brake', 'M0,0 C0.16,1 0.3,1 1,1'),
+  launch: CustomEase.create('launch', 'M0,0 C0.7,0 0.84,0 1,1'),
+  shift: CustomEase.create('shift', 'M0,0 C0.9,0 0.1,1 1,1'),
+  /** קו שנמתח: יציאה איטית, תאוצה, ונחיתה ארוכה. */
+  draw: CustomEase.create('draw', 'M0,0 C0.45,0 0.12,1 1,1'),
 } as const;
+
+export const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+export const finePointer = () => matchMedia('(pointer: fine)').matches;
