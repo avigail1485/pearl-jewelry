@@ -9,7 +9,7 @@ from engine2 import *
 from render2 import glyph_sets, ORDER_W, WEIGHTS
 
 FAMILY = FAMILY_NAME
-VERSION = "0.2"
+VERSION = "0.6"
 WEIGHT_CLASS = {"ExtraLight": 200, "Light": 300, "Regular": 400, "Medium": 500, "SemiBold": 600, "Bold": 700}
 
 
@@ -47,6 +47,57 @@ def draw_glyph(path):
     return pen.glyph()
 
 
+def features(LG, HG, PG, NG, lp, hp):
+    from anchors_kern import hebrew_anchors, kern_pairs
+    from niqqud import BELOW, CENTER, TOPLEFT, SHIN, SIN
+    dot_r = hp[0] * 0.95 + 16
+    A = hebrew_anchors(HG, hp, dot_r)
+    mark_anchor = {BELOW: (0, 0), CENTER: (0, 0), TOPLEFT: (0, HEB), SHIN: (0, HEB), SIN: (0, HEB)}
+    L = ["languagesystem DFLT dflt;", "languagesystem latn dflt;", "languagesystem hebr dflt;", ""]
+    for cls in (BELOW, CENTER, TOPLEFT, SHIN, SIN):
+        names = [g.name for g in NG.values() if g.mark_class == cls]
+        ax, ay = mark_anchor[cls]
+        L.append("markClass [%s] <anchor %d %d> @M_%s;" % (" ".join(names), ax, ay, cls))
+    L.append("")
+    L.append("feature mark {")
+    L.append("  script hebr;")
+    L.append("  lookup hebrew_marks {")
+    for gname, an in A.items():
+        for cls, (x, y) in an.items():
+            L.append("    pos base %s <anchor %d %d> mark @M_%s;" % (gname, x, y, cls))
+    L.append("  } hebrew_marks;")
+    L.append("} mark;")
+    L.append("")
+    # kerning
+    lat_letters = [chr(c) for c in range(65, 91)] + [chr(c) for c in range(97, 123)]
+    lat_punct = [c for c in ".,:;!?-'\"\u2018\u2019\u201C\u201D()&" if c in PG]
+    heb_letters = list(HG.keys())
+    heb_punct = [c for c in ".,:;!?-\u05F3\u05F4\u05BE\"'()" if c in PG]
+    allg = dict(LG); allg.update(PG); allg.update(HG)
+    pens = {c: (hp if c in HG else lp) for c in allg}
+    lat = kern_pairs(allg, pens, lat_letters + lat_punct, lat_letters + lat_punct, rtl=False, punct=lat_punct)
+    heb = kern_pairs(allg, pens, heb_letters + heb_punct, heb_letters + heb_punct, rtl=True, kmin=-70, punct=heb_punct)
+    L.append("feature kern {")
+    L.append("  lookup kern_latin {")
+    L.append("    lookupflag IgnoreMarks;")
+    for a, b, v in lat:
+        L.append("    pos %s %s %d;" % (a, b, v))
+    L.append("  } kern_latin;")
+    L.append("  lookup kern_hebrew {")
+    L.append("    lookupflag IgnoreMarks;")
+    for a, b, v in heb:
+        L.append("    pos %s %s %d;" % (a, b, v))
+    L.append("  } kern_hebrew;")
+    L.append("} kern;")
+    L.append("")
+    base = [g.name for G in (LG, HG, PG) for g in G.values()]
+    L.append("table GDEF {")
+    L.append("  GlyphClassDef [%s], , [%s], ;" % (" ".join(base), " ".join(g.name for g in NG.values())))
+    L.append("} GDEF;")
+    print("  kern pairs: latin %d, hebrew %d" % (len(lat), len(heb)))
+    return "\n".join(L)
+
+
 def build(weight, out_dir):
     LG, HG, lp, hp = glyph_sets(weight)
     from extra import extras
@@ -55,8 +106,10 @@ def build(weight, out_dir):
     for ch, g in PG.items():
         if getattr(g, 'optical', False):
             space_glyph(g, lp, (0, CAP), 86 - 0.15 * (lp[0] - 39), depth=0.15 * CAP, min_sb=30)
+    from niqqud import niqqud, BELOW, CENTER, TOPLEFT, SHIN, SIN
+    NG = niqqud(*hp)
     entries = []  # (glyph, pen)
-    for G, pen in ((LG, lp), (HG, hp), (PG, lp)):
+    for G, pen in ((LG, lp), (HG, hp), (PG, lp), (NG, hp)):
         for ch, g in G.items():
             entries.append((g, pen))
     order = [".notdef", "space"] + [g.name for g, _ in entries]
@@ -110,6 +163,13 @@ def build(weight, out_dir):
     fb.font["OS/2"].version = 4
     fb.setupPost()
     fb.setupHead(unitsPerEm=1000, macStyle=1 if weight == "Bold" else 0)
+    fb.font["head"].fontRevision = float(VERSION)
+    fea = features(LG, HG, PG, NG, lp, hp)
+    from fontTools.feaLib.builder import addOpenTypeFeaturesFromString
+    addOpenTypeFeaturesFromString(fb.font, fea)
+    os.makedirs("../features", exist_ok=True)
+    with open(os.path.join("../features", f"{ps}.fea"), "w") as fh:
+        fh.write(fea)
     os.makedirs(out_dir, exist_ok=True)
     ttf = os.path.join(out_dir, f"{ps}.ttf")
     fb.font.save(ttf)

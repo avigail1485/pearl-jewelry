@@ -265,4 +265,18 @@ def extras(a, b, hpen):
     g = G["@"]
     g.cuts = at(40, 40 + 820 + E, 820 + E)[1]
 
+    def ampersand(L, R, W):
+        xl, xr = L + a, R - a
+        cxt = L + 0.40 * W            # centre of the upper loop
+        rt = 0.17 * W + 0.7 * E       # half width of the upper loop
+        s = (Sk((R - 6, 0)).H((cxt - rt * 0.55, 445), (-0.62, 0.78), (-0.5, 0.86), 0.42, 0.35)
+             .H((cxt - rt, 590), (-0.5, 0.86), (0, 1), 0.5, 0.5)
+             .H((cxt, T + OS - b), (0, 1), (1, 0), k)
+             .H((cxt + rt, 590), (1, 0), (0, -1), k)
+             .H((xl + 0.06 * W, 200), (0, -1), (-0.62, -0.78), 0.45, 0.45)
+             .H((L + 0.36 * W, b - OS), (0, -1), (1, 0), 0.5, k)
+             .H((xr - 0.02 * W, 300), (1, 0), (0.42, 0.9), k, 0.5))
+        return [P(s, clip=(L - 50, 0, R + 50, T + 50))]
+    add("&", "ampersand", 40, 620, 30, ampersand, grow=3.0)
+
     return G
