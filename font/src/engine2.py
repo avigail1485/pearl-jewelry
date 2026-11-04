@@ -271,6 +271,17 @@ class Glyph:
         self.holes = list(holes)
 
     def outline(self, a, b):
+        key = (round(a, 3), round(b, 3), getattr(self, "dx", 0))
+        if getattr(self, "_ck", None) == key:
+            return self._cv
+        res = self._outline(a, b)
+        dx = getattr(self, "dx", 0)
+        if dx:
+            res = res.transform(1, 0, 0, 1, dx, 0)
+        self._ck, self._cv = key, res
+        return res
+
+    def _outline(self, a, b):
         paths = []
         for pt in self.parts:
             if isinstance(pt, Dot):

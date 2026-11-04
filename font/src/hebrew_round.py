@@ -173,8 +173,9 @@ def hebrew(a, b):
 
     def mem_f(L, R, W):
         xl, xr = L + a, R - a
-        s = (Sk((xl, H / 2)).L((xl, yt - RM)).R((xl, yt), (xr, yt), RM * 0.0 + RT)
-             .R((xr, yt), (xr, yb), RR).R((xr, yb), (xl, yb), RR).R((xl, yb), (xl, H / 2), RT).L((xl, H / 2)))
+        r = RM * 1.2
+        s = (Sk((xl, H / 2)).R((xl, yt), (xr, yt), r)
+             .R((xr, yt), (xr, yb), r).R((xr, yb), (xl, yb), r).R((xl, yb), (xl, H / 2), r).L((xl, H / 2)))
         return [P(s.close())]
     add("ם", "finalmem", 46, 0.86, 46, mem_f)
 
@@ -215,15 +216,15 @@ def hebrew(a, b):
         s = (Sk((L, yb)).L((L + 0.44 * W, yb))
              .H((xr, 0.50 * H), (1, 0), (0, 1), 0.6)
              .H((L + 0.53 * W, yt + OS), (0, 1), (-1, 0), k)
-             .H((xl, 0.67 * H), (-1, 0), (0, -1), k)
-             .H((L + 0.34 * W, 0.40 * H), (0, -1), (1, 0), k))
+             .H((xl, 0.68 * H + 0.3 * E), (-1, 0), (0, -1), k)
+             .H((L + 0.33 * W + 0.9 * E, 0.405 * H + 1.25 * E), (0, -1), (1, 0), k))
         return [P(s)]
     add("פ", "pe", 30, 0.88, 40, pe)
 
     def pe_f(L, R, W):
         xl, xr = L + a, R - a
         k = 0.56
-        s = (Sk((L + 0.36 * W, 0.40 * H)).H((xl, 0.67 * H), (-1, 0), (0, 1), k)
+        s = (Sk((L + 0.35 * W + 0.9 * E, 0.405 * H + 1.25 * E)).H((xl, 0.68 * H + 0.3 * E), (-1, 0), (0, 1), k)
              .H((L + 0.50 * W, yt + OS), (0, 1), (1, 0), k)
              .H((xr, 0.40 * H), (1, 0), (0, -1), k).L((xr, HDESC)))
         return [P(s)]

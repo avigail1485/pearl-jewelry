@@ -48,7 +48,10 @@ def pens(weight):
 
 def glyph_sets(weight):
     (la, lb), (ha, hb) = pens(weight)
-    return latin(la, lb), hebrew(ha, hb), (la, lb), (ha, hb)
+    LG, HG = latin(la, lb), hebrew(ha, hb)
+    from spacing import space_all
+    space_all(LG, HG, (la, lb), (ha, hb))
+    return LG, HG, (la, lb), (ha, hb)
 
 
 # --------------------------------------------------------- flattening
@@ -149,6 +152,7 @@ def nodes_draw(d, path, ox, oy, s):
 
 
 def skeleton_draw(d, g, ox, oy, s):
+    ox = ox + getattr(g, "dx", 0) * s
     for sk in g.skeletons():
         pts = sk.sample(40)
         # dotted line
