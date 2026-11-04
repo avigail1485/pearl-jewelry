@@ -158,10 +158,10 @@ def hebrew(a, b):
     # ---------------------------------------------------------------- מ ם
     def mem(L, R, W):
         xr = R - a
-        top = (L + 0.17 * W, H)
-        bot = (L + ha, 0)
-        end = L + 0.42 * W
-        s = Sk((L + 0.08 * W, yt)).R((xr, yt), (xr, yb), RR).R((xr, yb), (end, yb), RR).L((end, yb))
+        top = (L + 0.25 * W, H)
+        bot = (L + 0.09 * W + ha, 0)
+        end = L + 0.46 * W
+        s = Sk((L, yt)).R((xr, yt), (xr, yb), RR).R((xr, yb), (end, yb), RR).L((end, yb))
         return [P(s), D(top, bot, (L - 20, 0, R, H), e0=0, e1=40)]
     add("מ", "mem", 26, 0.98, 44, mem)
 
@@ -175,19 +175,23 @@ def hebrew(a, b):
     # ---------------------------------------------------------------- נ
     def nun(L, R, W):
         xr = R - a
-        s = Sk((L + 2, yt)).R((xr, yt), (xr, yb), RT).R((xr, yb), (L, yb), RT).L((L - 2, yb))
+        s = Sk((L + 0.42 * W, yt)).R((xr, yt), (xr, yb), RT).R((xr, yb), (L, yb), RT).L((L - 4, yb))
         return [P(s)]
-    add("נ", "nun", 30, 0.35, 42, nun)
+    add("נ", "nun", 28, 0.42, 42, nun)
 
     # ---------------------------------------------------------------- ס
     def samekh(L, R, W):
         x0 = L + 40           # where the circle starts (spur sits before it)
-        cx = (x0 + R) / 2
-        rx = (R - x0) / 2 - a
-        ry = H / 2 + OS - b
-        ring = P(ellipse(cx, H / 2 - OS * 0.0, rx, ry, 0.56))
-        return [ring, Hb(yt, L, cx)]
-    add("ס", "samekh", 20, 1.10, 40, samekh)
+        xl, xr = x0 + a, R - a
+        cx = (xl + xr) / 2
+        cy = (yt + yb - OS) / 2
+        bot = yb - OS
+        k = 0.56
+        s = (Sk((L, yt)).L((cx, yt)).H((xr, cy), (1, 0), (0, -1), 0.6)
+             .H((cx, bot), (0, -1), (-1, 0), k).H((xl, cy), (-1, 0), (0, 1), k)
+             .L((xl, yt)))
+        return [P(s)]
+    add("ס", "samekh", 20, 1.0, 40, samekh)
 
     # ---------------------------------------------------------------- ע
     def ayin(L, R, W):
