@@ -1,0 +1,438 @@
+<title>Nirit Sans</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+__FONTFACES__
+
+/* Layout: a type specimen read right-to-left; the font itself is the only display face,
+   a mono utility face carries numbers and metadata the font does not cover yet. */
+:root {
+  --paper: #f1f1ec;
+  --ink: #121316;
+  --muted: #6a6c72;
+  --rule: #d6d6cf;
+  --plate: #e6e6df;
+  --accent: #2a3ff0;
+  --accent-soft: #dfe2fb;
+  --display: "Nirit", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #101114; --ink: #ecece6; --muted: #9a9ca3; --rule: #2a2c31;
+    --plate: #1a1c20; --accent: #8d9bff; --accent-soft: #23284d; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #101114; --ink: #ecece6; --muted: #9a9ca3; --rule: #2a2c31;
+  --plate: #1a1c20; --accent: #8d9bff; --accent-soft: #23284d; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--display);
+  font-weight: 400;
+}
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+.label {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+section { padding-block: 64px; border-top: 1px solid var(--rule); }
+section h2 {
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: clamp(28px, 4vw, 40px);
+  margin: 0;
+  text-wrap: balance;
+}
+.sec-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+
+/* ---------- hero */
+header.hero { padding-block: 40px 56px; }
+.topbar { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; align-items: center; }
+.hero-word {
+  font-size: clamp(84px, 17vw, 230px);
+  line-height: 0.95;
+  margin: 40px 0 8px;
+  font-weight: 200;
+  transition: font-weight 0s;
+  white-space: nowrap;
+}
+.hero-latin {
+  font-size: clamp(44px, 8vw, 110px);
+  line-height: 1;
+  margin: 0;
+  direction: ltr;
+  text-align: left;
+}
+.hero-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 24px; margin-top: 48px; }
+.hero-meta div { display: grid; gap: 6px; }
+.hero-meta strong { font-family: var(--display); font-weight: 500; font-size: 22px; }
+.hero-meta .num { font-family: var(--mono); font-size: 20px; }
+
+/* ---------- tester */
+.tester { display: grid; gap: 20px; }
+.controls { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-family: var(--display);
+  font-size: 16px;
+  border: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.chip:focus-visible, .range:focus-visible, .editor:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.ctl { display: flex; align-items: center; gap: 10px; }
+.range { accent-color: var(--accent); width: 160px; }
+.ctl output { font-family: var(--mono); font-size: 13px; min-width: 52px; color: var(--muted); }
+.editor {
+  min-height: 220px;
+  padding: 28px;
+  background: var(--plate);
+  border-radius: 6px;
+  font-size: 72px;
+  line-height: 1.15;
+  outline: none;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+.hint { font-size: 15px; color: var(--muted); margin: 0; }
+
+/* ---------- weights */
+.weights { display: grid; gap: 0; }
+.wrow { display: grid; grid-template-columns: 140px 1fr; gap: 20px; align-items: baseline; padding-block: 18px; border-bottom: 1px solid var(--rule); }
+.wrow .label { direction: ltr; text-align: right; }
+.wrow p { margin: 0; font-size: clamp(26px, 4.4vw, 52px); line-height: 1.15; min-width: 0; overflow-wrap: anywhere; }
+.wrow .en { direction: ltr; text-align: left; font-size: clamp(20px, 3vw, 34px); color: var(--muted); margin-top: 6px; }
+
+/* ---------- glyphs */
+.glyph-layout { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 32px; align-items: start; }
+.glyph-groups { display: grid; gap: 28px; min-width: 0; }
+.ggrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); border-top: 1px solid var(--rule); border-right: 1px solid var(--rule); }
+.ggrid.ltr { direction: ltr; border-right: 0; border-left: 1px solid var(--rule); }
+.g {
+  aspect-ratio: 1;
+  max-width: 100%;
+  display: grid;
+  place-items: center;
+  font-size: 34px;
+  border-bottom: 1px solid var(--rule);
+  border-left: 1px solid var(--rule);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  font-family: var(--display);
+  padding: 0;
+}
+.ggrid.ltr .g { border-left: 0; border-right: 1px solid var(--rule); }
+.g:hover { background: var(--accent-soft); }
+.g[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.g:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+.inspector {
+  position: sticky;
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  background: var(--plate);
+  border-radius: 6px;
+  padding: 20px;
+  display: grid;
+  gap: 12px;
+}
+.big {
+  font-size: 220px;
+  line-height: 1.25;
+  text-align: center;
+  position: relative;
+  background:
+    linear-gradient(var(--rule), var(--rule)) 0 72% / 100% 1px no-repeat,
+    linear-gradient(var(--rule), var(--rule)) 0 26% / 100% 1px no-repeat;
+}
+.insp-meta { display: flex; justify-content: space-between; gap: 12px; direction: ltr; }
+.insp-meta span { font-family: var(--mono); font-size: 13px; }
+
+/* ---------- process */
+.process { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.process figure { margin: 0; display: grid; gap: 10px; }
+.process img { width: 100%; border-radius: 6px; display: block; }
+.process figcaption { font-size: 16px; color: var(--muted); }
+.principles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 24px; margin-top: 40px; }
+.principles div { display: grid; gap: 6px; align-content: start; }
+.principles h3 { margin: 0; font-weight: 500; font-size: 21px; }
+.principles p { margin: 0; color: var(--muted); font-size: 17px; line-height: 1.55; }
+
+/* ---------- text */
+.columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 48px; }
+.columns p { margin: 0 0 1em; font-size: 20px; line-height: 1.6; max-width: 34em; }
+.columns .ltr { direction: ltr; text-align: left; }
+.columns h3 { margin: 0 0 14px; font-weight: 600; font-size: 34px; line-height: 1.15; text-wrap: balance; }
+
+/* ---------- specs */
+.specs { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0; border-top: 1px solid var(--rule); }
+.specs div { padding: 18px 0; border-bottom: 1px solid var(--rule); display: grid; gap: 4px; }
+.specs .num { font-family: var(--mono); font-size: 24px; direction: ltr; text-align: right; }
+footer { padding-block: 40px 64px; border-top: 1px solid var(--rule); color: var(--muted); font-size: 15px; }
+
+@media (max-width: 860px) {
+  .glyph-layout { grid-template-columns: minmax(0, 1fr); }
+  .inspector { position: static; }
+  .process { grid-template-columns: minmax(0, 1fr); }
+  .columns { grid-template-columns: minmax(0, 1fr); }
+  .editor { font-size: 44px; padding: 18px; }
+  .wrow { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .wrow .label { text-align: right; }
+  .big { font-size: 160px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div dir="rtl" lang="he">
+  <header class="hero">
+    <div class="wrap">
+      <div class="topbar">
+        <span class="label">גופן דו־לשוני · עברית / Latin · 6 משקלים</span>
+        <span class="label" style="direction:ltr">v0.2 · draft for review</span>
+      </div>
+      <h1 class="hero-word" id="heroWord">נירית סאנס</h1>
+      <p class="hero-latin" id="heroLatin">Nirit Sans</p>
+      <div class="hero-meta">
+        <div><span class="label">משקלים</span><strong>ExtraLight → Bold</strong></div>
+        <div><span class="label">כתבים</span><strong>עברית · אנגלית</strong></div>
+        <div><span class="label">יחידות לאם</span><span class="num">1000 UPM</span></div>
+        <div><span class="label">גובה עברי / x / cap</span><span class="num">600 / 520 / 700</span></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="tester">
+    <div class="wrap tester">
+      <div class="sec-head">
+        <h2>כתבו כאן, בעברית או באנגלית</h2>
+        <span class="label">Live type tester</span>
+      </div>
+      <div class="controls">
+        <div class="chips" id="wChips" role="group" aria-label="משקל"></div>
+        <div class="ctl"><label class="label" for="size">גודל</label><input class="range" id="size" type="range" min="20" max="180" value="72"><output id="sizeOut">72px</output></div>
+        <div class="ctl"><label class="label" for="lh">ריווח שורות</label><input class="range" id="lh" type="range" min="90" max="180" value="115"><output id="lhOut">1.15</output></div>
+        <div class="chips" id="samples" role="group" aria-label="טקסט לדוגמה">
+          <button class="chip" type="button" data-s="he">עברית</button>
+          <button class="chip" type="button" data-s="en">English</button>
+          <button class="chip" type="button" data-s="mix">מעורב</button>
+        </div>
+      </div>
+      <div class="editor" id="editor" contenteditable="true" spellcheck="false" dir="auto" aria-label="טקסט לניסוי">הסיפורים מאחורי כמה מתהליכי הצמיחה</div>
+      <p class="hint">הגופן כולל כרגע את כל האותיות בעברית ובאנגלית ופיסוק בסיסי. ספרות ותווים נוספים מוצגים בגופן גיבוי עד שייכנסו לגרסה הבאה.</p>
+    </div>
+  </section>
+
+  <section id="weights">
+    <div class="wrap">
+      <div class="sec-head"><h2>שישה משקלים</h2><span class="label">ExtraLight 200 – Bold 700</span></div>
+      <div class="weights" id="weightRows"></div>
+    </div>
+  </section>
+
+  <section id="glyphs">
+    <div class="wrap">
+      <div class="sec-head"><h2>כל האותיות</h2><span class="label">לחצו על אות להגדלה</span></div>
+      <div class="glyph-layout">
+        <div class="glyph-groups">
+          <div><p class="label">עברית · 27</p><div class="ggrid" id="gHe"></div></div>
+          <div><p class="label">Uppercase · 26</p><div class="ggrid ltr" id="gUp"></div></div>
+          <div><p class="label">Lowercase · 26</p><div class="ggrid ltr" id="gLo"></div></div>
+        </div>
+        <aside class="inspector" aria-live="polite">
+          <div class="big" id="bigGlyph">א</div>
+          <div class="chips" id="iChips" role="group" aria-label="משקל באות המוגדלת"></div>
+          <div class="insp-meta"><span id="iName">alef</span><span id="iCode">U+05D0</span></div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <div class="wrap">
+      <div class="sec-head"><h2>תהליך הבנייה</h2><span class="label">Construction view</span></div>
+      <div class="process">
+        <figure><img src="__IMG_ALEF__" alt="מבט בנייה של האות אל״ף: שלד מנוקד באדום, קו מתאר ונקודות עקומה"><figcaption>א · אלכסון ישר, זרועות שמתעגלות לתוכו</figcaption></figure>
+        <figure><img src="__IMG_SHIN__" alt="מבט בנייה של האות שי״ן: תחתית עגולה וקו אמצעי שעולה משמאל"><figcaption>ש · תחתית עגולה, קו אמצעי שעולה מהזרוע השמאלית</figcaption></figure>
+        <figure><img src="__IMG_A__" alt="מבט בנייה של האות a: קערה עגולה וגבעול"><figcaption>a · קערה וגבעול במשיכת עט אחת</figcaption></figure>
+      </div>
+      <div class="principles">
+        <div><h3>שלד ועט</h3><p>כל אות מצוירת כקו מרכזי ונמשכת בעט אליפטי. המשקל משתנה רק בעובי העט, ולכן שישת המשקלים יוצאים מאותו ציור.</p></div>
+        <div><h3>אופקי מעט כבד</h3><p>בעברית הקווים האופקיים עבים מעט מהאנכיים, כמו במסורת הכתב המרובע. באנגלית היחס הפוך.</p></div>
+        <div><h3>משפחות אותיות</h3><p>ב כ פ, ד ר ה ח ק ת, ו ז י ן נ, ט ס ם מ, א צ ץ ע ש. בכל משפחה אותה בנייה ואותו רדיוס פינה.</p></div>
+        <div><h3>סיומות רכות</h3><p>הגג של ס, ח, ם, ת ממשיך מעט אל מעבר לרגל שמאל. זה פרט עדין שחוזר לאורך הגופן.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="text">
+    <div class="wrap">
+      <div class="sec-head"><h2>בטקסט רץ</h2><span class="label">Regular · 20px</span></div>
+      <div class="columns">
+        <div>
+          <h3>הסיפורים מאחורי כמה מתהליכי הצמיחה המשמעותיים שהובלנו</h3>
+          <p>גופן טוב לא מושך תשומת לב לעצמו. הוא שומר על קצב אחיד, נותן לכל אות מקום משלה ומאפשר לקורא להתרכז בתוכן. המבנה הפתוח, הפינות הרכות והגובה הנדיב עוזרים לקריאה נוחה גם בטקסט ארוך, על נייר ועל מסך.</p>
+          <p>כל העבודות · פיננסים · הייטק · בריאות · ציבורי · חברתי · השכלה · תרבות</p>
+        </div>
+        <div class="ltr">
+          <h3>The stories behind some of the growth we led</h3>
+          <p>A good typeface does not ask for attention. It keeps an even rhythm, gives every letter its own room and lets the reader stay with the content. The open forms, soft corners and generous x-height keep long text comfortable in print and on screen.</p>
+          <p>Hamburgefonstiv quick brown fox jumps over the lazy dog</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="specs">
+    <div class="wrap">
+      <div class="sec-head"><h2>מידות</h2><span class="label">Font metrics, units per em</span></div>
+      <div class="specs">
+        <div><span class="label">Cap height</span><span class="num">700</span></div>
+        <div><span class="label">x-height</span><span class="num">520</span></div>
+        <div><span class="label">גובה עברי</span><span class="num">600</span></div>
+        <div><span class="label">Ascender · למ״ד</span><span class="num">745 · 735</span></div>
+        <div><span class="label">Descender · סופיות</span><span class="num">−215 · −200</span></div>
+        <div><span class="label">עובי גבעול Regular</span><span class="num">78</span></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">Nirit Sans · גרסת עבודה 0.2 לבדיקה. ספרות, סימנים, ניקוד וקרנינג ייכנסו בגרסה הבאה.</div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  var W = [["ExtraLight", 200], ["Light", 300], ["Regular", 400], ["Medium", 500], ["SemiBold", 600], ["Bold", 700]];
+  var HE = "אבגדהוזחטיכךלמםנןסעפףצץקרשת".split("");
+  var NAMES = {"א":"alef","ב":"bet","ג":"gimel","ד":"dalet","ה":"he","ו":"vav","ז":"zayin","ח":"het","ט":"tet","י":"yod","כ":"kaf","ך":"final kaf","ל":"lamed","מ":"mem","ם":"final mem","נ":"nun","ן":"final nun","ס":"samekh","ע":"ayin","פ":"pe","ף":"final pe","צ":"tsadi","ץ":"final tsadi","ק":"qof","ר":"resh","ש":"shin","ת":"tav"};
+  var UP = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+  var LO = "abcdefghijklmnopqrstuvwxyz".split("");
+  var SAMPLES = {
+    he: "הסיפורים מאחורי כמה מתהליכי הצמיחה",
+    en: "The quick brown fox jumps over the lazy dog",
+    mix: "נירית סאנס – Nirit Sans, עברית ו־English"
+  };
+  var LINES = [
+    ["אבגדהוזחטיכךלמםנןסעפףצץקרשת", "ABCDEFGHIJKLMNOPQRSTUVWXYZ"],
+    ["גופן עברי נקי ומוקפד", "Hamburgefonstiv"],
+    ["הסיפורים מאחורי כמה מתהליכי הצמיחה", "The stories behind the growth"],
+    ["שפה ברורה, צורה שקטה", "abcdefghijklmnopqrstuvwxyz"],
+    ["כל העבודות, תרבות, השכלה", "Clear forms, quiet voice"],
+    ["אותיות שעומדות בגאון", "Bold and balanced"]
+  ];
+
+  var editor = document.getElementById("editor");
+  var state = { w: 400, iw: 400, glyph: "א" };
+
+  function chips(container, active, onPick) {
+    container.innerHTML = "";
+    W.forEach(function (pair) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "chip";
+      b.textContent = pair[0];
+      b.style.fontWeight = pair[1];
+      b.setAttribute("aria-pressed", pair[1] === active ? "true" : "false");
+      b.addEventListener("click", function () {
+        Array.prototype.forEach.call(container.children, function (c) { c.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true");
+        onPick(pair[1]);
+      });
+      container.appendChild(b);
+    });
+  }
+
+  chips(document.getElementById("wChips"), state.w, function (w) { editor.style.fontWeight = w; });
+  editor.style.fontWeight = state.w;
+
+  var size = document.getElementById("size"), sizeOut = document.getElementById("sizeOut");
+  size.addEventListener("input", function () { editor.style.fontSize = size.value + "px"; sizeOut.textContent = size.value + "px"; });
+  var lh = document.getElementById("lh"), lhOut = document.getElementById("lhOut");
+  lh.addEventListener("input", function () { var v = (lh.value / 100).toFixed(2); editor.style.lineHeight = v; lhOut.textContent = v; });
+
+  document.getElementById("samples").addEventListener("click", function (e) {
+    var k = e.target.getAttribute && e.target.getAttribute("data-s");
+    if (k) { editor.textContent = SAMPLES[k]; editor.focus(); }
+  });
+  editor.addEventListener("paste", function (e) {
+    e.preventDefault();
+    var t = (e.clipboardData || window.clipboardData).getData("text");
+    document.execCommand("insertText", false, t);
+  });
+
+  // weights
+  var rows = document.getElementById("weightRows");
+  W.forEach(function (pair, i) {
+    var r = document.createElement("div");
+    r.className = "wrow";
+    r.innerHTML = '<span class="label">' + pair[0] + " " + pair[1] + '</span><div style="min-width:0"><p></p><p class="en"></p></div>';
+    var ps = r.querySelectorAll("p");
+    ps[0].textContent = LINES[i][0];
+    ps[1].textContent = LINES[i][1];
+    ps[0].style.fontWeight = pair[1];
+    ps[1].style.fontWeight = pair[1];
+    rows.appendChild(r);
+  });
+
+  // glyph grids
+  var big = document.getElementById("bigGlyph");
+  var iName = document.getElementById("iName"), iCode = document.getElementById("iCode");
+  var allCells = [];
+  function show(ch) {
+    state.glyph = ch;
+    big.textContent = ch;
+    iName.textContent = NAMES[ch] || ch;
+    iCode.textContent = "U+" + ch.charCodeAt(0).toString(16).toUpperCase().padStart(4, "0");
+    allCells.forEach(function (c) { c.setAttribute("aria-pressed", c.textContent === ch ? "true" : "false"); });
+  }
+  function grid(id, list) {
+    var g = document.getElementById(id);
+    list.forEach(function (ch) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "g";
+      b.textContent = ch;
+      b.setAttribute("aria-label", NAMES[ch] || ch);
+      b.addEventListener("click", function () { show(ch); });
+      g.appendChild(b);
+      allCells.push(b);
+    });
+  }
+  grid("gHe", HE); grid("gUp", UP); grid("gLo", LO);
+  chips(document.getElementById("iChips"), state.iw, function (w) { big.style.fontWeight = w; });
+  big.style.fontWeight = state.iw;
+  show("א");
+
+  // hero: step through the weights once, then rest on Regular
+  var hero = document.getElementById("heroWord"), heroL = document.getElementById("heroLatin");
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  hero.style.fontWeight = 400; heroL.style.fontWeight = 400;
+  if (!reduce) {
+    var seq = [200, 300, 400, 500, 600, 700, 600, 500, 400], k = 0;
+    var t = setInterval(function () {
+      hero.style.fontWeight = seq[k]; heroL.style.fontWeight = seq[k];
+      k++; if (k >= seq.length) clearInterval(t);
+    }, 260);
+  }
+})();
+</script>

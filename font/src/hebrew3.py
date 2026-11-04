@@ -27,8 +27,8 @@ def hebrew(a, b):
     H = HEB
     yt, yb = H - b, b
     ha = a * 1.1
-    RC = 150 + 0.4 * E          # family corner radius (centre line)
-    RS = 62 + 0.3 * E           # small radius (heads, nun, het left)
+    RC = 178 + 0.4 * E          # family corner radius (centre line)
+    RS = 96 + 0.3 * E           # small radius (heads, nun, het left)
     HEAD = 38 + 0.6 * E         # length of the head of ו י ן ז
 
     def add(ch, name, sb_l, w0, sb_r, build, grow=1.3):
@@ -64,9 +64,9 @@ def hebrew(a, b):
         yr = 0.40 * H
         arm = (Sk((xr, H)).L((xr, 0.70 * H))
                .H((at_y(p0, p1, yr), yr), (0, -1), _dir(p0, p1, True), 0.62, 0.28))
-        yl = 0.50 * H
+        yl = 0.62 * H
         leg = (Sk((at_y(p0, p1, yl), yl))
-               .H((xl, 0.24 * H), _dir(p0, p1, True, -1), (0, -1), 0.28, 0.62).L((xl, 0)))
+               .H((xl, 0.36 * H), _dir(p0, p1, True, -1), (0, -1), 0.3, 0.62).L((xl, 0)))
         return [D(p0, p1, clip), P(arm), P(leg)]
     add("א", "alef", 40, 500, 40, alef)
 
@@ -114,22 +114,24 @@ def hebrew(a, b):
     add("ה", "he", 50, 448, 50, he)
 
     def het(L, R, W):
-        xl, xr = L + a, R - a
-        s = Sk((xl, 0)).R((xl, yt), (xr, yt), RS * 0.6).R((xr, yt), (xr, 0), RS).L((xr, 0))
-        return [P(s)]
-    add("ח", "het", 50, 448, 50, het)
+        xl, xr = L + 30 + a, R - a
+        s = Sk((L, yt)).R((xr, yt), (xr, 0), RS).L((xr, 0))
+        return [P(s), V(xl, 0, yt)]
+    add("ח", "het", 26, 476, 50, het)
 
     def qof(L, R, W):
         xr = R - a
-        return [P(roof(L, xr, 0)), V(L + a + 2, HDESC, 0.62 * H)]
-    add("ק", "qof", 44, 448, 50, qof)
+        xe = xr - 0.11 * W
+        s = Sk((L, yt)).R((xr, yt), (xe, 0), RC * 0.85).L((xe, 0))
+        return [P(s), V(L + a + 2, HDESC, 0.60 * H)]
+    add("ק", "qof", 44, 430, 40, qof)
 
     def tav(L, R, W):
         xr = R - a
-        xg = L + 54 + a
-        leg = Sk((xg, yt)).L((xg, yb + 92)).H((L, yb), (0, -1), (-1, 0), 0.6, 0.5)
-        return [P(roof(L + 18, xr, 0)), P(leg)]
-    add("ת", "tav", 26, 492, 50, tav)
+        xg = L + 92 + a
+        leg = Sk((xg, yt)).L((xg, yb + 128)).H((xg - 92, yb), (0, -1), (-1, 0), KAPPA, KAPPA).L((L, yb))
+        return [P(roof(L + 56, xr, 0)), P(leg)]
+    add("ת", "tav", 20, 520, 50, tav)
 
     # ------------------------------------------------------ ו ז י ן נ ג
     def vav(L, R, W):
@@ -173,8 +175,8 @@ def hebrew(a, b):
         hook = cx + 0.06 * W
         s = (Sk((xl, H)).L((xl, yb - OS * 0.5 + r)).H((cx, yb - OS * 0.5), (0, -1), (1, 0), KAPPA)
              .H((xr, yb - OS * 0.5 + r), (1, 0), (0, 1), KAPPA)
-             .L((xr, 0.62 * H)).H(((xr + hook) / 2, yt), (0, 1), (-1, 0), KAPPA)
-             .H((hook, 0.62 * H), (-1, 0), (0, -1), KAPPA).L((hook, 0.48 * H)))
+             .L((xr, 0.58 * H)).H((xr - 0.30 * W, yt), (0, 1), (-1, 0), KAPPA, KAPPA)
+             .L((xr - 0.40 * W, yt)))
         return [P(s)]
     add("ט", "tet", 50, 476, 50, tet)
 
@@ -190,11 +192,11 @@ def hebrew(a, b):
     add("ס", "samekh", 22, 520, 46, samekh)
 
     def mem_f(L, R, W):
-        xl, xr = L + a, R - a
+        xl, xr = L + 30 + a, R - a
         s = (Sk((xl, H / 2)).L((xl, yt)).R((xr, yt), (xr, yb), RS)
              .R((xr, yb), (xl, yb), RS).R((xl, yb), (xl, H / 2), RS * 0.4).L((xl, H / 2)))
-        return [P(s.close(), join="miter")]
-    add("ם", "finalmem", 50, 452, 50, mem_f)
+        return [P(s.close(), join="miter"), Hb(yt, L, xl)]
+    add("ם", "finalmem", 24, 480, 50, mem_f)
 
     def mem(L, R, W):
         xr = R - a
@@ -216,14 +218,12 @@ def hebrew(a, b):
 
     def tsadi(L, R, W):
         xl, xr = L + a, R - a
-        d0, d1 = (xl, H - 0.2 * H), (xr - 30, 0)
-        d2 = (d1[0] + (d1[0] - d0[0]) * 0.3, d1[1] + (d1[1] - d0[1]) * 0.3)
-        main = Sk((xl, H)).R(d0, d1, 70).L(d2)
+        d0, d1 = (xl, H - 0.2 * H), (xr - 6, yb)
+        main = Sk((xl, H)).R(d0, d1, 80).R(d1, (L, yb), 70).L((L - 4, yb))
         yr = 0.40 * H
         arm = (Sk((xr, H)).L((xr, 0.68 * H))
                .H((at_y(d0, d1, yr), yr), (0, -1), _dir(d0, d1, True), 0.6, 0.3))
-        xb = at_y(d0, d1, 0) + ha * 1.05
-        return [P(main, clip=(L - 50, 0, R + 50, H + 5)), P(arm), Hb(yb, L - 4, xb)]
+        return [P(main), P(arm)]
     add("צ", "tsadi", 40, 446, 44, tsadi)
 
     def tsadi_f(L, R, W):
@@ -244,7 +244,7 @@ def hebrew(a, b):
         bot = yb - OS
         s = (Sk((xl, H)).L((xl, bot + r * 0.95)).H((cx, bot), (0, -1), (1, 0), KAPPA)
              .H((xr, bot + r * 0.95), (1, 0), (0, 1), KAPPA).L((xr, H)))
-        mid = D((cx - 46, H), (cx + 22, yb + 20), (L, yb, R, H), e0=30, e1=0)
+        mid = D((xl, 0.34 * H), (cx + 8, H), (xl, 0, R, H), e0=0, e1=60)
         return [P(s), mid]
     add("ש", "shin", 50, 540, 50, shin)
 
