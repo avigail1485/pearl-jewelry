@@ -61,12 +61,12 @@ def hebrew(a, b):
         xr, xl = R - a, L + a
         p0, p1 = (L + ha + 4, H), (R - ha - 2, 0)
         clip = (L - 10, 0, R + 10, H)
-        yr = 0.54 * H
-        xj = at_y(p0, p1, yr)
-        arm = Sk((xr, H)).L((xr, 0.80 * H)).H((xj, yr), (0, -1), (-1, 0), 0.6, 0.55)
-        yl = 0.50 * H
-        xk = at_y(p0, p1, yl)
-        leg = Sk((xk, yl)).H((xl, 0.24 * H), (-1, 0), (0, -1), 0.55, 0.6).L((xl, 0))
+        yr = 0.49 * H
+        xj = at_y(p0, p1, yr) + 6
+        arm = Sk((xr, H)).L((xr, 0.79 * H)).H((xj, yr), (0, -1), (-1, -0.08), 0.62, 0.58)
+        yl = 0.585 * H
+        xk = at_y(p0, p1, yl) - 6
+        leg = Sk((xk, yl)).H((xl, 0.27 * H), (-1, -0.06), (0, -1), 0.58, 0.62).L((xl, 0))
         return [D(p0, p1, clip), P(arm), P(leg)]
     add("א", "alef", 38, 0.86, 38, alef)
 
@@ -92,19 +92,17 @@ def hebrew(a, b):
 
     # ---------------------------------------------------------------- ה
     def he(L, R, W):
-        return [P(roof(L, R - a, 0, RR)), V(L + a + 4, 0, 0.60 * H)]
+        return [P(roof(L, R - a, 0, 0.36 * H)), V(L + a + 8, 0, 0.59 * H)]
     add("ה", "he", 46, 0.80, 46, he)
 
     # ---------------------------------------------------------------- ו י ן
     def vav(L, R, W):
-        xs = R - a
-        return [P(Sk((L, yt)).R((xs, yt), (xs, 0), RT).L((xs, 0)))]
-    add("ו", "vav", 40, 0, 44, vav, fixed=2 * a + 34)
+        return [V(L + a, 0, H)]
+    add("ו", "vav", 46, 0, 46, vav, fixed=2 * a)
 
     def yod(L, R, W):
-        xs = R - a
-        return [P(Sk((L, yt)).R((xs, yt), (xs, 0.44 * H), RT).L((xs, 0.44 * H)))]
-    add("י", "yod", 40, 0, 44, yod, fixed=2 * a + 40)
+        return [V(L + a, 0.42 * H, H)]
+    add("י", "yod", 46, 0, 46, yod, fixed=2 * a)
 
     def nun_f(L, R, W):
         xs = R - a
@@ -113,15 +111,16 @@ def hebrew(a, b):
 
     # ---------------------------------------------------------------- ז
     def zayin(L, R, W):
-        p0, p1 = (L + 0.66 * W, yt), (L + 0.44 * W, 0)
-        return [Hb(yt, L, R), D(p0, p1, (L - 20, 0, R + 20, H), e0=0, e1=40)]
-    add("ז", "zayin", 26, 0.48, 26, zayin)
+        xs = L + a + 0.10 * W
+        stem = Sk((xs + 0.24 * H, yt)).H((xs, yt - 0.36 * H), (-1, 0), (0, -1), 0.58, 0.62).L((xs, 0))
+        return [Hb(yt, L, R), P(stem)]
+    add("ז", "zayin", 26, 0.46, 26, zayin)
 
     # ---------------------------------------------------------------- ח
     def het(L, R, W):
         xl, xr = L + a, R - a
-        s = Sk((xl, 0)).R((xl, yt), (xr, yt), RT).R((xr, yt), (xr, 0), RR).L((xr, 0))
-        return [P(s)]
+        s = Sk((xl, 0)).L((xl, yt)).R((xr, yt), (xr, 0), 0.36 * H).L((xr, 0))
+        return [P(s, join="miter")]
     add("ח", "het", 46, 0.82, 46, het)
 
     # ---------------------------------------------------------------- ט
@@ -132,8 +131,8 @@ def hebrew(a, b):
         bot = yb - OS
         s = (Sk((xl, H)).L((xl, bot + r * 0.92)).H((cx, bot), (0, -1), (1, 0), KAPPA)
              .H((xr, bot + r * 0.92), (1, 0), (0, 1), KAPPA)
-             .L((xr, 0.52 * H)).H((xr - 0.30 * W, yt), (0, 1), (-1, 0), 0.6, 0.6)
-             .L((L + 0.46 * W, yt)))
+             .L((xr, 0.52 * H)).H((xr - 0.40 * W, yt + OS * 0.5), (0, 1), (-1, 0), 0.6, 0.62)
+             .L((L + 0.42 * W, yt)))
         return [P(s)]
     add("ט", "tet", 44, 0.98, 44, tet)
 
@@ -158,16 +157,19 @@ def hebrew(a, b):
     # ---------------------------------------------------------------- מ ם
     def mem(L, R, W):
         xr = R - a
-        kink = (L + 0.20 * W, 0.64 * H)
-        top_l = (L + ha, H)
-        bot_l = (L + ha + 6, 0)
-        leg = [D(top_l, kink, (L - 30, 0, R, H), e0=40, e1=0),
-               D(kink, bot_l, (L - 30, 0, R, H), e0=0, e1=40)]
-        x1 = L + 0.36 * W
-        dshape = (Sk(kink).L((x1 - 30, yt - 10)).H((x1 + 30, yt), (0.55, 0.83), (1, 0), 0.5, 0.5)
-                  .R((xr, yt), (xr, yb), HALF * 0.98).R((xr, yb), (x1 + 10, yb), HALF * 0.98).L((x1 + 10, yb)))
-        return leg + [P(dshape)]
-    add("מ", "mem", 30, 1.06, 44, mem)
+        kink = (L + 0.20 * W, 0.68 * H)
+        top_l = (L + ha + 2, H)
+        bot_l = (L + 0.05 * W + ha, 0)
+        clip = (L - 30, 0, R, H)
+        leg = [D(top_l, kink, clip, e0=40, e1=0), D(kink, bot_l, clip, e0=0, e1=40)]
+        cx = L + 0.60 * W
+        k = 0.56
+        bowl = (Sk(kink).H((cx, yt + OS), (0.42, 1), (1, 0), 0.62, k)
+                .H((xr, 0.47 * H), (1, 0), (0, -1), k)
+                .H((cx - 0.04 * W, yb), (0, -1), (-1, 0), 0.6)
+                .L((L + 0.36 * W, yb)))
+        return leg + [P(bowl)]
+    add("מ", "mem", 26, 1.06, 40, mem)
 
     def mem_f(L, R, W):
         xl, xr = L + a, R - a
@@ -208,16 +210,24 @@ def hebrew(a, b):
                 .H((xl + rt, yt), (0, 1), (1, 0), KAPPA, KAPPA))
 
     def pe(L, R, W):
-        xr = R - a
-        s = curl(L, W).R((xr, yt), (xr, yb), HALF * 0.98).R((xr, yb), (L, yb), HALF * 0.98).L((L, yb))
+        xl, xr = L + a, R - a
+        k = 0.56
+        s = (Sk((L, yb)).L((L + 0.44 * W, yb))
+             .H((xr, 0.50 * H), (1, 0), (0, 1), 0.6)
+             .H((L + 0.53 * W, yt + OS), (0, 1), (-1, 0), k)
+             .H((xl, 0.67 * H), (-1, 0), (0, -1), k)
+             .H((L + 0.34 * W, 0.40 * H), (0, -1), (1, 0), k))
         return [P(s)]
-    add("פ", "pe", 30, 0.98, 44, pe)
+    add("פ", "pe", 30, 0.88, 40, pe)
 
     def pe_f(L, R, W):
-        xr = R - a
-        s = curl(L, W).R((xr, yt), (xr, HDESC), RR * 1.1).L((xr, HDESC))
+        xl, xr = L + a, R - a
+        k = 0.56
+        s = (Sk((L + 0.36 * W, 0.40 * H)).H((xl, 0.67 * H), (-1, 0), (0, 1), k)
+             .H((L + 0.50 * W, yt + OS), (0, 1), (1, 0), k)
+             .H((xr, 0.40 * H), (1, 0), (0, -1), k).L((xr, HDESC)))
         return [P(s)]
-    add("ף", "finalpe", 30, 0.86, 44, pe_f)
+    add("ף", "finalpe", 30, 0.82, 40, pe_f)
 
     # ---------------------------------------------------------------- צ ץ
     def tsadi(L, R, W):
