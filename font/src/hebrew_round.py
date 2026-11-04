@@ -173,10 +173,10 @@ def hebrew(a, b):
 
     def mem_f(L, R, W):
         xl, xr = L + a, R - a
-        r = RM * 1.2
-        s = (Sk((xl, H / 2)).R((xl, yt), (xr, yt), r)
-             .R((xr, yt), (xr, yb), r).R((xr, yb), (xl, yb), r).R((xl, yb), (xl, H / 2), r).L((xl, H / 2)))
-        return [P(s.close())]
+        r = RM * 1.25
+        s = (Sk((xl, H / 2)).L((xl, yt)).R((xr, yt), (xr, yb), r)
+             .R((xr, yb), (xl, yb), r).L((xl, yb)).L((xl, H / 2)))
+        return [P(s.close(), join="miter")]
     add("ם", "finalmem", 46, 0.86, 46, mem_f)
 
     # ---------------------------------------------------------------- נ

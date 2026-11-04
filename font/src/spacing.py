@@ -64,12 +64,12 @@ def space_all(LG, HG, lpen, hpen):
     la = lpen[0]
     hb = hpen[1]
     for ch, g in HG.items():
-        c = 64 - 0.20 * (hb - 39)
-        space_glyph(g, hpen, (0, HEB), c, depth=0.15 * HEB, min_sb=14)
+        c = 84 - 0.15 * (hb - 39)
+        space_glyph(g, hpen, (0, HEB), c, depth=0.16 * HEB, min_sb=24)
     for ch, g in LG.items():
         if ch.isupper():
-            c = 74 - 0.20 * (la - 39)
-            space_glyph(g, lpen, (0, CAP), c, depth=0.15 * CAP, min_sb=12)
+            c = 92 - 0.15 * (la - 39)
+            space_glyph(g, lpen, (0, CAP), c, depth=0.15 * CAP, min_sb=20)
         else:
-            c = 64 - 0.20 * (la - 39)
-            space_glyph(g, lpen, (0, XH), c, depth=0.15 * XH, min_sb=10)
+            c = 80 - 0.15 * (la - 39)
+            space_glyph(g, lpen, (0, XH), c, depth=0.16 * XH, min_sb=18)

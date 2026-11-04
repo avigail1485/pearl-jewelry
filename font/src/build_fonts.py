@@ -49,7 +49,12 @@ def draw_glyph(path):
 
 def build(weight, out_dir):
     LG, HG, lp, hp = glyph_sets(weight)
-    PG = punctuation(*lp)
+    from extra import extras
+    from spacing import space_glyph
+    PG = extras(lp[0], lp[1], hp)
+    for ch, g in PG.items():
+        if getattr(g, 'optical', False):
+            space_glyph(g, lp, (0, CAP), 86 - 0.15 * (lp[0] - 39), depth=0.15 * CAP, min_sb=30)
     entries = []  # (glyph, pen)
     for G, pen in ((LG, lp), (HG, hp), (PG, lp)):
         for ch, g in G.items():
