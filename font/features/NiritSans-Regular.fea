@@ -47,7 +47,7 @@ feature mark {
     pos base kaf <anchor 392 0> mark @M_below;
     pos base kaf <anchor 302 264> mark @M_center;
     pos base kaf <anchor 44 600> mark @M_topleft;
-    pos base finalkaf <anchor 421 300> mark @M_below;
+    pos base finalkaf <anchor 218 384> mark @M_below;
     pos base finalkaf <anchor 308 264> mark @M_center;
     pos base finalkaf <anchor 44 600> mark @M_topleft;
     pos base lamed <anchor 292 0> mark @M_below;
@@ -135,7 +135,7 @@ feature kern {
     pos A quotedblright -80;
     pos A parenleft -35;
     pos A parenright -25;
-    pos A ampersand -30;
+    pos A ampersand -25;
     pos B A -30;
     pos B T -35;
     pos B V -40;
@@ -221,7 +221,6 @@ feature kern {
     pos E question -20;
     pos E hyphen -20;
     pos E parenleft -20;
-    pos E ampersand -20;
     pos F A -75;
     pos F C -20;
     pos F G -20;
@@ -257,7 +256,7 @@ feature kern {
     pos F question -20;
     pos F hyphen -20;
     pos F parenleft -20;
-    pos F ampersand -35;
+    pos F ampersand -55;
     pos G A -50;
     pos G J -25;
     pos G S -30;
@@ -355,7 +354,6 @@ feature kern {
     pos L quotedblright -80;
     pos L parenleft -25;
     pos L parenright -25;
-    pos L ampersand -20;
     pos M j -65;
     pos N j -65;
     pos O A -50;
@@ -392,7 +390,7 @@ feature kern {
     pos P comma -80;
     pos P hyphen -35;
     pos P parenright -40;
-    pos P ampersand -35;
+    pos P ampersand -45;
     pos Q A -30;
     pos Q B -20;
     pos Q C -20;
@@ -474,7 +472,7 @@ feature kern {
     pos R hyphen -50;
     pos R parenleft -20;
     pos R parenright -30;
-    pos R ampersand -35;
+    pos R ampersand -30;
     pos S A -30;
     pos S V -25;
     pos S W -20;
@@ -529,7 +527,7 @@ feature kern {
     pos T question -20;
     pos T hyphen -80;
     pos T parenleft -55;
-    pos T ampersand -35;
+    pos T ampersand -55;
     pos U A -40;
     pos U j -65;
     pos U period -35;
@@ -569,7 +567,7 @@ feature kern {
     pos V question -25;
     pos V hyphen -65;
     pos V parenleft -55;
-    pos V ampersand -45;
+    pos V ampersand -65;
     pos W A -85;
     pos W C -35;
     pos W G -35;
@@ -605,7 +603,7 @@ feature kern {
     pos W question -20;
     pos W hyphen -45;
     pos W parenleft -40;
-    pos W ampersand -40;
+    pos W ampersand -60;
     pos X C -70;
     pos X G -75;
     pos X J -40;
@@ -668,7 +666,7 @@ feature kern {
     pos Y question -40;
     pos Y hyphen -80;
     pos Y parenleft -70;
-    pos Y ampersand -55;
+    pos Y ampersand -75;
     pos Z C -50;
     pos Z G -55;
     pos Z J -20;
@@ -691,7 +689,6 @@ feature kern {
     pos Z question -25;
     pos Z hyphen -80;
     pos Z parenleft -25;
-    pos Z ampersand -20;
     pos a T -110;
     pos a V -30;
     pos a W -20;
@@ -802,7 +799,7 @@ feature kern {
     pos f question -40;
     pos f hyphen -75;
     pos f parenleft -25;
-    pos f ampersand -50;
+    pos f ampersand -60;
     pos g T -110;
     pos g V -30;
     pos g W -20;
@@ -854,7 +851,7 @@ feature kern {
     pos k hyphen -80;
     pos k parenleft -25;
     pos k parenright -40;
-    pos k ampersand -35;
+    pos k ampersand -45;
     pos l j -65;
     pos m T -110;
     pos m V -60;
@@ -971,7 +968,7 @@ feature kern {
     pos r comma -80;
     pos r hyphen -80;
     pos r parenright -45;
-    pos r ampersand -35;
+    pos r ampersand -45;
     pos s A -20;
     pos s T -110;
     pos s V -50;
@@ -1054,7 +1051,7 @@ feature kern {
     pos v hyphen -35;
     pos v parenleft -25;
     pos v parenright -50;
-    pos v ampersand -35;
+    pos v ampersand -45;
     pos w A -65;
     pos w J -50;
     pos w T -110;
@@ -1078,7 +1075,7 @@ feature kern {
     pos w hyphen -25;
     pos w parenleft -20;
     pos w parenright -50;
-    pos w ampersand -35;
+    pos w ampersand -45;
     pos x J -40;
     pos x O -20;
     pos x Q -20;
@@ -1101,7 +1098,7 @@ feature kern {
     pos x hyphen -70;
     pos x parenleft -25;
     pos x parenright -25;
-    pos x ampersand -35;
+    pos x ampersand -40;
     pos y A -95;
     pos y J -70;
     pos y T -110;
@@ -1125,7 +1122,7 @@ feature kern {
     pos y hyphen -35;
     pos y parenleft -25;
     pos y parenright -50;
-    pos y ampersand -35;
+    pos y ampersand -45;
     pos z J -20;
     pos z T -110;
     pos z V -35;
@@ -1142,7 +1139,6 @@ feature kern {
     pos z question -35;
     pos z hyphen -60;
     pos z parenright -25;
-    pos z ampersand -20;
     pos period C -45;
     pos period G -50;
     pos period O -50;
@@ -1169,7 +1165,6 @@ feature kern {
     pos period question -70;
     pos period parenleft -25;
     pos period parenright -35;
-    pos period ampersand -20;
     pos comma C -50;
     pos comma G -50;
     pos comma J -20;
@@ -1197,7 +1192,6 @@ feature kern {
     pos comma question -70;
     pos comma parenleft -25;
     pos comma parenright -25;
-    pos comma ampersand -20;
     pos colon T -80;
     pos colon V -40;
     pos colon W -30;
@@ -1212,7 +1206,6 @@ feature kern {
     pos colon q -30;
     pos colon question -45;
     pos colon parenright -35;
-    pos colon ampersand -20;
     pos semicolon J -20;
     pos semicolon T -80;
     pos semicolon V -40;
@@ -1228,7 +1221,6 @@ feature kern {
     pos semicolon q -30;
     pos semicolon question -50;
     pos semicolon parenright -25;
-    pos semicolon ampersand -20;
     pos exclam j -70;
     pos question A -80;
     pos question J -80;
@@ -1250,7 +1242,7 @@ feature kern {
     pos question comma -75;
     pos question hyphen -65;
     pos question parenright -35;
-    pos question ampersand -35;
+    pos question ampersand -45;
     pos hyphen A -45;
     pos hyphen J -80;
     pos hyphen S -80;
@@ -1270,7 +1262,6 @@ feature kern {
     pos hyphen z -75;
     pos hyphen question -80;
     pos hyphen parenright -75;
-    pos hyphen ampersand -20;
     pos quotesingle A -80;
     pos quotesingle J -80;
     pos quotesingle a -55;
@@ -1283,7 +1274,7 @@ feature kern {
     pos quotesingle q -55;
     pos quotesingle s -30;
     pos quotesingle parenleft -20;
-    pos quotesingle ampersand -30;
+    pos quotesingle ampersand -45;
     pos quotedbl A -80;
     pos quotedbl J -80;
     pos quotedbl a -55;
@@ -1296,7 +1287,7 @@ feature kern {
     pos quotedbl q -55;
     pos quotedbl s -30;
     pos quotedbl parenleft -20;
-    pos quotedbl ampersand -30;
+    pos quotedbl ampersand -45;
     pos quoteleft A -80;
     pos quoteleft C -25;
     pos quoteleft G -30;
@@ -1317,7 +1308,7 @@ feature kern {
     pos quoteleft colon -20;
     pos quoteleft semicolon -25;
     pos quoteleft parenleft -35;
-    pos quoteleft ampersand -40;
+    pos quoteleft ampersand -55;
     pos quoteright A -80;
     pos quoteright C -25;
     pos quoteright G -30;
@@ -1338,7 +1329,7 @@ feature kern {
     pos quoteright colon -20;
     pos quoteright semicolon -25;
     pos quoteright parenleft -35;
-    pos quoteright ampersand -40;
+    pos quoteright ampersand -55;
     pos quotedblleft A -80;
     pos quotedblleft C -25;
     pos quotedblleft G -30;
@@ -1359,7 +1350,7 @@ feature kern {
     pos quotedblleft colon -20;
     pos quotedblleft semicolon -25;
     pos quotedblleft parenleft -35;
-    pos quotedblleft ampersand -40;
+    pos quotedblleft ampersand -55;
     pos quotedblright A -80;
     pos quotedblright C -25;
     pos quotedblright G -30;
@@ -1380,7 +1371,7 @@ feature kern {
     pos quotedblright colon -20;
     pos quotedblright semicolon -25;
     pos quotedblright parenleft -35;
-    pos quotedblright ampersand -40;
+    pos quotedblright ampersand -55;
     pos parenleft A -25;
     pos parenleft C -60;
     pos parenleft G -60;
@@ -1417,7 +1408,7 @@ feature kern {
     pos parenleft quotedblleft -25;
     pos parenleft quotedblright -25;
     pos parenleft parenleft -70;
-    pos parenleft ampersand -55;
+    pos parenleft ampersand -60;
     pos parenright A -35;
     pos parenright T -55;
     pos parenright V -55;
@@ -1441,43 +1432,29 @@ feature kern {
     pos parenright quotedblleft -20;
     pos parenright quotedblright -20;
     pos parenright parenright -70;
-    pos ampersand C -20;
-    pos ampersand G -20;
-    pos ampersand J -35;
-    pos ampersand O -20;
-    pos ampersand Q -20;
-    pos ampersand S -35;
+    pos ampersand J -45;
+    pos ampersand S -45;
     pos ampersand T -80;
-    pos ampersand U -20;
-    pos ampersand V -80;
-    pos ampersand W -70;
+    pos ampersand V -70;
+    pos ampersand W -50;
     pos ampersand Y -80;
-    pos ampersand a -20;
-    pos ampersand c -20;
-    pos ampersand d -20;
-    pos ampersand e -20;
     pos ampersand f -30;
-    pos ampersand g -20;
     pos ampersand j -75;
-    pos ampersand o -20;
-    pos ampersand q -20;
-    pos ampersand s -20;
-    pos ampersand t -45;
-    pos ampersand u -20;
-    pos ampersand v -60;
-    pos ampersand w -50;
-    pos ampersand y -60;
-    pos ampersand question -75;
-    pos ampersand hyphen -20;
+    pos ampersand t -35;
+    pos ampersand v -40;
+    pos ampersand w -30;
+    pos ampersand y -40;
+    pos ampersand comma -20;
+    pos ampersand semicolon -20;
+    pos ampersand question -80;
     pos ampersand quotesingle -80;
     pos ampersand quotedbl -80;
     pos ampersand quoteleft -80;
     pos ampersand quoteright -80;
     pos ampersand quotedblleft -80;
     pos ampersand quotedblright -80;
-    pos ampersand parenleft -20;
-    pos ampersand parenright -30;
-    pos ampersand ampersand -35;
+    pos ampersand parenright -25;
+    pos ampersand ampersand -30;
   } kern_latin;
   lookup kern_hebrew {
     lookupflag IgnoreMarks;

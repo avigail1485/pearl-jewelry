@@ -35,7 +35,8 @@ def hebrew_anchors(HG, hpen, dot_r):
         an = {}
         # below
         if ch == "ך":
-            an[BELOW] = (cx - 0.08 * (bx1 - bx0), 0.50 * H)
+            stem_l = x1 - 2 * hpen[0]
+            an[BELOW] = ((x0 + stem_l) / 2 + 10, 0.64 * H)
         elif ch in "ןףץ":
             an[BELOW] = (cx, HDESC - 20)
         elif ch == "ק":

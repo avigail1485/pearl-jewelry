@@ -9,7 +9,7 @@ from engine2 import *
 from render2 import glyph_sets, ORDER_W, WEIGHTS
 
 FAMILY = FAMILY_NAME
-VERSION = "0.6"
+VERSION = "0.7"
 WEIGHT_CLASS = {"ExtraLight": 200, "Light": 300, "Regular": 400, "Medium": 500, "SemiBold": 600, "Bold": 700}
 
 

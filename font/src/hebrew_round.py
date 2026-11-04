@@ -284,9 +284,9 @@ def hebrew(a, b):
         xr = R - a
         xg = L + 0.20 * W + a
         r = 0.10 * H
-        leg = (Sk((xg, yt)).L((xg, yb + r)).H((xg - r, yb), (0, -1), (-1, 0), KAPPA, KAPPA)
-               .L((L, yb)))
-        return [P(roof(L + 0.20 * W - 10, xr, 0, RR)), P(leg)]
+        s = (Sk((L, yb)).L((xg - r, yb)).H((xg, yb + r), (1, 0), (0, 1), KAPPA, KAPPA)
+             .L((xg, yt)).R((xr, yt), (xr, 0), RR).L((xr, 0)))
+        return [P(s, join="miter")]
     add("ת", "tav", 22, 1.02, 44, tav)
 
     return G
