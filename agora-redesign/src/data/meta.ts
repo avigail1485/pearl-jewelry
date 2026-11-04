@@ -1,4 +1,4 @@
-import type { Condition, WantedRequest } from "./types"
+import type { Condition } from "./types"
 
 // Category tree and popular searches as they appear on agora.co.il
 export const categories: { label: string; subs: string[] }[] = [
@@ -16,20 +16,6 @@ export const popularSearches = ["ספות", "פינת אוכל", "כורסא", "
 
 export const conditions: Condition[] = ["כמו חדש", "מצב טוב", "מעט פגום", "לחומר גלם"]
 
-export const cities = [
-  "כל הארץ", "ירושלים", "בני ברק", "תל אביב-יפו", "פתח תקווה", "בית שמש", "אלעד", "חיפה", "רמת גן", "אשדוד",
-  "ראשון לציון", "רעננה", "כפר סבא", "הרצליה", "רחובות", "חולון", "נתניה",
-]
-
-// Real open requests from the "בקשו חפץ" board
-export const wantedRequests: WantedRequest[] = [
-  { id: "w1", title: "שולחן סת\"ם", city: "ירושלים", posted: "לפני 84 ימים" },
-  { id: "w2", title: "תנור אפיה", city: "אלעד", posted: "לפני 47 ימים" },
-  { id: "w3", title: "מקרר", city: "ירושלים", posted: "לפני 41 ימים" },
-  { id: "w4", title: "שולחן כתיבה עם מגירות", city: "תל אביב-יפו", posted: "לפני 37 ימים" },
-  { id: "w5", title: "כיריים חשמליים", city: "כפר סבא", posted: "לפני 36 ימים" },
-  { id: "w6", title: "בוסטר הגבהה", city: "הוד השרון", posted: "לפני 27 ימים" },
-]
 
 // Real figures from agora.co.il
 export const stats = { members: "1,170,087", given: "1,162,919" }

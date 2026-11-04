@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react"
-import { Bell, Camera, ChevronLeft, Search, ArrowUpLeft } from "lucide-react"
+import { Bell, Camera, ChevronDown, ChevronLeft, Loader2, LocateFixed, MapPin, Search } from "lucide-react"
+import { nearby } from "../../data/filter"
+import { locateErrorCopy, type LocateError } from "../../data/location"
+import TownSheet from "../location/TownSheet"
 import { usePhotoSearch } from "../search/PhotoSearch"
 import { items } from "../../data/items"
-import { categories, wantedRequests } from "../../data/meta"
+import { categories } from "../../data/meta"
 import type { Item } from "../../data/types"
 import { emptyFilters, useNav } from "../../nav"
 import { ItemCard } from "../item/ItemCard"
@@ -59,9 +62,20 @@ export default function Home() {
     return () => io.disconnect()
   }, [])
   // Each item appears on the home screen once: the category rows skip what "just posted" already shows
-  const fresh = mixed(items, 10)
-  const shown = new Set(fresh.map((i) => i.id))
-  const byCat = (c: string) => items.filter((i) => i.category === c && !shown.has(i.id))
+  const [townSheet, setTownSheet] = useState(false)
+  const [locError, setLocError] = useState<LocateError | null>(null)
+  // The board = what the signed-in user published here (still available) + everything else
+  const board = [...nav.myItems.filter((i) => !i.given), ...items]
+  const near = nav.location ? nearby(nav.location, 30, board).slice(0, 10) : []
+  const nearIds = new Set(near.map((i) => i.id))
+  const fresh = mixed(board.filter((i) => !nearIds.has(i.id)), 10)
+  const shown = new Set([...nearIds, ...fresh.map((i) => i.id)])
+  const byCat = (c: string) => board.filter((i) => i.category === c && !shown.has(i.id))
+  const useMyLocation = async () => {
+    setLocError(null)
+    const res = await nav.locate()
+    if (!res.ok) setLocError(res.error)
+  }
   const openCat = (category: string) => nav.push({ name: "results", filters: { ...emptyFilters, category } })
 
   return (
@@ -71,15 +85,27 @@ export default function Home() {
             <Logo />
             <span className="text-[20px] font-bold tracking-tight">אגורה</span>
           </button>
-          <button
-            type="button"
-            onClick={() => nav.push({ name: "alerts" })}
-            aria-label="התראות חכמות"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-inset ring-line hover:bg-lavender"
-          >
-            <Bell size={19} />
-            {nav.alerts.length > 0 && <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-blue" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setTownSheet(true)}
+              aria-label={nav.location ? `אזור: ${nav.location.town}. שינוי` : "בחירת אזור"}
+              className="flex h-10 max-w-[160px] items-center gap-1 rounded-full px-3 text-[14px] font-medium ring-1 ring-inset ring-line hover:bg-lavender"
+            >
+              <MapPin size={15} className="shrink-0 text-blue" aria-hidden="true" />
+              <span className="truncate">{nav.location?.town ?? "בחירת אזור"}</span>
+              <ChevronDown size={14} className="shrink-0 text-ink-2" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={() => nav.push({ name: "alerts" })}
+              aria-label="התראות חכמות"
+              className="relative flex h-10 w-10 items-center justify-center rounded-full ring-1 ring-inset ring-line hover:bg-lavender"
+            >
+              <Bell size={19} />
+              {nav.alerts.length > 0 && <span className="absolute left-2 top-2 h-2 w-2 rounded-full bg-blue" />}
+            </button>
+          </div>
       </div>
       <div ref={sentinel} aria-hidden="true" className="h-px" />
 
@@ -129,6 +155,46 @@ export default function Home() {
       </header>
 
       <div className="flex flex-col gap-8 pt-4">
+      {nav.location ? (
+        <Section
+          title={`קרוב אליך, ב${nav.location.town}`}
+          onAll={() => nav.push({ name: "results", filters: { ...emptyFilters, place: { kind: "near", km: 10 }, sort: "near" } })}
+        >
+          {near.length ? (
+            <Carousel list={near} />
+          ) : (
+            <p className="mx-5 rounded-2xl bg-lavender px-4 py-3 text-[14px] text-ink-2">אין כרגע חפצים עד 30 ק"מ ממך. בינתיים, הנה מה שעלה בכל הארץ.</p>
+          )}
+        </Section>
+      ) : (
+        <section className="mx-5 flex flex-col gap-3 rounded-3xl bg-lavender p-5" aria-label="חפצים קרובים אליך">
+          <div className="flex items-start gap-3">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white text-blue">
+              <MapPin size={20} aria-hidden="true" />
+            </span>
+            <div>
+              <h2 className="text-[17px] font-bold">מה יש קרוב אליך?</h2>
+              <p className="text-[14px] text-ink-2">נציג קודם חפצים שאפשר לאסוף בלי לנסוע רחוק. המיקום נשאר במכשיר.</p>
+            </div>
+          </div>
+          {locError && <p role="alert" className="text-[14px] text-ink-2">{locateErrorCopy[locError]}</p>}
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={useMyLocation}
+              disabled={nav.locating}
+              className="flex h-11 items-center justify-center gap-2 rounded-2xl bg-blue px-3 text-[14px] font-semibold text-white transition-transform active:scale-[0.98] disabled:opacity-70"
+            >
+              {nav.locating ? <Loader2 size={17} className="animate-spin" aria-hidden="true" /> : <LocateFixed size={17} aria-hidden="true" />}
+              {nav.locating ? "מזהים…" : "המיקום שלי"}
+            </button>
+            <button type="button" onClick={() => setTownSheet(true)} className="h-11 rounded-2xl bg-white px-3 text-[14px] font-semibold ring-1 ring-inset ring-lavender-2 transition-transform active:scale-[0.98]">
+              בחירת עיר
+            </button>
+          </div>
+        </section>
+      )}
+
       <Section title="עלו עכשיו" onAll={() => nav.push({ name: "results", filters: emptyFilters })}>
         <Carousel list={fresh} />
       </Section>
@@ -137,46 +203,8 @@ export default function Home() {
         <Carousel list={byCat("ריהוט וכלי בית")} />
       </Section>
 
-      <div className="px-5">
-        <button
-          type="button"
-          onClick={() => nav.push({ name: "request" })}
-          className="flex w-full items-center gap-4 rounded-3xl bg-blue p-5 text-right text-white shadow-blue transition-transform active:scale-[0.99]"
-        >
-          <span className="flex flex-1 flex-col gap-1">
-            <span className="text-[18px] font-bold leading-tight">לא מצאתם? בקשו חפץ</span>
-            <span className="text-[14px] text-white/80">נפרסם את הבקשה ונודיע לכם כשמישהו באזור מוסר משהו מתאים</span>
-          </span>
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-lime text-ink">
-            <ArrowUpLeft size={22} strokeWidth={2.25} />
-          </span>
-        </button>
-      </div>
-
       <Section title="לתינוק ולילד" onAll={() => openCat("לתינוק ולילד")}>
         <Carousel list={byCat("לתינוק ולילד")} />
-      </Section>
-
-      <Section title="מחפשים עכשיו">
-        <ul className="mx-5 flex flex-col rounded-3xl bg-lavender px-4">
-          {wantedRequests.slice(0, 4).map((r) => (
-            <li key={r.id} className="flex items-center gap-3 border-b border-lavender-2 py-3.5 last:border-b-0">
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-[15px] font-semibold">{r.title}</p>
-                <p className="text-[13px] text-mute">
-                  {r.city} · {r.posted}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => nav.push({ name: "give", forRequest: r })}
-                className="h-9 shrink-0 rounded-full bg-white px-4 text-[14px] font-semibold text-blue-ink ring-1 ring-inset ring-lavender-2 hover:ring-blue"
-              >
-                יש לי
-              </button>
-            </li>
-          ))}
-        </ul>
       </Section>
 
       <Section title="מוצרי חשמל" onAll={() => openCat("מוצרי חשמל")}>
@@ -196,6 +224,18 @@ export default function Home() {
       </div>
 
       {photo.element}
+      {townSheet && (
+        <TownSheet
+          current={nav.location?.town}
+          onClose={() => setTownSheet(false)}
+          onPick={(town, source) => {
+            if (source === "manual") nav.setTown(town)
+            setLocError(null)
+            setTownSheet(false)
+            nav.toast(`מציגים חפצים קרובים ל${town}`)
+          }}
+        />
+      )}
 
     </div>
   )

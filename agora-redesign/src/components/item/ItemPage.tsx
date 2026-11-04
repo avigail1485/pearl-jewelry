@@ -1,5 +1,6 @@
 import { useState } from "react"
-import { ArrowRight, Flag, Heart, MapPin, MessageCircle, Share2, ShieldCheck } from "lucide-react"
+import { ArrowRight, Camera, CheckCircle2, Flag, Heart, MapPin, MessageCircle, Share2, ShieldCheck } from "lucide-react"
+import { kmTo } from "../../data/location"
 import type { Item } from "../../data/types"
 import { items } from "../../data/items"
 import { emptyFilters, useNav } from "../../nav"
@@ -23,6 +24,11 @@ export default function ItemPage({ item }: { item: Item }) {
   const [report, setReport] = useState(false)
   const [reason, setReason] = useState("")
   const saved = nav.saved.includes(item.id)
+  // Mine: published by the signed-in user. Read the live copy so "given" updates here too.
+  const live = nav.myItems.find((i) => i.id === item.id) ?? item
+  const mine = !!nav.user && live.ownerId === nav.user.id
+  const km = kmTo(nav.location?.point ?? null, item.city)
+  const want = () => nav.requireAuth("התחברו כדי לפנות למוסר", () => setContact(true))
   const similar = items.filter((i) => i.category === item.category && i.id !== item.id).slice(0, 8)
   const round = "flex h-10 w-10 items-center justify-center rounded-full bg-white/95 shadow-[0_2px_8px_rgba(0,0,0,.15)] hover:bg-white"
 
@@ -30,7 +36,14 @@ export default function ItemPage({ item }: { item: Item }) {
     <div className="relative flex h-full flex-col bg-white">
       <div className="no-scrollbar flex-1 overflow-y-auto pb-28">
         <div className="relative bg-photo">
-          <img src={item.photo} alt={item.title} className="aspect-[4/3.4] w-full object-cover" />
+          {item.photo ? (
+            <img src={item.photo} alt={item.title} className="aspect-[4/3.4] w-full object-cover" />
+          ) : (
+            <div className="flex aspect-[4/3.4] w-full flex-col items-center justify-center gap-2 text-[14px] text-ink-2">
+              <Camera size={28} aria-hidden="true" />
+              בלי תמונה
+            </div>
+          )}
           <div className="pt-safe absolute inset-x-0 top-0 flex items-center justify-between px-4">
             <button type="button" onClick={nav.back} aria-label="חזרה" className={round}>
               <ArrowRight size={20} />
@@ -66,9 +79,11 @@ export default function ItemPage({ item }: { item: Item }) {
             </button>
             <h1 className="text-[24px] font-bold leading-tight">{item.title}</h1>
             <p className="flex flex-wrap items-center gap-x-1.5 text-[14px] text-ink-2">
-              <MapPin size={15} />
+              <MapPin size={15} aria-hidden="true" />
               {item.city}
-              <span className="text-mute">·</span>
+              {km !== null && <span className="font-medium text-blue-ink">({km} ק"מ ממך)</span>}
+            </p>
+            <p className="flex items-center gap-1.5 text-[13px] text-mute">
               פורסם {item.posted}
               {isFresh(item) && <span className="rounded-full bg-lime px-2 text-[12px] font-bold text-ink">חדש</span>}
             </p>
@@ -83,9 +98,20 @@ export default function ItemPage({ item }: { item: Item }) {
             <div className="rounded-2xl bg-lavender p-4">
               <p className="text-[12px] text-mute">איסוף</p>
               <p className="text-[16px] font-bold">{item.city}</p>
-              <p className="truncate text-[12px] text-ink-2">{item.region || "הכתובת נמסרת בשיחה"}</p>
+              <p className="truncate text-[12px] text-ink-2">{item.size ? `גודל ${item.size}` : item.region || "הכתובת נמסרת בשיחה"}</p>
             </div>
           </div>
+
+          {(item.times?.length || item.stairs) && (
+            <section className="flex flex-wrap gap-2">
+              {item.times?.map((t) => (
+                <span key={t} className="rounded-full bg-lavender px-3 py-1 text-[13px] font-medium text-ink-2">
+                  איסוף: {t}
+                </span>
+              ))}
+              {item.stairs && <span className="rounded-full bg-lavender px-3 py-1 text-[13px] font-medium text-ink-2">מדרגות בלי מעלית</span>}
+            </section>
+          )}
 
           {item.description && (
             <section>
@@ -96,14 +122,14 @@ export default function ItemPage({ item }: { item: Item }) {
 
           <section className="flex items-center gap-3 border-y border-line py-4">
             <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-lavender text-[18px] font-bold text-blue-ink">
-              {item.giver.charAt(0)}
+              {(item.giver || "?").charAt(0)}
               <span className="absolute -bottom-0.5 -left-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-blue text-white ring-2 ring-white">
                 <ShieldCheck size={11} />
               </span>
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[15px] font-semibold">מוסר: {item.giver}</p>
-              <p className="text-[13px] text-mute">טלפון מאומת · מוסר/ת באגורה</p>
+              <p className="text-[15px] font-semibold">{mine ? "החפץ שלכם" : `מוסר: ${item.giver}`}</p>
+              <p className="text-[13px] text-mute">{mine ? "רק אתם רואים את כפתורי הניהול" : "טלפון מאומת"}</p>
             </div>
           </section>
 
@@ -140,12 +166,26 @@ export default function ItemPage({ item }: { item: Item }) {
       {/* Sticky action bar (Airbnb pattern) */}
       <div className="absolute inset-x-0 bottom-0 z-20 flex items-center gap-3 bg-white px-5 shadow-bar pb-[max(env(safe-area-inset-bottom),14px)] pt-3">
         <div className="min-w-0 flex-1 leading-tight">
-          <p className="text-[16px] font-bold">בחינם</p>
+          <p className="text-[16px] font-bold">{live.given ? "נמסר" : "בחינם"}</p>
           <p className="truncate text-[13px] text-mute">איסוף מ{item.city}</p>
         </div>
-        <Button icon={<MessageCircle size={19} />} onClick={() => setContact(true)} className="px-6 shadow-blue">
-          אני רוצה את זה
-        </Button>
+        {mine ? (
+          <Button
+            variant={live.given ? "outline" : "primary"}
+            icon={<CheckCircle2 size={19} />}
+            onClick={() => {
+              nav.setGiven(live.id, !live.given)
+              nav.toast(live.given ? "המודעה חזרה ללוח" : "סומן כנמסר. המודעה ירדה מהלוח")
+            }}
+            className="px-6"
+          >
+            {live.given ? "להחזיר ללוח" : "סימון כנמסר"}
+          </Button>
+        ) : (
+          <Button icon={<MessageCircle size={19} />} onClick={want} disabled={live.given} className="px-6 shadow-blue">
+            {live.given ? "החפץ כבר נמסר" : "אני רוצה את זה"}
+          </Button>
+        )}
       </div>
 
       {contact && <ContactSheet item={item} onClose={() => setContact(false)} />}

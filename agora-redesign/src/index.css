@@ -66,7 +66,7 @@ h1, h2 { font-family: var(--font-display); text-wrap: balance; }
 .screen-in { animation: screen-in 200ms ease-out; }
 @keyframes sheet-in { from { transform: translateY(24px); opacity: .6; } to { transform: none; opacity: 1; } }
 .sheet-in { animation: sheet-in 220ms cubic-bezier(.2,.8,.2,1); }
-@keyframes toast-in { from { opacity: 0; transform: translate(-50%, 10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes toast-in { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
 .toast-in { animation: toast-in 180ms ease-out; }
 @media (prefers-reduced-motion: reduce) { .screen-in, .sheet-in, .toast-in { animation: none; } }
 

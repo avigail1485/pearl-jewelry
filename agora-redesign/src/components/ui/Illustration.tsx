@@ -1,4 +1,4 @@
-export type IllustrationName = "alerts" | "community" | "message-sent" | "no-results" | "photo" | "published" | "request" | "saved" | "verified"
+export type IllustrationName = "alerts" | "community" | "message-sent" | "no-results" | "photo" | "published" | "saved" | "verified"
 
 /**
  * Spot illustrations (Magnific, Agora palette). Used only on empty, confirmation and success

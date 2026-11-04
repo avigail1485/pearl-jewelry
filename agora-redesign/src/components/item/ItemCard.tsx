@@ -1,8 +1,21 @@
-import { Heart } from "lucide-react"
+import { Camera, Heart } from "lucide-react"
+import { kmTo } from "../../data/location"
 import type { Item } from "../../data/types"
 import { useNav } from "../../nav"
 
-export const isFresh = (i: Item) => i.posted === "פחות משעה"
+export const isFresh = (i: Item) => i.posted === "פחות משעה" || i.posted === "עכשיו"
+
+/** Town, plus distance from the viewer when their area is known. */
+function Place({ item }: { item: Item }) {
+  const nav = useNav()
+  const km = kmTo(nav.location?.point ?? null, item.city)
+  return (
+    <p className="truncate text-[13px] text-ink-2">
+      {item.city}
+      {km !== null && <span className="text-blue-ink">{`, ${km} ק"מ`}</span>}
+    </p>
+  )
+}
 
 function SaveButton({ item, className = "" }: { item: Item; className?: string }) {
   const nav = useNav()
@@ -37,16 +50,20 @@ export function ItemCard({ item, width }: { item: Item; width?: number }) {
       style={width ? { width } : undefined}
     >
       <div className="relative aspect-square overflow-hidden rounded-2xl bg-photo">
-        <img src={item.photo} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+        {item.photo ? (
+          <img src={item.photo} alt="" loading="lazy" className="h-full w-full object-cover" />
+        ) : (
+          <div className="flex h-full items-center justify-center text-ink-2">
+            <Camera size={24} aria-hidden="true" />
+          </div>
+        )}
         {isFresh(item) && <span className="absolute right-2.5 top-2.5 rounded-full bg-lime px-2.5 py-0.5 text-[12px] font-bold text-ink">חדש</span>}
         <SaveButton item={item} className="absolute left-1 top-1" />
       </div>
       <div className="min-w-0 px-0.5">
         <h3 className="truncate text-[15px] font-semibold leading-snug">{item.title}</h3>
-        <p className="truncate text-[13px] text-mute">
-          {item.city} · {item.posted}
-        </p>
-        <p className="truncate text-[13px] text-ink-2">{item.condition}</p>
+        <Place item={item} />
+        <p className="truncate text-[13px] text-mute">{item.condition}</p>
       </div>
     </article>
   )
@@ -65,7 +82,7 @@ export function ItemRow({ item }: { item: Item }) {
       className="flex cursor-pointer gap-3 border-b border-line py-3 last:border-b-0"
     >
       <div className="relative h-[96px] w-[96px] shrink-0 overflow-hidden rounded-xl bg-photo">
-        <img src={item.photo} alt="" loading="lazy" className="h-full w-full object-cover" />
+        {item.photo ? <img src={item.photo} alt="" loading="lazy" className="h-full w-full object-cover" /> : <div className="flex h-full items-center justify-center text-ink-2"><Camera size={20} aria-hidden="true" /></div>}
         {isFresh(item) && <span className="absolute right-1.5 top-1.5 rounded-full bg-lime px-2 text-[11px] font-bold text-ink">חדש</span>}
       </div>
       <div className="flex min-w-0 flex-1 flex-col">

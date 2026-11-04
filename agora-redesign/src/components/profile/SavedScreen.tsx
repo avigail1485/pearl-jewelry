@@ -6,7 +6,7 @@ import Button from "../ui/Button"
 
 export default function SavedScreen() {
   const nav = useNav()
-  const list = nav.saved.map((id) => items.find((i) => i.id === id)!).filter(Boolean)
+  const list = nav.saved.map((id) => [...nav.myItems, ...items].find((i) => i.id === id)).filter((i): i is NonNullable<typeof i> => !!i)
   return (
     <div className="bg-white">
       <header className="pt-safe px-5 pb-2">

@@ -13,6 +13,11 @@ export type Item = {
   photo: string
   giver: string
   url: string
+  /** Set on items the signed-in user published in this browser */
+  ownerId?: string
+  given?: boolean
+  size?: string
+  times?: string[]
+  stairs?: boolean
 }
 
-export type WantedRequest = { id: string; title: string; city: string; posted: string }

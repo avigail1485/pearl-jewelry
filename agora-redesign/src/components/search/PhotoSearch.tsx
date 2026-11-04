@@ -8,8 +8,10 @@ import Button from "../ui/Button"
 type State = { status: "idle" } | { status: "scanning" } | { status: "error"; message: string }
 
 const messages = {
-  not_granted: "חיפוש לפי תמונה לא אושר בתצוגה הזו. אפשר לחפש במילים.",
+  unavailable: "חיפוש לפי תמונה לא זמין בגרסה הזו. אפשר לחפש במילים.",
+  not_granted: "לא ניתן אישור לחיפוש לפי תמונה. אפשר לחפש במילים.",
   rate_limited: "יותר מדי ניסיונות ברגע זה. נסו שוב בעוד דקה.",
+  bad_image: "לא הצלחנו לקרוא את התמונה. נסו תמונה בפורמט JPG או PNG.",
   failed: "לא הצלחנו למצוא חפצים לפי התמונה. נסו תמונה אחרת, כשהחפץ במרכז.",
   notItem: "לא מצאנו חפץ בתמונה. צלמו את החפץ עצמו, במרכז הפריים.",
 }
@@ -33,15 +35,16 @@ export function usePhotoSearch() {
     setState({ status: "scanning" })
     photoQuery(file, c.signal).then(
       (r) => {
-        if (c.signal.aborted) return
+        if (ctl.current !== c) return
         if (!r.isItem || (!r.category && !r.keywords.length)) return setState({ status: "error", message: messages.notItem })
         setState({ status: "idle" })
         nav.push({
           name: "results",
-          filters: { ...emptyFilters, category: r.category || undefined, sub: r.sub || undefined, keywords: r.keywords, photo: { label: r.label || r.keywords[0] || "החפץ", demo: r.demo } },
+          filters: { ...emptyFilters, category: r.category || undefined, sub: r.sub || undefined, keywords: r.keywords, photo: { label: r.label || r.keywords[0] || "החפץ" } },
         })
       },
       (e) => {
+        if (ctl.current !== c) return
         const code = errorCode(e)
         if (code === "cancelled") return
         setState({ status: "error", message: messages[code] })
@@ -51,6 +54,7 @@ export function usePhotoSearch() {
 
   const close = () => {
     ctl.current?.abort()
+    ctl.current = null
     setState({ status: "idle" })
   }
 
