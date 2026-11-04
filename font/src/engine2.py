@@ -8,6 +8,7 @@ result is a clean outline made of curves - the same data that goes
 into the final font file.
 """
 import math
+import os
 import pathops
 from pathops import Path, LineCap, LineJoin, PathOp
 
@@ -21,6 +22,10 @@ HEB = 600
 HEB_ASC = 720
 HDESC = -200
 OS = 12            # overshoot of round forms
+VARIANT = os.environ.get("NIRIT_VARIANT", "sans")   # "sans" or "round"
+ROUND = VARIANT == "round"
+FAMILY_NAME = "Nirit Round" if ROUND else "Nirit Sans"
+ROUND_CAPS = False   # the Round family keeps straight cut terminals, like the reference
 KAPPA = 0.585      # handle length of the "squircle" quadrant (circle 0.552)
 
 
@@ -194,10 +199,57 @@ def P(sk, **kw):
     return Part(sk, **kw)
 
 
+def _trim(sk, a, b, w):
+    """shorten both open ends by the pen's reach so a round cap ends
+    exactly where a butt cap would."""
+    import copy
+    t = copy.deepcopy(sk)
+    segs = t.segs
+    if not segs or t.closed:
+        return t
+
+    def reach(v):
+        v = _norm(v)
+        return math.hypot(a * v[0], b * v[1]) * w
+
+    # start
+    s0 = segs[0]
+    nxt = s0[1] if s0[0] == "L" else s0[1]
+    v = (nxt[0] - t.start[0], nxt[1] - t.start[1])
+    if math.hypot(*v) > 1e-6:
+        d = reach(v)
+        u = _norm(v)
+        if s0[0] == "L" and math.hypot(*v) < d * 1.3:
+            pass
+        else:
+            t.start = _add(t.start, u, d)
+            if s0[0] == "C":
+                segs[0] = ("C", _add(s0[1], u, d), s0[2], s0[3])
+    # end
+    s1 = segs[-1]
+    prev_pt = (t.start if len(segs) == 1 else segs[-2][-1]) if s1[0] == "L" else s1[2]
+    end = s1[-1]
+    v = (end[0] - prev_pt[0], end[1] - prev_pt[1])
+    if math.hypot(*v) > 1e-6:
+        d = reach(v)
+        u = _norm(v)
+        if not (s1[0] == "L" and math.hypot(*v) < d * 1.3):
+            if s1[0] == "L":
+                segs[-1] = ("L", _add(end, u, -d))
+            else:
+                segs[-1] = ("C", s1[1], _add(s1[2], u, -d), _add(end, u, -d))
+    return t
+
+
 def _stroke(part, a, b):
     s = a / b
-    p = part.sk.path().transform(1, 0, 0, s, 0, 0)
-    cap = {"butt": LineCap.BUTT_CAP, "round": LineCap.ROUND_CAP, "square": LineCap.SQUARE_CAP}[part.cap]
+    sk = part.sk
+    capname = part.cap
+    if ROUND_CAPS and capname == "butt" and part.clip is None and not sk.closed:
+        sk = _trim(sk, a, b, part.w)
+        capname = "round"
+    p = sk.path().transform(1, 0, 0, s, 0, 0)
+    cap = {"butt": LineCap.BUTT_CAP, "round": LineCap.ROUND_CAP, "square": LineCap.SQUARE_CAP}[capname]
     join = {"round": LineJoin.ROUND_JOIN, "miter": LineJoin.MITER_JOIN}[part.join]
     p.stroke(2 * a * part.w, cap, join, 10)
     p.convertConicsToQuads()

@@ -201,7 +201,7 @@ def frame(g, pen, path_out, weight, W=1200, Hh=1400):
     skeleton_draw(d, g, ox, oy, s)
     nodes_draw(d, out, ox, oy, s)
     # header / footer
-    d.text((44, 34), "Nirit Sans", fill=INK, font=font(26, True))
+    d.text((44, 34), FAMILY_NAME, fill=INK, font=font(26, True))
     d.text((44, 68), f"{weight}  ·  construction view", fill=GUIDE_TXT, font=font(18))
     lsb = round(out.bounds[0]) if out.bounds else 0
     rsb = round(g.width - out.bounds[2]) if out.bounds else 0
@@ -359,7 +359,7 @@ def charset(path_out, weight, dark=True):
     H = 420
     img = Image.new("RGB", (W, H), bg)
     d = ImageDraw.Draw(img)
-    d.text((40, 24), f"Nirit Sans {weight}", fill=(150, 146, 140), font=font(20))
+    d.text((40, 24), f"{FAMILY_NAME} {weight}", fill=(150, 146, 140), font=font(20))
     s = min(s, (W - 120) / sum(LG[c].width for c in lines[0][0]))
     for i, (txt, rtl) in enumerate(lines):
         items = items_for(txt, LG, HG, lp, hp)

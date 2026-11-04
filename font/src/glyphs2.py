@@ -446,7 +446,10 @@ def latin(a, b):
 
 # ===================================================================== HEBREW
 
-from hebrew4 import hebrew  # noqa: E402
+if ROUND:
+    from hebrew_round import hebrew  # noqa: E402
+else:
+    from hebrew4 import hebrew  # noqa: E402
 
 
 LATIN_ORDER = [chr(c) for c in range(ord("A"), ord("Z") + 1)] + [chr(c) for c in range(ord("a"), ord("z") + 1)]

@@ -8,7 +8,7 @@ from fontTools.ttLib import TTFont
 from engine2 import *
 from render2 import glyph_sets, ORDER_W, WEIGHTS
 
-FAMILY = "Nirit Sans"
+FAMILY = FAMILY_NAME
 VERSION = "0.2"
 WEIGHT_CLASS = {"ExtraLight": 200, "Light": 300, "Regular": 400, "Medium": 500, "SemiBold": 600, "Bold": 700}
 
@@ -85,7 +85,7 @@ def build(weight, out_dir):
     asc, desc = 940, -280
     fb.setupHorizontalHeader(ascent=asc, descent=desc, lineGap=0)
     style = weight
-    ps = f"NiritSans-{weight}"
+    ps = f"{FAMILY.replace(' ', '')}-{weight}"
     fb.setupNameTable({
         "familyName": FAMILY if weight in ("Regular", "Bold") else f"{FAMILY} {weight}",
         "styleName": weight if weight in ("Regular", "Bold") else "Regular",
