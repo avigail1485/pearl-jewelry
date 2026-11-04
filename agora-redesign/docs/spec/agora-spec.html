@@ -1,0 +1,590 @@
+<title>איפיון פרויקט אגורה</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="איפיון מוצר, UX ו-UI לאפליקציית פרויקט אגורה">
+<style>
+/* Layout: an RTL spec book. Sticky contents rail on the right (desktop), chip strip on phones; one 720px reading column; screens shown as phone frames beside their rules. */
+@font-face { font-family: 'GS Text'; font-weight: 400; font-display: swap; src: url('fonts/GoogleSans_17pt-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'GS Text'; font-weight: 500; font-display: swap; src: url('fonts/GoogleSans_17pt-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'GS Text'; font-weight: 600; font-display: swap; src: url('fonts/GoogleSans_17pt-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'GS Display'; font-weight: 600; font-display: swap; src: url('fonts/GoogleSans-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'GS Display'; font-weight: 700; font-display: swap; src: url('fonts/GoogleSans-Bold.woff2') format('woff2'); }
+
+:root {
+  --blue: #3869fe;
+  --blue-ink: #2850d8;
+  --lime: #d4fa60;
+  --lavender: #eff3ff;
+  --lavender-2: #e2e9ff;
+  --page: #ffffff;
+  --ink: #16181d;
+  --ink-2: #43474f;
+  --mute: #646a74;
+  --line: #e8eaf0;
+  --frame: #f2f4f8;
+  --on-lime: #16181d;
+  --font-text: 'GS Text', system-ui, sans-serif;
+  --font-display: 'GS Display', 'GS Text', system-ui, sans-serif;
+  --r-md: 16px;
+  --r-lg: 24px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --blue: #6f93ff; --blue-ink: #9db5ff; --lime: #d4fa60; --lavender: #1b2236; --lavender-2: #26304b;
+    --page: #0f1115; --ink: #eef0f5; --ink-2: #c3c7d0; --mute: #9aa0ab; --line: #262a33; --frame: #171a20; --on-lime: #16181d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --blue: #6f93ff; --blue-ink: #9db5ff; --lime: #d4fa60; --lavender: #1b2236; --lavender-2: #26304b;
+  --page: #0f1115; --ink: #eef0f5; --ink-2: #c3c7d0; --mute: #9aa0ab; --line: #262a33; --frame: #171a20; --on-lime: #16181d;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { direction: rtl; }
+body {
+  background: var(--page); color: var(--ink);
+  font-family: var(--font-text); font-size: 16px; line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; color: var(--ink); margin: 0; }
+h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.05; font-weight: 700; letter-spacing: -0.01em; }
+h2 { font-size: 30px; line-height: 1.15; font-weight: 700; }
+h3 { font-size: 20px; line-height: 1.3; font-weight: 600; }
+p { margin: 0; text-wrap: pretty; }
+a { color: var(--blue-ink); }
+:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 6px; }
+img { max-width: 100%; display: block; }
+
+.wrap {
+  display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 56px;
+  max-width: 1120px; margin: 0 auto;
+  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px));
+  padding-block: 0 96px;
+}
+.rail { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 32px); align-self: start; padding-top: 40px; }
+.rail p { font-size: 13px; color: var(--mute); margin-bottom: 10px; }
+.rail ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 2px; counter-reset: s; }
+.rail a { display: flex; gap: 10px; padding: 6px 10px; border-radius: 10px; color: var(--ink-2); text-decoration: none; font-size: 14px; }
+.rail a::before { counter-increment: s; content: counter(s); color: var(--mute); font-variant-numeric: tabular-nums; min-width: 1.4em; }
+.rail a:hover { background: var(--lavender); color: var(--ink); }
+.rail a[aria-current="true"] { background: var(--lavender); color: var(--blue-ink); font-weight: 600; }
+main { min-width: 0; max-width: 760px; }
+
+.hero { padding: 56px 0 40px; display: grid; gap: 20px; border-bottom: 1px solid var(--line); }
+.hero .lede { font-size: 20px; line-height: 1.5; color: var(--ink-2); max-width: 36em; }
+.hero .meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 999px; background: var(--lavender); color: var(--ink-2); font-size: 13px; font-weight: 500; }
+.tag.lime { background: var(--lime); color: var(--on-lime); }
+.trio { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 12px; }
+.trio figure { margin: 0; display: grid; gap: 8px; }
+.trio figcaption { font-size: 13px; color: var(--mute); text-align: center; }
+
+section { padding-top: 72px; display: grid; gap: 20px; scroll-margin-top: 24px; }
+section > p, .prose p { color: var(--ink-2); max-width: 40em; }
+.sub { margin-top: 20px; }
+
+.phone { border-radius: 26px; padding: 6px; background: var(--frame); box-shadow: 0 0 0 1px var(--line), 0 18px 40px -24px rgba(22,24,29,.35); }
+.phone img { border-radius: 21px; width: 100%; height: auto; aspect-ratio: 468 / 1012; background: #fff; }
+
+.quote { border-inline-start: 3px solid var(--blue); padding: 4px 18px; font-size: 17px; color: var(--ink); max-width: 38em; }
+.quote cite { display: block; margin-top: 8px; font-style: normal; font-size: 13px; color: var(--mute); }
+
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.panel { border-radius: var(--r-lg); background: var(--lavender); padding: 20px; display: grid; gap: 8px; align-content: start; }
+.panel h3 { font-size: 17px; }
+.panel p, .panel li { color: var(--ink-2); font-size: 15px; }
+.panel ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 4px; }
+.from { font-size: 13px; color: var(--blue-ink); font-weight: 500; }
+
+.table { overflow-x: auto; border-radius: var(--r-md); box-shadow: 0 0 0 1px var(--line); }
+table { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 560px; }
+th, td { text-align: right; padding: 12px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 600; color: var(--ink); background: var(--frame); font-size: 13px; }
+td { color: var(--ink-2); }
+tr:last-child td { border-bottom: 0; }
+td code, p code, li code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; background: var(--lavender); color: var(--ink); padding: 1px 6px; border-radius: 6px; direction: ltr; unicode-bidi: isolate; }
+.num { font-variant-numeric: tabular-nums; }
+
+.tree { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.tree > div { border-radius: var(--r-md); padding: 14px; box-shadow: 0 0 0 1px var(--line); display: grid; gap: 8px; align-content: start; }
+.tree b { font-family: var(--font-display); font-weight: 600; font-size: 16px; }
+.tree b.give { color: var(--blue-ink); }
+.tree ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); }
+.tree li::before { content: "– "; color: var(--mute); }
+
+.flow { display: grid; gap: 14px; }
+.flow > div { border-radius: var(--r-lg); box-shadow: 0 0 0 1px var(--line); padding: 20px; display: grid; gap: 12px; }
+.flow ol { margin: 0; padding: 0; list-style: none; counter-reset: f; display: grid; gap: 8px; }
+.flow li { counter-increment: f; display: grid; grid-template-columns: 28px minmax(0, 1fr); gap: 10px; color: var(--ink-2); font-size: 15px; }
+.flow li::before { content: counter(f); display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--lavender); color: var(--blue-ink); font-size: 12px; font-weight: 600; margin-top: 1px; }
+.flow .rule { font-size: 14px; color: var(--ink); background: var(--lavender); border-radius: 12px; padding: 10px 12px; }
+
+.screen { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px; align-items: start; padding-block: 28px; border-top: 1px solid var(--line); }
+.screen:first-of-type { border-top: 0; }
+.screen .spec { display: grid; gap: 14px; min-width: 0; }
+.screen .job { font-size: 17px; color: var(--ink); }
+.kv { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 6px 14px; font-size: 14px; }
+.kv dt { color: var(--mute); }
+.kv dd { margin: 0; color: var(--ink-2); }
+.kv dd ul { margin: 0; padding-inline-start: 16px; display: grid; gap: 3px; }
+
+.swatches { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.sw { display: grid; gap: 6px; font-size: 13px; }
+.sw span { height: 64px; border-radius: 14px; box-shadow: inset 0 0 0 1px rgba(22,24,29,.08); }
+.sw b { font-weight: 600; color: var(--ink); }
+.sw em { font-style: normal; color: var(--mute); direction: ltr; text-align: right; }
+.ratio { display: flex; height: 18px; border-radius: 9px; overflow: hidden; box-shadow: inset 0 0 0 1px var(--line); }
+
+.spec-type { display: grid; gap: 0; border-radius: var(--r-md); box-shadow: 0 0 0 1px var(--line); }
+.spec-type > div { display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 16px; align-items: baseline; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.spec-type > div:last-child { border-bottom: 0; }
+.spec-type small { font-size: 12.5px; color: var(--mute); direction: ltr; text-align: left; font-variant-numeric: tabular-nums; }
+
+.dodont { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.dodont div { border-radius: var(--r-md); padding: 14px 16px; font-size: 15px; display: grid; gap: 4px; }
+.dodont .do { background: var(--lavender); }
+.dodont .dont { box-shadow: 0 0 0 1px var(--line); color: var(--ink-2); }
+.dodont b { font-size: 12.5px; font-weight: 600; }
+.dodont .do b { color: var(--blue-ink); }
+.dodont .dont b { color: var(--mute); }
+
+.checks { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+.checks li { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 10px; color: var(--ink-2); font-size: 15px; }
+.checks li::before { content: ""; width: 16px; height: 16px; margin-top: 4px; border-radius: 5px; box-shadow: inset 0 0 0 1.5px var(--blue); }
+
+.gap { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+.gap:last-child { border-bottom: 0; }
+.pri { height: 26px; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 12.5px; font-weight: 600; }
+.pri.p1 { background: var(--blue); color: #fff; }
+.pri.p2 { background: var(--lavender-2); color: var(--blue-ink); }
+.pri.p3 { box-shadow: inset 0 0 0 1px var(--line); color: var(--mute); }
+.gap p { color: var(--ink-2); }
+.gap strong { color: var(--ink); font-weight: 600; }
+
+.art { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 20px; align-items: center; border-radius: var(--r-lg); background: var(--lavender); padding: 16px 20px; }
+.art img { mix-blend-mode: multiply; border-radius: 12px; background: #fff; }
+
+footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--line); font-size: 13px; color: var(--mute); display: grid; gap: 6px; }
+
+.chips { display: none; }
+@media (max-width: 920px) {
+  .wrap { grid-template-columns: minmax(0, 1fr); gap: 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .rail { display: none; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--page); padding: 10px 0; border-bottom: 1px solid var(--line); scrollbar-width: none; }
+  .chips a { flex: none; height: 32px; display: inline-flex; align-items: center; padding: 0 12px; border-radius: 999px; background: var(--lavender); color: var(--ink-2); text-decoration: none; font-size: 13px; }
+  body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--page); }
+  .tree { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid3 { grid-template-columns: minmax(0, 1fr); }
+  .swatches { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  h2 { font-size: 25px; }
+  .trio { gap: 8px; }
+  .grid2, .dodont { grid-template-columns: minmax(0, 1fr); }
+  .screen { grid-template-columns: minmax(0, 1fr); }
+  .screen .phone { max-width: 240px; }
+  .spec-type > div { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .spec-type small { text-align: right; }
+  .art { grid-template-columns: minmax(0, 1fr); }
+  .art img { max-width: 200px; }
+}
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<nav class="chips" aria-label="פרקים">
+  <a href="#summary">תקציר</a><a href="#problem">הבעיה</a><a href="#people">משתמשים</a><a href="#principles">עקרונות</a><a href="#ia">מבנה</a><a href="#flows">זרימות</a><a href="#screens">מסכים</a><a href="#system">מערכת עיצוב</a><a href="#components">רכיבים</a><a href="#motion">תנועה</a><a href="#copy">כתיבה</a><a href="#a11y">נגישות</a><a href="#ai">AI</a><a href="#gaps">פערים</a><a href="#open">פתוח</a>
+</nav>
+
+<div class="wrap">
+  <aside class="rail" aria-label="תוכן העניינים">
+    <p>תוכן העניינים</p>
+    <ol>
+      <li><a href="#summary">תקציר</a></li>
+      <li><a href="#problem">הבעיה והמטרות</a></li>
+      <li><a href="#people">משתמשים ותרחישים</a></li>
+      <li><a href="#principles">עקרונות מוצר</a></li>
+      <li><a href="#ia">מבנה האפליקציה</a></li>
+      <li><a href="#flows">זרימות מרכזיות</a></li>
+      <li><a href="#screens">מפרט מסכים</a></li>
+      <li><a href="#system">מערכת עיצוב</a></li>
+      <li><a href="#components">רכיבים</a></li>
+      <li><a href="#motion">תנועה</a></li>
+      <li><a href="#copy">כתיבה וטון</a></li>
+      <li><a href="#a11y">נגישות ו-RTL</a></li>
+      <li><a href="#ai">זיהוי AI</a></li>
+      <li><a href="#gaps">פערים ותעדוף</a></li>
+      <li><a href="#open">שאלות פתוחות</a></li>
+    </ol>
+  </aside>
+
+  <main>
+    <header class="hero" id="summary">
+      <div class="meta"><span class="tag">איפיון מוצר, גרסה 1.0</span><span class="tag">אפליקציית מובייל, עברית</span><span class="tag lime">לאישור</span></div>
+      <h1>פרויקט אגורה</h1>
+      <p class="lede">חפץ שמישהו כבר לא צריך, אצל מישהו שצריך אותו. האפליקציה בונה מחדש את לוח המסירה החינמי הוותיק בישראל סביב שלוש פעולות: למצוא, לפנות, למסור. כל השאר נשאר שקט.</p>
+      <div class="trio">
+        <figure><div class="phone"><img src="screens/home.webp" alt="מסך הבית: שורת חיפוש ופסים של חפצים" width="468" height="1012"></div><figcaption>למצוא</figcaption></figure>
+        <figure><div class="phone"><img src="screens/item.webp" alt="דף חפץ: תמונה, מצב, מקום איסוף וכפתור אני רוצה את זה" width="468" height="1012"></div><figcaption>לפנות</figcaption></figure>
+        <figure><div class="phone"><img src="screens/give-ai.webp" alt="מסירת חפץ: זיהוי אוטומטי ממלא את פרטי המודעה" width="468" height="1012"></div><figcaption>למסור</figcaption></figure>
+      </div>
+    </header>
+
+    <section id="problem" aria-labelledby="h-problem">
+      <h2 id="h-problem">הבעיה והמטרות</h2>
+      <p>אגורה פועלת משנות האלפיים ויש לה קהילה גדולה: <b class="num">1,170,087</b> גולשים ו-<b class="num">1,162,919</b> חפצים שנמסרו, לפי האתר. האפליקציה עצמה לא התחדשה, והביקורות בחנות מתארות שלוש תקלות שחוזרות על עצמן.</p>
+      <blockquote class="quote">"לא ניתן לנווט באפליקציה. מסכי הפרסומות חוסמים את סמלון החיפוש הקטנטן… אם אתה בכל זאת מגיע לפריט מעניין תקבל אפשרות להתקשר בתשלום נצלני עם קידומת 1-900."<cite>ביקורת משתמש ב-Google Play</cite></blockquote>
+      <div class="grid3">
+        <div class="panel"><h3>חיפוש שלא מוצאים</h3><p>החיפוש קטן ומוסתר מאחורי פרסומות. <b>מטרה:</b> חיפוש הוא הרכיב הבולט ביותר במסך הבית, ונגיש בכל גלילה.</p></div>
+        <div class="panel"><h3>קשר בתשלום</h3><p>פנייה למוסר דרך מספר 1-900. <b>מטרה:</b> יצירת קשר בהודעה בתוך האפליקציה, בחינם, עם אימות טלפון חד-פעמי.</p></div>
+        <div class="panel"><h3>אין דרך חזרה</h3><p>ניווט שבור ומסכים בלי יציאה. <b>מטרה:</b> חץ חזרה בכל מסך, לשוניות קבועות, וכפתור החזרה של המכשיר עובד תמיד.</p></div>
+      </div>
+      <h3 class="sub">מדדי הצלחה</h3>
+      <p>הערכים הם יעדים מוצעים לשלושת החודשים הראשונים אחרי ההשקה. אין לנו כרגע נתוני בסיס מהאפליקציה הקיימת, ולכן השלב הראשון הוא למדוד אותם.</p>
+      <div class="table"><table>
+        <thead><tr><th>מדד</th><th>איך מודדים</th><th>יעד מוצע</th></tr></thead>
+        <tbody>
+          <tr><td>זמן עד פנייה ראשונה</td><td>מפתיחת האפליקציה עד שליחת הודעה למוסר</td><td class="num">פחות מ-60 שניות בחציון</td></tr>
+          <tr><td>הצלחת חיפוש</td><td>חיפושים שהסתיימו בכניסה לדף חפץ</td><td class="num">60% ומעלה</td></tr>
+          <tr><td>השלמת פרסום</td><td>מי שהתחיל למסור והגיע ל"פרסום בלוח"</td><td class="num">70% ומעלה</td></tr>
+          <tr><td>מודעות עם תמונה</td><td>שיעור המודעות שפורסמו עם תמונה אחת לפחות</td><td class="num">85% ומעלה</td></tr>
+          <tr><td>חפץ שנמסר בפועל</td><td>מודעות שסומנו "נמסר" תוך 7 ימים</td><td class="num">40% ומעלה</td></tr>
+          <tr><td>דירוג בחנות</td><td>ממוצע הביקורות החדשות אחרי ההשקה</td><td class="num">4.3 ומעלה</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="people" aria-labelledby="h-people">
+      <h2 id="h-people">משתמשים ותרחישים</h2>
+      <p>לאגורה שלושה תפקידים. אותו אדם עובר ביניהם, ולכן אין הפרדה בין "חשבון מוסר" ל"חשבון מקבל".</p>
+      <div class="grid3">
+        <div class="panel"><h3>המחפש</h3><p>צריך משהו מסוים, לרוב עכשיו: מיטת תינוק, מקרר, שולחן.</p><ul><li>רוצה לראות תמונה ומצב לפני שהוא פונה</li><li>מסנן לפי עיר, כי האיסוף עליו</li><li>חוזר כמה פעמים ביום אם לא מצא</li></ul></div>
+        <div class="panel"><h3>המוסר</h3><p>מפנה דירה, מחליף ריהוט, או לא רוצה לזרוק.</p><ul><li>רוצה לפרסם בדקה, מהטלפון, בלי טופס ארוך</li><li>לא רוצה שהטלפון שלו יהיה פומבי</li><li>רוצה לסגור את המסירה ולהוריד את המודעה</li></ul></div>
+        <div class="panel"><h3>המבקש</h3><p>מחפש משהו שאין בלוח, או נעזר בסיוע חברתי.</p><ul><li>מפרסם בקשה ומחכה להתראה</li><li>רוצה שמוסרים באזור יראו אותו</li><li>צריך כתיבה מכבדת ופרטיות</li></ul></div>
+      </div>
+    </section>
+
+    <section id="principles" aria-labelledby="h-principles">
+      <h2 id="h-principles">עקרונות מוצר</h2>
+      <p>כל עיקרון לקוח מתבנית שעובדת במוצרים מובילים, ומותאם לאגורה. כשיש התנגשות בין עקרונות, הסדר כאן קובע.</p>
+      <div class="grid2">
+        <div class="panel"><span class="from">מהתבנית של Airbnb</span><h3>התמונה היא המודעה</h3><p>החפץ מוצג בתמונה גדולה, והטקסט משרת אותה. הממשק לבן ושקט כדי שהצבע יגיע מהתמונות של המוסרים.</p></div>
+        <div class="panel"><span class="from">מהתבנית של יד 2</span><h3>סריקה מהירה, סינון אמיתי</h3><p>מי שמחפש רוצה לראות הרבה ולצמצם מהר: מעבר בין רשת לרשימה, סינון לפי עיר ומצב, והתראה על חיפוש שמור.</p></div>
+        <div class="panel"><span class="from">מ-Apple Human Interface Guidelines</span><h3>היד מגיעה לכל דבר</h3><p>פעולות ראשיות בתחתית המסך, גיליונות במקום מסכים חדשים לפעולות קצרות, ואזור מגע של 44 נקודות לפחות.</p></div>
+        <div class="panel"><span class="from">מגישת הכתיבה של Monzo</span><h3>מילים פשוטות, בלי הפתעות</h3><p>כפתור אומר בדיוק מה יקרה, שגיאה אומרת איך לתקן, ומה שחינם כתוב שהוא חינם.</p></div>
+        <div class="panel"><span class="from">מגישת Linear</span><h3>מהירות היא עיצוב</h3><p>אנימציה רק כשהיא מסבירה שינוי. מסך נטען מיד, פעולה מקבלת תגובה תוך 150 מילישניות, ושום דבר לא מחכה לאנימציה.</p></div>
+        <div class="panel"><span class="from">ייחודי לאגורה</span><h3>אמון בלי חיכוך</h3><p>אימות טלפון פעם אחת, מספר שלא נחשף עד שהמוסר מאשר, וכללי מסירה בטוחה בכל דף חפץ.</p></div>
+      </div>
+    </section>
+
+    <section id="ia" aria-labelledby="h-ia">
+      <h2 id="h-ia">מבנה האפליקציה</h2>
+      <p>חמש לשוניות קבועות בתחתית. "למסור" היא פעולה ולא מקום, ולכן היא נפתחת כזרימה במסך מלא ומחזירה ללשונית שממנה יצאו.</p>
+      <div class="tree" role="list">
+        <div role="listitem"><b>ראשי</b><ul><li>חיפוש קבוע</li><li>עלו עכשיו</li><li>פסים לפי קטגוריה</li><li>בקשות פתוחות</li><li>בקשת חפץ</li></ul></div>
+        <div role="listitem"><b>חיפוש</b><ul><li>חיפוש במילים</li><li>חיפוש לפי תמונה</li><li>קטגוריות ותתי-קטגוריות</li><li>תוצאות וסינון</li><li>דף חפץ</li></ul></div>
+        <div role="listitem"><b class="give">למסור</b><ul><li>תמונות וזיהוי אוטומטי</li><li>פרטי החפץ</li><li>תצוגה מקדימה</li><li>פורסם</li></ul></div>
+        <div role="listitem"><b>שמורים</b><ul><li>חפצים ששמרתי</li><li>מצב ריק</li></ul></div>
+        <div role="listitem"><b>פרופיל</b><ul><li>החפצים והבקשות שלי</li><li>התראות חכמות</li><li>קהילת אגורה</li><li>כללי הקהילה</li><li>עזרה ויציאה</li></ul></div>
+      </div>
+      <div class="table"><table>
+        <thead><tr><th>כלל ניווט</th><th>פירוט</th></tr></thead>
+        <tbody>
+          <tr><td>חזרה</td><td>כל מסך פנימי מציג חץ חזרה בצד ימין למעלה. כפתור החזרה של המכשיר עושה אותו דבר, וזרימה שנפתחה מלשונית חוזרת אליה.</td></tr>
+          <tr><td>מעבר לשונית</td><td>לחיצה על לשונית מחזירה לראש שלה. לחיצה חוזרת על הלשונית הפעילה גוללת לראש המסך.</td></tr>
+          <tr><td>גיליונות</td><td>פעולות קצרות (סינון, פנייה, דיווח, בחירת עיר) נפתחות כגיליון מלמטה. סוגרים בגרירה, ב-X או בלחיצה על הרקע.</td></tr>
+          <tr><td>קישור עמוק</td><td>לכל חפץ, חיפוש ופרופיל יש כתובת. שיתוף מודעה פותח את דף החפץ ישירות.</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="flows" aria-labelledby="h-flows">
+      <h2 id="h-flows">זרימות מרכזיות</h2>
+      <div class="flow">
+        <div><h3>מציאת חפץ ופנייה</h3>
+          <ol><li>הבית נפתח עם חיפוש בראש המסך ופסים של חפצים חדשים.</li><li>מקלידים מילה. הצעות מופיעות תוך כדי: תת-קטגוריה, כותרות דומות, חיפוש חופשי.</li><li>התוצאות מגיעות ברשת תמונות. סינון מהיר לפי מצב ועיר בשורת צ'יפים.</li><li>דף החפץ: תמונה, מצב, מקום איסוף, תיאור ופרטי המוסר. הכפתור "אני רוצה את זה" קבוע בתחתית.</li><li>גיליון עם טיוטת הודעה מוכנה ומשפטים מהירים. שליחה.</li><li>בפעם הראשונה בלבד: אימות טלפון בקוד SMS.</li></ol>
+          <p class="rule">יעד: פחות מ-60 שניות ושש הקשות מפתיחה ועד הודעה, למשתמש שכבר אומת.</p></div>
+        <div><h3>מסירת חפץ עם זיהוי אוטומטי</h3>
+          <ol><li>לוחצים "למסור". ברירת המחדל היא זיהוי אוטומטי, ואפשר לעבור למילוי ידני בלחיצה.</li><li>מצלמים או בוחרים תמונה. קו סריקה עובר על התמונה עם אפשרות ביטול.</li><li>כרטיס תוצאה: שם, קטגוריה, מצב ותיאור מוצע, עם רמת ביטחון.</li><li>"נראה טוב" עובר לתצוגה מקדימה. "לתקן" פותח את הטופס מלא, עם סימון ליד כל שדה שמולא אוטומטית.</li><li>אם חסרה עיר לאיסוף, הזרימה עוצרת ומבקשת רק אותה.</li><li>פרסום, ומסך הצלחה עם "למסור חפץ נוסף".</li></ol>
+          <p class="rule">כשהזיהוי לא בטוח, הכפתור הראשי הופך ל"לבדוק ולתקן". לעולם לא מפרסמים זיהוי בביטחון נמוך בלי שהמוסר ראה אותו.</p></div>
+        <div><h3>בקשת חפץ</h3>
+          <ol><li>מהבית או ממסך "לא מצאנו": "בקשו חפץ".</li><li>מה מחפשים, עיר, מצב מינימלי ומשפט על הצורך.</li><li>פרסום מפעיל אוטומטית התראה על אותה מילה.</li><li>מסך הצלחה מציג חפצים שכבר בלוח ומתאימים לבקשה.</li></ol></div>
+        <div><h3>חיפוש לפי תמונה</h3>
+          <ol><li>אייקון מצלמה בשורת החיפוש, בבית ובמסך החיפוש.</li><li>בוחרים תמונה. מופיע "מחפשים חפצים דומים…" עם ביטול.</li><li>התוצאות: קודם חפצים מאותו סוג, ורק אם יש מעט מהם, שאר הקטגוריה.</li></ol>
+          <p class="rule">האפשרות מוצגת כחיפוש רגיל: בלי להציג את התמונה ובלי להבליט שמדובר ב-AI.</p></div>
+        <div><h3>התראה על חיפוש שמור</h3>
+          <ol><li>במסך התוצאות: "התראה על חדשים".</li><li>ההתראה נשמרת עם המילים, העיר והמצב.</li><li>ניהול ומחיקה במסך "התראות חכמות" בפרופיל.</li></ol></div>
+      </div>
+    </section>
+
+    <section id="screens" aria-labelledby="h-screens">
+      <h2 id="h-screens">מפרט מסכים</h2>
+      <p>לכל מסך יש תפקיד אחד. מה שלא משרת אותו עובר למסך אחר או יוצא. כל מסך מוגדר גם במצב ריק, טעינה ושגיאה.</p>
+
+      <article class="screen"><div class="phone"><img src="screens/home-scrolled.webp" alt="מסך הבית אחרי גלילה: לוגו, חיפוש ופעמון בשורה אחת" width="468" height="1012" loading="lazy"></div>
+        <div class="spec"><h3>ראשי</h3><p class="job">להראות מה יש עכשיו, ולתת לחפש בלחיצה אחת.</p>
+          <dl class="kv"><dt>רכיבים</dt><dd><ul><li>שורה עליונה: לוגו מלא ופעמון התראות</li><li>חיפוש קבוע עם מצלמה. בגלילה הלוגו נכנס מימין והפעמון משמאל, והחיפוש מצטמצם ל-52 פיקסלים</li><li>"עלו עכשיו": פריט מכל קטגוריה לסירוגין</li><li>פסים לפי קטגוריה, בלי לחזור על פריטים</li><li>כרטיס "בקשו חפץ" ורשימת בקשות פתוחות</li></ul></dd>
+          <dt>טעינה</dt><dd>שלד כרטיסים בגודל הסופי, בלי קפיצת פריסה</dd>
+          <dt>שגיאה</dt><dd>"אין חיבור לרשת. החפצים יופיעו כשהחיבור יחזור", עם כפתור "לנסות שוב"</dd>
+          <dt>אסור</dt><dd>פרסומות, באנרים או כל דבר שמסתיר את החיפוש</dd></dl></div></article>
+
+      <article class="screen"><div class="phone"><img src="screens/search.webp" alt="מסך חיפוש: חיפוש לפי תמונה, חיפושים אחרונים, פופולריים וקטגוריות" width="468" height="1012" loading="lazy"></div>
+        <div class="spec"><h3>חיפוש</h3><p class="job">להגיע למילה הנכונה מהר.</p>
+          <dl class="kv"><dt>רכיבים</dt><dd><ul><li>שדה חיפוש עם מצלמה, ו-X לניקוי כשיש טקסט</li><li>שורה "חיפוש לפי תמונה"</li><li>חיפושים אחרונים (5) ופופולריים</li><li>קטגוריות נפתחות לתתי-קטגוריות</li></ul></dd>
+          <dt>בהקלדה</dt><dd>"חיפוש X בכל הקטגוריות", ואחריו תתי-קטגוריות וכותרות תואמות</dd>
+          <dt>מקלדת</dt><dd>כפתור Enter במקלדת מוגדר כ"חיפוש"</dd></dl></div></article>
+
+      <article class="screen"><div class="phone"><img src="screens/results-list.webp" alt="תוצאות בתצוגת רשימה" width="468" height="1012" loading="lazy"></div>
+        <div class="spec"><h3>תוצאות</h3><p class="job">לצמצם עד שנשארים חפצים רלוונטיים.</p>
+          <dl class="kv"><dt>רכיבים</dt><dd><ul><li>שורת שאילתה. לחיצה פותחת את החיפוש עם הטקסט הקיים</li><li>כפתור סינון עם מונה מסננים פעילים</li><li>צ'יפים מהירים: מצב ועיר</li><li>מספר תוצאות, "התראה על חדשים", מעבר רשת או רשימה</li></ul></dd>
+          <dt>סינון</dt><dd>גיליון: עיר, מצב (בחירה מרובה), מיון. הכפתור מציג את מספר התוצאות לפני שמחילים</dd>
+          <dt>ריק</dt><dd>איור, "לא מצאנו כרגע", ושתי פעולות: "פרסום בקשה" ו"ניקוי סינונים"</dd></dl></div></article>
+
+      <article class="screen"><div class="phone"><img src="screens/item.webp" alt="דף חפץ" width="468" height="1012" loading="lazy"></div>
+        <div class="spec"><h3>דף חפץ</h3><p class="job">להחליט אם לפנות, ולפנות.</p>
+          <dl class="kv"><dt>רכיבים</dt><dd><ul><li>תמונה ברוחב מלא, גלריה בהחלקה עם מונה</li><li>חזרה, שיתוף ושמירה צפים על התמונה</li><li>נתיב קטגוריה לחיץ, כותרת, עיר ומועד פרסום</li><li>שני כרטיסים: מצב (עם הסבר) ואיסוף</li><li>תיאור, מוסר מאומת, מסירה בטוחה, עוד בקטגוריה, דיווח</li></ul></dd>
+          <dt>סרגל קבוע</dt><dd>"בחינם" ומקום האיסוף מימין, "אני רוצה את זה" משמאל</dd>
+          <dt>נמסר</dt><dd>הכפתור מושבת עם "החפץ כבר נמסר", ומוצעים חפצים דומים</dd></dl></div></article>
+
+      <article class="screen"><div class="phone"><img src="screens/contact.webp" alt="גיליון הודעה למוסר" width="468" height="1012" loading="lazy"></div>
+        <div class="spec"><h3>פנייה למוסר</h3><p class="job">לשלוח הודעה טובה בלחיצה אחת.</p>
+          <dl class="kv"><dt>רכיבים</dt><dd><ul><li>תקציר החפץ בראש הגיליון</li><li>טיוטת הודעה ניתנת לעריכה, עם שם המוסר והחפץ</li><li>משפטים מהירים: "מתי אפשר לאסוף?", "עדיין רלוונטי?"</li><li>"ההודעה נשלחת בתוך האפליקציה. בלי שיחות בתשלום."</li></ul></dd>
+          <dt>אימות</dt><dd>פעם אחת לכל משתמש: טלפון, קוד בן 4 ספרות, "שליחה מחדש"</dd>
+          <dt>אחרי</dt><dd>"ההודעה נשלחה", עם חזרה לחפץ או לדף הראשי</dd></dl></div></article>
+
+      <article class="screen"><div class="phone"><img src="screens/give-details.webp" alt="פרטי חפץ שמולאו אוטומטית" width="468" height="1012" loading="lazy"></div>
+        <div class="spec"><h3>למסור</h3><p class="job">לפרסם חפץ בפחות מדקה.</p>
+          <dl class="kv"><dt>שלבים</dt><dd>תמונות, פרטים, תצוגה מקדימה. פס התקדמות של 3 שלבים, וחזרה לשלב הקודם בלי לאבד נתונים</dd>
+          <dt>שדות</dt><dd><ul><li>מה מוסרים (חובה)</li><li>קטגוריה (חובה), עם תת-קטגוריה מהזיהוי</li><li>ישוב לאיסוף (חובה), רק שם הישוב מוצג</li><li>מצב: כמו חדש, מצב טוב, מעט פגום, לחומר גלם</li><li>תיאור (רשות)</li></ul></dd>
+          <dt>שגיאות</dt><dd>מתחת לשדה, במילים פשוטות, והמיקוד עובר לשדה הראשון עם שגיאה</dd></dl></div></article>
+
+      <article class="screen"><div class="phone"><img src="screens/profile.webp" alt="פרופיל" width="468" height="1012" loading="lazy"></div>
+        <div class="spec"><h3>פרופיל</h3><p class="job">לנהל את מה שלי.</p>
+          <dl class="kv"><dt>רכיבים</dt><dd><ul><li>שם, אימות ושנת הצטרפות</li><li>מונים: מסרתי, קיבלתי, שמורים</li><li>לשוניות: החפצים שלי והבקשות שלי</li><li>כרטיס "קהילת אגורה" עם הנתונים מהאתר</li><li>התראות חכמות, כללי הקהילה, עזרה, יציאה</li></ul></dd>
+          <dt>חסר</dt><dd>"סימון כנמסר" לכל חפץ שלי (ראו פערים)</dd></dl></div></article>
+    </section>
+
+    <section id="system" aria-labelledby="h-system">
+      <h2 id="h-system">מערכת עיצוב</h2>
+      <h3>צבע</h3>
+      <p>הצבע במשורה. רוב המסך לבן ושחור, כדי שהתמונות של המוסרים יובילו. כחול הוא פעולה, ליים הוא הדגשה אחת, ולבנדר הוא משטח רך.</p>
+      <div class="swatches">
+        <div class="sw"><span style="background:#3869FE"></span><b>כחול</b><em>#3869FE</em></div>
+        <div class="sw"><span style="background:#2850D8"></span><b>כחול טקסט</b><em>#2850D8</em></div>
+        <div class="sw"><span style="background:#D4FA60"></span><b>ליים</b><em>#D4FA60</em></div>
+        <div class="sw"><span style="background:#EFF3FF"></span><b>לבנדר</b><em>#EFF3FF</em></div>
+        <div class="sw"><span style="background:#FFFFFF"></span><b>לבן</b><em>#FFFFFF</em></div>
+        <div class="sw"><span style="background:#16181D"></span><b>דיו</b><em>#16181D</em></div>
+        <div class="sw"><span style="background:#43474F"></span><b>טקסט גוף</b><em>#43474F</em></div>
+        <div class="sw"><span style="background:#6C717B"></span><b>משני</b><em>#6C717B</em></div>
+      </div>
+      <div class="ratio" role="img" aria-label="יחס שימוש: לבן ודיו 82%, לבנדר 10%, כחול 6%, ליים 2%"><span style="width:82%;background:#fff"></span><span style="width:10%;background:#EFF3FF"></span><span style="width:6%;background:#3869FE"></span><span style="width:2%;background:#D4FA60"></span></div>
+      <p>יחס שימוש במסך: לבן ודיו 82%, לבנדר 10%, כחול 6%, ליים 2%.</p>
+      <div class="table"><table>
+        <thead><tr><th>צירוף</th><th>ניגודיות</th><th>כלל</th></tr></thead>
+        <tbody>
+          <tr><td>לבן על כחול</td><td class="num">4.55</td><td>עובר AA. כפתורים ראשיים בלבד, 15 פיקסלים ומעלה</td></tr>
+          <tr><td>כחול טקסט על לבן</td><td class="num">6.50</td><td>לכל קישור וטקסט כחול קטן</td></tr>
+          <tr><td>דיו על ליים</td><td class="num">14.92</td><td>הדרך היחידה להשתמש בליים עם טקסט</td></tr>
+          <tr><td>ליים על לבן</td><td class="num">1.19</td><td>אסור כטקסט או כאייקון. רק כמילוי מתחת לדיו</td></tr>
+          <tr><td>משני על לבן</td><td class="num">4.90</td><td>עובר. טקסט משני על רקע לבן</td></tr>
+          <tr><td>משני על לבנדר</td><td class="num">4.42</td><td>לא עובר. על לבנדר משתמשים בטקסט גוף <code>#43474F</code></td></tr>
+          <tr><td>קו הפרדה על לבן</td><td class="num">1.20</td><td>קישוטי בלבד. גבולות של שדות מסומנים במילוי לבנדר</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3 class="sub">טיפוגרפיה: Google Sans</h3>
+      <p>משפחה אחת בשני חיתוכים. Google Sans Text (חיתוך 17pt) לטקסט ולממשק: גובה אות גדול יותר וריווח מרווח, קריא בגדלים קטנים. Google Sans Display (החיתוך הרגיל) לכותרות של 20 פיקסלים ומעלה: צפוף ונקי יותר בגודל גדול.</p>
+      <div class="spec-type">
+        <div><span style="font-family:var(--font-display);font-weight:700;font-size:26px;line-height:32px">צלמו את החפץ</span><small>Display 700 · 26/32 · כותרת מסך</small></div>
+        <div><span style="font-family:var(--font-display);font-weight:700;font-size:24px;line-height:30px">שידת מגירות מעץ</span><small>Display 700 · 24/30 · כותרת חפץ</small></div>
+        <div><span style="font-family:var(--font-display);font-weight:700;font-size:19px;line-height:26px">עלו עכשיו</span><small>Display 700 · 19/26 · כותרת אזור</small></div>
+        <div><span style="font-weight:600;font-size:15px;line-height:22px">מיטה וחצי</span><small>Text 600 · 15/22 · כותרת כרטיס</small></div>
+        <div><span style="font-weight:400;font-size:15px;line-height:23px">מיטה וחצי 190 על 120, איסוף מרעננה.</span><small>Text 400 · 15/23 · גוף</small></div>
+        <div><span style="font-weight:400;font-size:13px;line-height:18px;color:var(--mute)">רעננה, לפני שעתיים</span><small>Text 400 · 13/18 · משני</small></div>
+        <div><span style="font-weight:600;font-size:11px;line-height:14px">שמורים</span><small>Text 600 · 11/14 · תווית לשונית</small></div>
+      </div>
+      <p>מינימום 13 פיקסלים לכל טקסט שקוראים, חוץ מתוויות הלשוניות (11). ספרות בעמודות בספרות טבלאיות. כותרות עם איזון שורות, כדי שמילה אחת לא תישאר לבד בשורה.</p>
+
+      <h3 class="sub">ריווח, פינות וצל</h3>
+      <div class="table"><table>
+        <thead><tr><th>טוקן</th><th>ערך</th><th>שימוש</th></tr></thead>
+        <tbody>
+          <tr><td>ריווח בסיס</td><td class="num">4, 8, 12, 16, 20, 24, 32</td><td>כל המרווחים בכפולות של 4</td></tr>
+          <tr><td>שוליים צדדיים</td><td class="num">20</td><td>כל המסכים. רשימות צפופות: 16</td></tr>
+          <tr><td>בין אזורים</td><td class="num">32</td><td>בין פסים בבית ובין חלקים בדף חפץ</td></tr>
+          <tr><td>פינה קטנה</td><td class="num">12</td><td>תמונות ממוזערות ברשימה</td></tr>
+          <tr><td>פינה בינונית</td><td class="num">16</td><td>כרטיסי חפץ, כפתורים, שדות, כרטיסי מידע</td></tr>
+          <tr><td>פינה גדולה</td><td class="num">24</td><td>לוחות: AI, קהילה, בקשות</td></tr>
+          <tr><td>גיליון</td><td class="num">28</td><td>פינות עליונות של גיליונות</td></tr>
+          <tr><td>עגול</td><td class="num">999</td><td>חיפוש, צ'יפים, אווטרים</td></tr>
+          <tr><td>צל חיפוש</td><td><code>0 6px 20px -6px</code></td><td>שורת החיפוש בלבד</td></tr>
+          <tr><td>צל כותרת</td><td><code>0 8px 16px -12px</code></td><td>מופיע רק כשתוכן גולל מתחת</td></tr>
+          <tr><td>צל ניווט</td><td>שלוש שכבות</td><td>הניווט התחתון: קו דק, צל קרוב ומרחף רחב</td></tr>
+          <tr><td>הילה כחולה</td><td><code>0 12px 28px -12px</code></td><td>"אני רוצה את זה" וכרטיס הבקשה בלבד</td></tr>
+        </tbody>
+      </table></div>
+      <p>הצל מסמן מה מרחף מעל התוכן. כרטיסי חפץ בגלילה לא מקבלים צל: התמונה מספיקה.</p>
+
+      <h3 class="sub">אייקונים, איורים ותמונות</h3>
+      <div class="table"><table>
+        <thead><tr><th>נכס</th><th>כלל</th></tr></thead>
+        <tbody>
+          <tr><td>אייקונים</td><td>Lucide בלבד, קו 1.75, גודל 20 או 22. אייקון פעיל בלשונית מקבל קו 2.25 וצבע כחול. בלי אימוג'י כאייקונים</td></tr>
+          <tr><td>איורים</td><td>סדרה אחת בצבעי המותג, חפצים בלבד. רק ברגעי ריק, אישור והצלחה, בגובה 120 עד 190. לעולם לא בבית, בתוצאות או בדף חפץ</td></tr>
+          <tr><td>תמונות חפצים</td><td>יחס 1:1 בכרטיס, 4:3.4 בדף חפץ. רקע אפור בהיר בזמן טעינה, גודל שמור מראש. חדש: תגית ליים "חדש" בפינה</td></tr>
+        </tbody>
+      </table></div>
+      <div class="art"><img src="illustrations/published.webp" alt="" width="720" height="504" loading="lazy"><p>דוגמה: האיור של מסך "החפץ פורסם". האיור מסביר את הרגע, והכפתורים מתחתיו אומרים מה עושים עכשיו.</p></div>
+    </section>
+
+    <section id="components" aria-labelledby="h-components">
+      <h2 id="h-components">רכיבים</h2>
+      <div class="table"><table>
+        <thead><tr><th>רכיב</th><th>וריאנטים</th><th>מפרט</th><th>מצבים</th></tr></thead>
+        <tbody>
+          <tr><td>כפתור</td><td>ראשי, רך, מסגרת, שקוף</td><td>גובה 52 (גדול) או 44, פינה 16, טקסט 16/600</td><td>לחיצה: הקטנה ל-0.97. מושבת: שקיפות 40%. טעינה: טקסט עם "…"</td></tr>
+          <tr><td>כרטיס חפץ</td><td>רשת, פס, רשימה</td><td>תמונה 1:1, פינה 16, שמירה בפינה. כותרת שורה אחת</td><td>שמור: לב כחול מלא. נמסר: שכבה כהה ותגית</td></tr>
+          <tr><td>צ'יפ</td><td>רגיל, נבחר</td><td>גובה 36, עגול. נבחר: רקע דיו וטקסט לבן</td><td>aria-pressed לפי מצב</td></tr>
+          <tr><td>שדה</td><td>טקסט, בחירה, טקסט ארוך</td><td>מילוי לבנדר, פינה 16. בפוקוס: לבן עם טבעת כחולה</td><td>שגיאה מתחת לשדה. עזרה כשאין שגיאה</td></tr>
+          <tr><td>גיליון</td><td>עם או בלי שורת פעולה</td><td>פינות 28, עד 88% מגובה המסך, כותרת וסגירה</td><td>סגירה בגרירה, X, רקע או חזרה</td></tr>
+          <tr><td>סרגל עליון</td><td>כותרת, שדה, פעולה</td><td>חזרה מימין, נדבק לראש עם צל כשגוללים</td><td>תמיד מוצג במסכים פנימיים</td></tr>
+          <tr><td>ניווט תחתון</td><td>5 פריטים</td><td>"למסור" במרכז, כחול. תווית 11/600</td><td>פעיל: אייקון כחול עבה וטקסט מודגש</td></tr>
+          <tr><td>הודעה קופצת</td><td>מידע</td><td>רקע דיו, טקסט לבן, מעל הניווט</td><td>2.4 שניות, מוכרזת לקורא מסך</td></tr>
+          <tr><td>מצב ריק</td><td>עם איור</td><td>איור, כותרת, משפט, פעולה אחת או שתיים</td><td>תמיד עם פעולה, אף פעם לא מסך ריק</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="motion" aria-labelledby="h-motion">
+      <h2 id="h-motion">תנועה</h2>
+      <p>תנועה רק כשהיא מסבירה מה השתנה. מה שקורה עשרות פעמים ביום זז מעט או לא זז. רק transform ו-opacity מונפשים.</p>
+      <div class="table"><table>
+        <thead><tr><th>רגע</th><th>תנועה</th><th>משך ועקומה</th></tr></thead>
+        <tbody>
+          <tr><td>לחיצה על כפתור או כרטיס</td><td>הקטנה ל-0.97</td><td class="num">120ms, יציאה מהירה</td></tr>
+          <tr><td>מעבר בין מסכים</td><td>שקיפות בלבד</td><td class="num">150ms</td></tr>
+          <tr><td>פתיחת גיליון</td><td>עולה מלמטה ב-100% מגובהו</td><td class="num">280ms, עקומת מגירה</td></tr>
+          <tr><td>סגירת גיליון</td><td>יורד, מהיר יותר מהפתיחה</td><td class="num">200ms</td></tr>
+          <tr><td>שמירה בלב</td><td>מילוי והגדלה קלה ל-1.15 וחזרה</td><td class="num">220ms, קפיץ עדין</td></tr>
+          <tr><td>הודעה קופצת</td><td>עולה 10 פיקסלים ומופיעה</td><td class="num">180ms</td></tr>
+          <tr><td>כותרת הבית מצטמצמת</td><td>לוגו ופעמון נכנסים מהצדדים</td><td class="num">200ms</td></tr>
+          <tr><td>זיהוי AI</td><td>קו סריקה עובר על התמונה</td><td class="num">1.6s בלולאה, עד לתוצאה</td></tr>
+        </tbody>
+      </table></div>
+      <div class="table"><table>
+        <thead><tr><th>טוקן</th><th>ערך</th></tr></thead>
+        <tbody>
+          <tr><td>יציאה מהירה</td><td><code>cubic-bezier(0.23, 1, 0.32, 1)</code></td></tr>
+          <tr><td>מגירה</td><td><code>cubic-bezier(0.32, 0.72, 0, 1)</code></td></tr>
+          <tr><td>תנועה הדדית</td><td><code>cubic-bezier(0.77, 0, 0.175, 1)</code></td></tr>
+        </tbody>
+      </table></div>
+      <p>כשמוגדר "הפחתת תנועה" במכשיר: בלי תזוזה, רק שקיפות. קו הסריקה נעצר במקום, והטקסט "מזהים…" נשאר.</p>
+    </section>
+
+    <section id="copy" aria-labelledby="h-copy">
+      <h2 id="h-copy">כתיבה וטון</h2>
+      <p>הטון של שכן טוב: פשוט, חם וענייני. פונים ברבים ("צלמו", "מחפשים"), כותבים בפעלים, ולא מתנצלים. כל כפתור אומר מה יקרה, ואותה פעולה נקראת באותו שם לאורך כל הדרך.</p>
+      <div class="dodont">
+        <div class="do"><b>כך</b>פרסום בלוח</div><div class="dont"><b>לא כך</b>המשך</div>
+        <div class="do"><b>כך</b>מאיזה ישוב האיסוף?</div><div class="dont"><b>לא כך</b>שדה חובה</div>
+        <div class="do"><b>כך</b>לא מצאנו כרגע. אפשר לפרסם בקשה ונודיע לכם.</div><div class="dont"><b>לא כך</b>אופס! אין תוצאות 😕</div>
+        <div class="do"><b>כך</b>ההודעה נשלחת בתוך האפליקציה. בלי שיחות בתשלום.</div><div class="dont"><b>לא כך</b>צור קשר עם המפרסם</div>
+        <div class="do"><b>כך</b>שולחים…</div><div class="dont"><b>לא כך</b>אנא המתן</div>
+      </div>
+      <p>מספרים בספרות, גרשיים עבריים במקומם (ק"מ, סת"ם), ושלוש נקודות כתו אחד (…). שמות מותגים לא מתורגמים.</p>
+    </section>
+
+    <section id="a11y" aria-labelledby="h-a11y">
+      <h2 id="h-a11y">נגישות ו-RTL</h2>
+      <p>היעד הוא עמידה ב-WCAG 2.1 AA, שעליו מבוסס התקן הישראלי 5568.</p>
+      <ul class="checks">
+        <li>אזור מגע של 44 על 44 לפחות לכל פעולה, גם כשהאייקון קטן יותר</li>
+        <li>לכל כפתור אייקון יש שם נגיש, ולאיורים יש alt ריק</li>
+        <li>פוקוס מקלדת נראה לעין, וסדר הפוקוס זהה לסדר הוויזואלי מימין לשמאל</li>
+        <li>כרטיסי חפץ הם קישורים אמיתיים, לא רכיבים עם לחיצה בלבד</li>
+        <li>הודעות קופצות ושגיאות מוכרזות לקורא מסך</li>
+        <li>טקסט גדל עם הגדרות הגופן של המכשיר עד 200% בלי להיחתך</li>
+        <li>לא נשענים על צבע לבד: מצב חפץ מגיע עם טקסט, ונבחר עם צורה</li>
+        <li>אייקונים כיווניים מתהפכים: חץ חזרה מצביע ימינה, "הכל" מצביע שמאלה</li>
+        <li>אייקונים שאינם כיווניים לא מתהפכים: מצלמה, לב, פעמון</li>
+        <li>פסים נגללים מתחילים מימין, וגלילה טבעית היא לשמאל</li>
+        <li>מספרי טלפון וקודים בכיוון שמאל לימין בתוך טקסט עברי</li>
+      </ul>
+    </section>
+
+    <section id="ai" aria-labelledby="h-ai">
+      <h2 id="h-ai">זיהוי AI</h2>
+      <p>ה-AI חוסך הקלדה, אבל לא מחליט במקום המשתמש. בכל מקום שבו הוא ממלא משהו, המשתמש רואה את זה ויכול לשנות.</p>
+      <div class="grid2">
+        <div class="panel"><h3>במסירה: גלוי</h3><ul><li>מתג "זיהוי אוטומטי" או "מילוי ידני" בראש שלב התמונות</li><li>החזרה: שם, קטגוריה ותת-קטגוריה מהרשימה הסגורה, מצב, תיאור וביטחון</li><li>ביטחון מתחת ל-0.5, או "אין חפץ": מעבר לבדיקה ידנית</li><li>תגית "מולא ב-AI" ליד כל שדה, שנעלמת אחרי עריכה</li><li>עיר לא מזוהה מתמונה, ולכן תמיד נשאלת</li></ul></div>
+        <div class="panel"><h3>בחיפוש: שקוף</h3><ul><li>מוצג כ"חיפוש לפי תמונה" בלבד, בלי המילה AI ובלי להציג את התמונה</li><li>החזרה: שם, קטגוריה, תת-קטגוריה ומילות חיפוש</li><li>דירוג: מילה בכותרת, אחר כך תת-קטגוריה, אחר כך קטגוריה</li><li>קטגוריה כללית מוצגת רק כשיש פחות משני חפצים דומים</li></ul></div>
+      </div>
+      <div class="table"><table>
+        <thead><tr><th>מקרה</th><th>מה המשתמש רואה</th></tr></thead>
+        <tbody>
+          <tr><td>המשתמש לא אישר שימוש ב-AI</td><td>מעבר שקט למילוי ידני, עם משפט הסבר אחד</td></tr>
+          <tr><td>יותר מדי בקשות</td><td>"יותר מדי ניסיונות ברגע זה. נסו שוב בעוד דקה, או מלאו ידנית."</td></tr>
+          <tr><td>כשל</td><td>"לא הצלחנו לזהות את החפץ", עם "לנסות שוב" ו"מילוי ידני"</td></tr>
+          <tr><td>ביטול</td><td>חוזרים למצב שלפני, בלי הודעה</td></tr>
+        </tbody>
+      </table></div>
+      <p>פרטיות: נשלחות עד 3 תמונות, מוקטנות ובלי מידע מיקום. דרישה מספק ה-AI: לא לשמור את התמונות מעבר לבקשה עצמה. בייצור, הקריאה עוברת דרך השרת של אגורה ולא ישירות מהמכשיר.</p>
+    </section>
+
+    <section id="gaps" aria-labelledby="h-gaps">
+      <h2 id="h-gaps">פערים ותעדוף</h2>
+      <p>מה שהאב-טיפוס הנוכחי עוד לא עושה לפי האיפיון הזה. עדיפות 1 חוסמת השקה.</p>
+      <div>
+        <div class="gap"><span class="pri p1">עדיפות 1</span><p><strong>מסך הודעות.</strong> אין מקום לראות תשובה של מוסר ולהמשיך שיחה. בלי זה הזרימה נקטעת אחרי "ההודעה נשלחה".</p></div>
+        <div class="gap"><span class="pri p1">עדיפות 1</span><p><strong>סימון "נמסר" ודירוג.</strong> המוסר צריך לסגור מודעה בלחיצה, ושני הצדדים מדרגים. זה גם מנקה מהלוח מודעות ישנות.</p></div>
+        <div class="gap"><span class="pri p1">עדיפות 1</span><p><strong>כניסה ראשונה ומיקום.</strong> מסך אחד שמסביר "הכל בחינם" ומבקש עיר. אחריו, הבית נפתח על "קרוב אליך".</p></div>
+        <div class="gap"><span class="pri p2">עדיפות 2</span><p><strong>כרטיסים כקישורים אמיתיים.</strong> כרטיסי חפץ בנויים היום כרכיב עם לחיצה. צריך קישור, כדי לתמוך בקורא מסך ובפתיחה בלשונית חדשה.</p></div>
+        <div class="gap"><span class="pri p2">עדיפות 2</span><p><strong>שורות מידע.</strong> צירופים כמו "רעננה · לפני שעתיים" חוזרים בכל כרטיס. להפריד לשתי שורות או לאייקון ומילה, כדי שיהיה קל לסרוק.</p></div>
+        <div class="gap"><span class="pri p2">עדיפות 2</span><p><strong>טקסט משני על לבנדר.</strong> ניגודיות 4.42. להחליף לצבע טקסט הגוף בכל משטח לבנדר.</p></div>
+        <div class="gap"><span class="pri p2">עדיפות 2</span><p><strong>תנועה.</strong> מעבר בין מסכים מזיז את התוכן ב-6 פיקסלים בכל ניווט. להשאיר שקיפות בלבד. בכפתורים להנפיש רק את ההקטנה, לא את כל המאפיינים.</p></div>
+        <div class="gap"><span class="pri p2">עדיפות 2</span><p><strong>שדות טופס.</strong> להוסיף השלמה אוטומטית (טלפון, קוד SMS), ושכל דוגמה בשדה תסתיים ב-"…".</p></div>
+        <div class="gap"><span class="pri p3">עדיפות 3</span><p><strong>גלריית תמונות.</strong> היום כל מודעה מציגה תמונה אחת. לתמוך בעד 6 תמונות עם החלקה ומונה.</p></div>
+        <div class="gap"><span class="pri p3">עדיפות 3</span><p><strong>מצב כהה.</strong> הטוקנים מוכנים, אבל צריך לבדוק ניגודיות בנפרד לכל צירוף.</p></div>
+      </div>
+    </section>
+
+    <section id="open" aria-labelledby="h-open">
+      <h2 id="h-open">שאלות פתוחות</h2>
+      <ul class="checks">
+        <li>מי קהל היעד הראשון להשקה: כל הארץ, או ערים וקהילות מסוימות?</li>
+        <li>האם מסך הודעות הוא צ'אט מלא, או הודעה אחת ואחריה חשיפת טלפון באישור המוסר?</li>
+        <li>מי מאשר דיווחים על מודעות, ותוך כמה זמן?</li>
+        <li>האם "קהילות אגורה" מהאתר נכנסות לאפליקציה בגרסה הראשונה?</li>
+        <li>איזה ספק AI משמש בייצור, ומה העלות לכל זיהוי?</li>
+      </ul>
+      <div class="art"><img src="illustrations/community.webp" alt="" width="720" height="375" loading="lazy"><p>הצעד הבא: אישור האיפיון, ואחריו בניית שלושת הפערים בעדיפות 1 באב-טיפוס.</p></div>
+    </section>
+
+    <footer>
+      <p>מבוסס על אב-טיפוס חי ועל תוכן אמיתי מ-agora.co.il. תמונות החפצים שייכות למוסרים.</p>
+      <p>מקורות לעקרונות: Apple Human Interface Guidelines, Web Interface Guidelines של Vercel, ומאגרי ההנחיות ui-ux-pro-max ו-emil-design-eng.</p>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function () {
+  var links = document.querySelectorAll('.rail a');
+  if (!('IntersectionObserver' in window) || !links.length) return;
+  var map = {};
+  links.forEach(function (a) { map[a.getAttribute('href').slice(1)] = a; });
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      links.forEach(function (a) { a.removeAttribute('aria-current'); });
+      var a = map[e.target.id]; if (a) a.setAttribute('aria-current', 'true');
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('main [id]').forEach(function (s) { if (map[s.id]) io.observe(s); });
+})();
+</script>

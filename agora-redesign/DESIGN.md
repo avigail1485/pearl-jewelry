@@ -19,7 +19,7 @@ This file replaces the in-app palette screen. It is for designers and developers
 Rough share of the screen: white + ink 82%, lavender 10%, blue 6%, lime 2%.
 
 ## Type — Google Sans only
-Google Sans 17pt, the files supplied by design (Regular + SemiBold), subset to Hebrew + Latin in `src/assets/fonts`, declared in `src/fonts.css`. Regular covers 400–500, SemiBold covers 600–700.
+Google Sans, the full family supplied by design, subset to Hebrew + Latin (`src/assets/fonts`, declared in `src/fonts.css`). Text cut (17pt: 400/500/600/700) for UI and body under 20px; Display cut (600/700) for h1/h2.
 Screen title 26/700 · section 19/700 · card title 15/600 · body 15/400 · secondary 13/400.
 
 ## AI

@@ -1,19 +1,12 @@
 /*
-  Google Sans 17pt — the files supplied by the design team, subset to Hebrew + Latin.
-  Two static weights: Regular serves 400–500, SemiBold serves 600–700
-  (so "bold" text uses the real SemiBold cut instead of a faked bold).
+  Google Sans — the family supplied by design, subset to Hebrew + Latin.
+  Two optical cuts, used by size:
+    Google Sans Text  (the "17pt" cut: larger x-height, looser spacing) → UI and body text, < 20px
+    Google Sans Display (the standard cut: tighter)                     → headings, ≥ 20px
 */
-@font-face {
-  font-family: 'Google Sans';
-  font-style: normal;
-  font-weight: 100 500;
-  font-display: swap;
-  src: url('./assets/fonts/GoogleSans-17pt-Regular.woff2') format('woff2');
-}
-@font-face {
-  font-family: 'Google Sans';
-  font-style: normal;
-  font-weight: 600 900;
-  font-display: swap;
-  src: url('./assets/fonts/GoogleSans-17pt-SemiBold.woff2') format('woff2');
-}
+@font-face { font-family: 'Google Sans Text'; font-weight: 400; font-display: swap; src: url('./assets/fonts/GoogleSans_17pt-Regular.woff2') format('woff2'); }
+@font-face { font-family: 'Google Sans Text'; font-weight: 500; font-display: swap; src: url('./assets/fonts/GoogleSans_17pt-Medium.woff2') format('woff2'); }
+@font-face { font-family: 'Google Sans Text'; font-weight: 600; font-display: swap; src: url('./assets/fonts/GoogleSans_17pt-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'Google Sans Text'; font-weight: 700; font-display: swap; src: url('./assets/fonts/GoogleSans_17pt-Bold.woff2') format('woff2'); }
+@font-face { font-family: 'Google Sans Display'; font-weight: 600; font-display: swap; src: url('./assets/fonts/GoogleSans-SemiBold.woff2') format('woff2'); }
+@font-face { font-family: 'Google Sans Display'; font-weight: 700; font-display: swap; src: url('./assets/fonts/GoogleSans-Bold.woff2') format('woff2'); }

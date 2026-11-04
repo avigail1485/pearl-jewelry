@@ -9,7 +9,8 @@
   White + near-black ink carry everything else, so photos stay the hero (Airbnb approach).
 */
 @theme {
-  --font-sans: 'Google Sans', system-ui, sans-serif;
+  --font-sans: 'Google Sans Text', system-ui, sans-serif;
+  --font-display: 'Google Sans Display', 'Google Sans Text', system-ui, sans-serif;
 
   --color-blue: #3869fe;
   --color-blue-hover: #2c5cf0;
@@ -56,6 +57,9 @@ button { cursor: pointer; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
 :focus-visible { outline: 2px solid var(--color-blue); outline-offset: 2px; }
+
+/* Headings use the display cut; text-wrap avoids one-word last lines */
+h1, h2 { font-family: var(--font-display); text-wrap: balance; }
 }
 
 @keyframes screen-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
