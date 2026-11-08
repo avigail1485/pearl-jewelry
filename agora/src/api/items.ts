@@ -2,11 +2,13 @@
 // the app; items people publish live in the shared `items` collection, full photos in `photos/<id>`.
 import demo from "../data/items.json";
 import { getDB } from "./platform";
+import { VARIANT } from "../lib/variant";
 import type { Item } from "./types";
 
 const loadedAt = Date.now();
 export const demoItems: Item[] = (demo as any[]).map((d) => ({
   ...d,
+  ...(VARIANT === "photos" ? { photo: `assets/items-photo/${String(d.id).slice(1)}.jpg`, cutout: false } : {}),
   distanceKm: 0,
   createdAt: loadedAt - d.minutesAgo * 60_000,
   status: "active",

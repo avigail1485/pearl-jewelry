@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "build:artifact": "tsc -b && vite build --mode artifact && node scripts/make-artifact.mjs"
+    "build:artifact": "tsc -b && vite build --mode artifact && node scripts/make-artifact.mjs",
+    "build:artifact:photos": "tsc -b && VITE_VARIANT=photos vite build --mode artifact --outDir dist-artifact-photos && node scripts/make-artifact.mjs dist-artifact-photos artifact-photos/index.html \"אגורה · תמונות אמיתיות\""
   },
   "dependencies": {
     "lucide-react": "^0.460.0",

@@ -54,3 +54,22 @@ export async function recognize(photos: string | string[]): Promise<RecognizeRes
     return { ok: false, reason: e?.code === "not_granted" ? "declined" : "error" };
   }
 }
+
+/** Ask Claude to write a short, friendly listing description from the photos (and the name). */
+export async function describe(photos: string[], title: string, condition: string): Promise<string | null> {
+  try {
+    const sample = await getSample();
+    if (!sample) return null;
+    const lim = await sample.limits?.().catch(() => null);
+    const images = lim?.images ? await Promise.all(photos.slice(0, lim.images.maxCount ?? 1).map(dataUrlToBlob)) : undefined;
+    const prompt = `Write a short description in Hebrew for a free second-hand item listing on "אגורה" (a community giveaway board).
+Item: ${title || "(see photo)"}. Condition: ${condition || "unknown"}.
+${images ? "Use only what is visible in the attached photo(s): colour, material, size hints, visible wear." : ""}
+Two or three short, plain sentences, plural addressing ("אתם"), no emojis, no prices, no phone numbers, nothing you cannot see. Return only the description text.`;
+    const { text } = await sample(prompt, images ? { images, modelTier: "quick" } : { modelTier: "quick" });
+    const t = String(text || "").trim().replace(/^["״]|["״]$/g, "");
+    return t ? t.slice(0, 400) : null;
+  } catch {
+    return null;
+  }
+}

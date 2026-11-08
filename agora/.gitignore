@@ -3,3 +3,5 @@ dist
 dist-artifact
 artifact
 *.tsbuildinfo
+artifact-photos
+dist-artifact-photos

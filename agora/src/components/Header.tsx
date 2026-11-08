@@ -23,8 +23,8 @@ function SearchPill({ compact }: { compact: boolean }) {
   return (
     <div className={`relative flex min-w-0 flex-1 items-center rounded-btn bg-white shadow-card transition-[height] duration-200 ${compact ? "h-11" : "h-12"}`}>
       <button type="button" onClick={() => nav("/search")} className="flex h-full min-w-0 flex-1 items-center justify-center gap-2 rounded-btn pl-11 pr-4">
-        <Search size={18} strokeWidth={2.25} aria-hidden className="shrink-0" />
-        <span className="truncate text-body font-demibold">מה תרצו לחפש היום?</span>
+        <Search size={18} strokeWidth={1.75} aria-hidden className="shrink-0 text-ink/65" />
+        <span className="truncate text-body font-light text-ink/65">מה מחפשים?</span>
       </button>
       <button type="button" aria-label="חיפוש לפי תמונה" onClick={() => file.current?.click()} className="absolute left-0.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-btn">
         <Camera size={20} strokeWidth={1.75} />

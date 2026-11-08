@@ -12,12 +12,13 @@ import { ItemImage } from "../../components/ItemImage";
 import { Sheet } from "../../components/Sheet";
 import { Tag } from "../../components/Tag";
 import { Toggle } from "../../components/Toggle";
-import { recognize, type Guess, type RecognizeResult } from "../../lib/ai";
+import { describe, recognize, type Guess, type RecognizeResult } from "../../lib/ai";
 import { CATEGORIES, CATEGORY_ICON, CONDITIONS, SIZES, TIMES } from "../../lib/categories";
 import { CityInput } from "../../components/CityInput";
 import { useRequireLogin } from "../../lib/hooks";
 import { compress } from "../../lib/image";
 import { preloadRemoveBg, removeBackground } from "../../lib/removeBg";
+import { REMOVE_BG } from "../../lib/variant";
 import { preloadVisual, visualMatch } from "../../lib/visual";
 import { demoItems } from "../../api/items";
 import { useItems } from "../../store/items";
@@ -54,7 +55,7 @@ export default function Give() {
   useEffect(() => { if (!d.city) d.set({ city }); }, []); // eslint-disable-line
   useEffect(() => { scrollToTop(); }, [step]);
   // Start fetching the on-device models while the person picks a photo.
-  useEffect(() => { preloadRemoveBg(); preloadVisual(); }, []);
+  useEffect(() => { if (REMOVE_BG) preloadRemoveBg(); preloadVisual(); }, []);
 
   const valid = (n: number) => n === 1 ? true : n === 2 ? !!(d.title.trim() && d.category && d.condition) : n === 3 ? !!(d.city && d.size && d.times.length) : true;
   const anim = STEP_ANIM[step - 1];
@@ -173,8 +174,10 @@ function Step1({ onNext }: { onNext: () => void }) {
   useEffect(() => {
     if (!main) { d.set({ cutout: null, bg: "idle" }); return; }
     let alive = true;
-    d.set({ cutout: null, bg: "working", useCutout: true });
-    removeBackground(useDraft.getState().mainHQ ?? main).then((cut) => { if (alive) d.set({ cutout: cut, bg: cut ? "done" : "failed" }); });
+    if (REMOVE_BG) {
+      d.set({ cutout: null, bg: "working", useCutout: true });
+      removeBackground(useDraft.getState().mainHQ ?? main).then((cut) => { if (alive) d.set({ cutout: cut, bg: cut ? "done" : "failed" }); });
+    } else d.set({ cutout: null, bg: "idle", useCutout: false });
     if (!guess) {
       setScanning(true); setFailed(null);
       // Claude names the item; the on-device visual match is the fallback.
@@ -203,7 +206,7 @@ function Step1({ onNext }: { onNext: () => void }) {
     d.set({ photos: [...d.photos, ...list].slice(0, MAX_PHOTOS) });
   };
   const accept = () => onNext();
-  const pick = () => { preloadRemoveBg(); file.current?.click(); };
+  const pick = () => { if (REMOVE_BG) preloadRemoveBg(); file.current?.click(); };
   const picker = <input ref={file} type="file" accept="image/*" multiple hidden onChange={(e) => { add(e.target.files); e.target.value = ""; }} />;
 
   if (!d.photos.length) {
@@ -292,6 +295,14 @@ function Step1({ onNext }: { onNext: () => void }) {
 /* ---------- 2 · details ---------- */
 function Step2() {
   const d = useDraft();
+  const [writing, setWriting] = useState(false);
+  const toast = useUI((s) => s.showToast);
+  const write = async () => {
+    setWriting(true);
+    const t = await describe(d.photos, d.title, d.condition);
+    setWriting(false);
+    if (t) d.set({ description: t }); else toast("לא הצלחנו לכתוב תיאור כרגע. אפשר לכתוב בעצמכם.");
+  };
   return (
     <div className="space-y-6">
       <div>
@@ -307,7 +318,12 @@ function Step2() {
         <div className="mt-2 flex flex-wrap gap-2">{CONDITIONS.map((c) => <Chip key={c} selected={d.condition === c} onClick={() => d.set({ condition: c })}>{c}</Chip>)}</div>
       </fieldset>
       <div>
-        <label htmlFor="desc" className="text-body font-demibold">תיאור <span className="font-light text-ink/65">(לא חובה)</span></label>
+        <div className="flex items-center justify-between gap-2">
+          <label htmlFor="desc" className="text-body font-demibold">תיאור <span className="font-light text-ink/65">(לא חובה)</span></label>
+          <button type="button" onClick={write} disabled={writing} className="inline-flex min-h-[44px] items-center gap-1.5 rounded-[8px] px-2 text-body disabled:opacity-50">
+            <Sparkles size={16} strokeWidth={1.75} aria-hidden />{writing ? "כותבים…" : "כתבו לי תיאור"}
+          </button>
+        </div>
         <textarea id="desc" rows={4} value={d.description} maxLength={400} onChange={(e) => d.set({ description: e.target.value })} placeholder="מידות, פגמים, כל מה שכדאי לדעת…" className="mt-2 w-full resize-none rounded-tile bg-gray-100 p-3 text-body" />
       </div>
     </div>

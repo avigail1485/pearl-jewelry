@@ -26,7 +26,7 @@ export function SearchField({ value, onChange, onSubmit, onFocus, onImage, autoF
         type="search"
         enterKeyHint="search"
         aria-label="חיפוש"
-        placeholder="מה תרצו לחפש היום?"
+        placeholder="מה מחפשים?"
         value={value}
         onChange={(e) => onChange?.(e.target.value)}
         onFocus={onFocus}
