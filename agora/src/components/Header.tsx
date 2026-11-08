@@ -22,9 +22,9 @@ function SearchPill({ compact }: { compact: boolean }) {
   const file = useRef<HTMLInputElement>(null);
   return (
     <div className={`relative flex min-w-0 flex-1 items-center rounded-btn bg-white shadow-card transition-[height] duration-200 ${compact ? "h-11" : "h-12"}`}>
-      <button type="button" onClick={() => nav("/search")} className="flex h-full min-w-0 flex-1 items-center justify-start gap-2 rounded-btn pl-14 pr-4">
+      <button type="button" onClick={() => nav("/search")} className="flex h-full min-w-0 flex-1 items-center justify-start gap-2 rounded-btn pl-12 pr-4">
         <Search size={18} strokeWidth={1.75} aria-hidden className="shrink-0 text-ink/65" />
-        <span className="truncate text-body font-light text-ink/65">מה מחפשים?</span>
+        <span className="shrink-0 whitespace-nowrap text-body font-light text-ink/65">מה מחפשים?</span>
       </button>
       <button type="button" aria-label="חיפוש לפי תמונה" onClick={() => file.current?.click()} className="absolute left-1 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-btn-sm">
         <Camera size={20} strokeWidth={1.75} />
@@ -55,11 +55,10 @@ export function Header({ tabs }: { tabs?: ReactNode }) {
           </div>
         </div>
       </div>
-      <div className={`flex items-center gap-4 px-gutter ${compact ? "h-16" : "pb-3 pt-1"}`}>
-        {compact && <Link to="/" aria-label="אגורה · ראשי" className="tap -mr-1 inline-flex shrink-0 items-center justify-center rounded-btn-sm"><Pinwheel size={32} /></Link>}
+      <div className={`mx-auto flex w-full items-center justify-center gap-3 px-4 min-[380px]:gap-4 min-[380px]:px-gutter ${compact ? "h-16" : "pb-3 pt-1"}`}>
+        {compact && <Link to="/" aria-label="אגורה · ראשי" className="tap inline-flex shrink-0 items-center justify-center rounded-btn-sm"><Pinwheel size={32} /></Link>}
         <SearchPill compact={compact} />
         <BellButton />
-        {compact && <Avatar />}
       </div>
       {tabs && !compact && <div className="border-b border-gray-100">{tabs}</div>}
     </header>
