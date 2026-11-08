@@ -13,7 +13,7 @@ export default {
     extend: {
       borderRadius: radii,
       spacing: { gutter: "24px", nav: "75px" },
-      maxWidth: { app: "480px" },
+      maxWidth: { app: "402px" },
     },
   },
   plugins: [],

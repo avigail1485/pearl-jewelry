@@ -35,7 +35,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="flex min-h-[100dvh] flex-col">
+    <div className="flex min-h-full flex-col">
       <TopBar title={<span className="block truncate">{name}{thread && <Link to={`/item/${thread.itemId}`} className="block truncate text-meta font-light text-ink/65 underline underline-offset-4">{thread.itemTitle}</Link>}</span>} />
       <main className="flex-1 px-gutter pb-28" aria-live="polite">
         {msgs === null ? <Loading /> : (

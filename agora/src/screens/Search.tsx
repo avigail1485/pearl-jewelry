@@ -52,7 +52,7 @@ export default function Search() {
   };
 
   return (
-    <div className="min-h-[100dvh] pb-[120px]">
+    <div className="min-h-full pb-[120px]">
       <TopBar title="חיפוש" />
       <main className="px-gutter">
         <div className="flex flex-col items-center pb-5 text-center">

@@ -20,9 +20,14 @@ import { CityInput } from "../../components/CityInput";
 import { useRequireLogin } from "../../lib/hooks";
 import { compress } from "../../lib/image";
 import { preloadRemoveBg, removeBackground } from "../../lib/removeBg";
+import { preloadVisual, visualMatch } from "../../lib/visual";
+import { demoItems } from "../../api/items";
+import { useItems } from "../../store/items";
+const useDraftItems = () => new Map([...demoItems, ...useItems.getState().live].map((i) => [i.id, i]));
 import { useDraft } from "../../store/giveDraft";
 import { useUI } from "../../store/ui";
 import { useUser } from "../../store/user";
+import { scrollToTop } from "../../lib/scroll";
 import type { Item } from "../../api/types";
 
 const TITLES = ["תמונות", "פרטים", "איסוף", "סיכום"];
@@ -33,15 +38,15 @@ export default function Give() {
   const nav = useNavigate();
   const city = useUser((s) => s.city);
   useEffect(() => { if (!d.city) d.set({ city }); }, []); // eslint-disable-line
-  useEffect(() => { window.scrollTo(0, 0); }, [step]);
+  useEffect(() => { scrollToTop(); }, [step]);
   // Start fetching the background-removal model while the person picks a photo.
-  useEffect(() => { preloadRemoveBg(); }, []);
+  useEffect(() => { preloadRemoveBg(); preloadVisual(); }, []);
 
   const back = () => (step > 1 ? setStep(step - 1) : nav(-1));
   const canNext = step === 1 ? d.photos.length > 0 : step === 2 ? !!(d.title.trim() && d.category && d.condition) : step === 3 ? !!(d.city && d.size && d.times.length) : true;
 
   return (
-    <div className="min-h-[100dvh] pb-[110px]">
+    <div className="min-h-full pb-[110px]">
       <TopBar title={<span>למסור <span className="text-meta font-light text-ink/65">· שלב {step} מתוך 4 · {TITLES[step - 1]}</span></span>} onBack={back} />
       <div className="px-gutter pb-2"><ProgressBar step={step} /></div>
       <main className="px-gutter pt-3">
@@ -72,6 +77,7 @@ function Step1({ onNext }: { onNext: () => void }) {
   const [guess, setGuess] = useState<Guess | null>(null);
   const [failed, setFailed] = useState<RecognizeResult | null>(null);
   const [scanning, setScanning] = useState(false);
+  const [soft, setSoft] = useState(false);
   const main = d.photos[0];
 
   // Fill the form from what was recognised (only fields the person has not filled).
@@ -91,10 +97,17 @@ function Step1({ onNext }: { onNext: () => void }) {
     removeBackground(useDraft.getState().mainHQ ?? main).then((cut) => { if (alive) d.set({ cutout: cut, bg: cut ? "done" : "failed" }); });
     if (!guess) {
       setScanning(true); setFailed(null);
-      recognize(d.photos).then((r) => {
+      // Claude names the item; the on-device visual match is the fallback.
+      Promise.all([recognize(d.photos), visualMatch(main)]).then(([r, vis]) => {
         if (!alive) return;
         setScanning(false);
-        if (r.ok) { setGuess(r.guess); apply(r.guess); } else setFailed(r);
+        if (r.ok) { setGuess(r.guess); setSoft(false); apply(r.guess); return; }
+        if (vis?.guess && (vis.guess.title || vis.guess.confidence > 0.45)) {
+          const top = vis.similar[0] && useDraftItems().get(vis.similar[0].id);
+          const g: Guess = { title: vis.guess.title ?? "", category: vis.guess.category, condition: "מצב טוב", size: top?.size ?? "בינוני", description: "" };
+          setGuess(g); setSoft(true); apply(g); return;
+        }
+        setFailed(r);
       });
     }
     return () => { alive = false; };
@@ -173,8 +186,8 @@ function Step1({ onNext }: { onNext: () => void }) {
           <div className="flex items-center gap-3"><Illustration name="loading" size={40} /><div><p className="text-body font-demibold">מזהים את החפץ…</p><p className="text-meta text-ink/65">ממלאים בשבילכם את הפרטים</p></div></div>
         ) : guess?.title ? (
           <>
-            <p className="flex items-center gap-1.5 text-meta text-ink/65"><Sparkles size={14} strokeWidth={1.75} aria-hidden />זיהינו ומילאנו את הפרטים</p>
-            <p className="mt-1 text-title font-demibold">{d.title || guess.title}</p>
+            <p className="flex items-center gap-1.5 text-meta text-ink/65"><Sparkles size={14} strokeWidth={1.75} aria-hidden />{soft ? "נראה לנו שזה… מילאנו מה שאפשר" : "זיהינו ומילאנו את הפרטים"}</p>
+            <p className="mt-1 text-title font-demibold">{d.title || guess.title || "תנו לחפץ שם בשלב הבא"}</p>
             <div className="mt-2 flex flex-wrap gap-1.5"><Tag>{d.category || guess.category}</Tag><Tag>{d.condition || guess.condition}</Tag><Tag>{`גודל ${d.size || guess.size}`}</Tag></div>
             {(d.description || guess.description) && <p className="mt-2 text-body">{d.description || guess.description}</p>}
             <Button block className="mt-4" icon={<Check size={20} strokeWidth={1.75} />} onClick={accept}>נראה טוב, להמשך</Button>

@@ -6,9 +6,11 @@ import { Loading } from "./components/Loading";
 import { LoginSheet } from "./components/LoginSheet";
 import { LocationPrompt } from "./components/LocationPrompt";
 import { Toast } from "./components/Toast";
+import { BusyOverlay } from "./components/BusyOverlay";
 import Home from "./screens/Home";
 import Item from "./screens/Item";
 import { useItems } from "./store/items";
+import { scrollToTop } from "./lib/scroll";
 import { useUser } from "./store/user";
 
 const Welcome = lazy(() => import("./screens/Welcome"));
@@ -36,7 +38,7 @@ function FirstRun({ children }: { children: ReactNode }) {
 
 function ScrollTop() {
   const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => { scrollToTop(); }, [pathname]);
   return null;
 }
 
@@ -48,7 +50,8 @@ export default function App() {
   return (
     <Router>
       <ScrollTop />
-      <div className="mx-auto min-h-[100dvh] max-w-app bg-white">
+      <div id="app-frame" className="app-frame">
+      <div id="scroll-root" className="h-full overflow-y-auto overscroll-contain bg-white">
         <Suspense fallback={<Loading />}>
           <FirstRun>
             <Routes>
@@ -73,6 +76,8 @@ export default function App() {
       <LoginSheet />
       <LocationPrompt />
       <Toast />
+      <BusyOverlay />
+      </div>
     </Router>
   );
 }

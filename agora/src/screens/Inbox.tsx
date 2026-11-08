@@ -51,7 +51,7 @@ export default function Inbox() {
   }, [viewer?.id, signedIn]);
 
   return (
-    <div className="min-h-[100dvh] pb-8">
+    <div className="min-h-full pb-8">
       <TopBar title="הודעות" />
       <main className="px-gutter">
         {!signedIn ? (

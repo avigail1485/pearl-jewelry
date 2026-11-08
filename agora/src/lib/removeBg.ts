@@ -5,59 +5,18 @@
 // guided filter. Backup: U²-Net small (4.6 MB) if the main model cannot load on this device.
 // Any failure returns null and the original photo is kept.
 import { compress } from "./image";
+import { getOrt, loadImage, loadSession, withTimeout as timeout } from "./ml";
 
-type Ort = typeof import("onnxruntime-web");
 interface ModelSpec { files: string[]; size: number; mean: number[]; std: number[]; byMax: boolean; firm: boolean }
 const MODELS: Record<"rmbg" | "u2netp", ModelSpec> = {
   rmbg: { files: ["rmbg-part0.wasm", "rmbg-part1.wasm", "rmbg-part2.wasm", "rmbg-part3.wasm"], size: 1024, mean: [0.5, 0.5, 0.5], std: [1, 1, 1], byMax: false, firm: false },
   u2netp: { files: ["u2netp-model.wasm"], size: 320, mean: [0.485, 0.456, 0.406], std: [0.229, 0.224, 0.225], byMax: true, firm: true },
 };
-
-let ortP: Promise<Ort> | null = null;
-const base = () => new URL("./assets/ml/", document.baseURI).href;
-function getOrt() {
-  if (!ortP) {
-    ortP = import("onnxruntime-web").then((ort) => {
-      ort.env.wasm.wasmPaths = base();
-      ort.env.wasm.numThreads = 1;
-      ort.env.wasm.proxy = false;
-      return ort;
-    });
-  }
-  return ortP;
-}
-
-async function fetchModel(files: string[]): Promise<Uint8Array> {
-  const parts = await Promise.all(files.map(async (f) => {
-    const url = base() + f;
-    let res: Response | undefined;
-    try { const c = await caches.open("agora-ml"); res = await c.match(url); if (!res) { res = await fetch(url); if (res.ok) await c.put(url, res.clone()); } }
-    catch { res = await fetch(url); }
-    if (!res.ok) throw new Error("model " + f);
-    return new Uint8Array(await res.arrayBuffer());
-  }));
-  const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
-  let o = 0; for (const p of parts) { out.set(p, o); o += p.length; }
-  return out;
-}
-
-const sessions: Partial<Record<keyof typeof MODELS, Promise<import("onnxruntime-web").InferenceSession>>> = {};
-function session(name: keyof typeof MODELS) {
-  if (!sessions[name]) {
-    sessions[name] = (async () => {
-      const ort = await getOrt();
-      return ort.InferenceSession.create(await fetchModel(MODELS[name].files), { executionProviders: ["wasm"], graphOptimizationLevel: "all" });
-    })();
-    sessions[name]!.catch(() => { delete sessions[name]; });
-  }
-  return sessions[name]!;
-}
+const session = (name: keyof typeof MODELS) => loadSession(name, MODELS[name].files);
 
 /** Start downloading the model early (when the give flow opens). */
 export function preloadRemoveBg() { session("rmbg").catch(() => session("u2netp").catch(() => {})); }
 
-const timeout = <T,>(p: Promise<T>, ms: number) => Promise.race([p, new Promise<never>((_, r) => setTimeout(() => r(new Error("timeout")), ms))]);
-const loadImage = (src: string) => new Promise<HTMLImageElement>((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = src; });
 
 /** Predicted foreground mask (0..1) at the model's size. */
 async function predict(name: keyof typeof MODELS, img: HTMLImageElement): Promise<Float32Array> {
@@ -78,7 +37,7 @@ async function predict(name: keyof typeof MODELS, img: HTMLImageElement): Promis
   for (const v of pred) { if (v < lo) lo = v; if (v > hi) hi = v; }
   const span = hi - lo || 1, m = new Float32Array(S * S);
   // normalise; the small backup model also gets its soft edges firmed up
-  for (let i = 0; i < S * S; i++) { const v = (pred[i] - lo) / span; m[i] = spec.firm ? Math.min(1, Math.max(0, (v - 0.2) / 0.6)) : v; }
+  for (let i = 0; i < S * S; i++) { const v = (pred[i] - lo) / span; m[i] = spec.firm ? Math.min(1, Math.max(0, (v - 0.2) / 0.6)) : Math.min(1, Math.max(0, (v - 0.15) / 0.7)); }
   return m;
 }
 
@@ -99,7 +58,7 @@ function keepMainParts(m: Float32Array, S: number) {
     sizes.push(n);
   }
   const big = Math.max(...sizes);
-  for (let i = 0; i < S * S; i++) if (lab[i] && sizes[lab[i]] < big * 0.04) m[i] = 0;
+  for (let i = 0; i < S * S; i++) if (lab[i] && sizes[lab[i]] < big * 0.08) m[i] = 0;
   return big / (S * S);
 }
 
@@ -144,7 +103,7 @@ export async function removeBackground(photo: string): Promise<string | null> {
     catch { name = "u2netp"; mask = await timeout(predict("u2netp", img), 60000); }
     const S = MODELS[name].size;
     const share = keepMainParts(mask, S);
-    if (share < 0.02 || share > 0.97) return null; // nothing clear to cut out
+    if (share < 0.06 || share > 0.97) return null; // nothing clear to cut out (e.g. glass) — keep the photo
 
     const W = img.naturalWidth, H = img.naturalHeight;
     const m = document.createElement("canvas"); m.width = S; m.height = S;

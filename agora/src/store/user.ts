@@ -28,7 +28,8 @@ export const useUser = create<UserState>((set, get) => ({
   signedIn: false,
   phoneVerified: false,
   city: ls.get("agora.city", "רמת גן"),
-  welcomed: ls.get("agora.welcomed", false),
+  // The welcome screen opens every time the app is opened (kept in memory only).
+  welcomed: false,
 
   async init() {
     const cap = await getUserCap();
@@ -86,7 +87,7 @@ export const useUser = create<UserState>((set, get) => ({
     if (v?.id && get().signedIn) profileRef(v.id).then((r) => r?.update({ city }).catch(() => {}));
   },
 
-  markWelcomed() { ls.set("agora.welcomed", true); set({ welcomed: true }); },
+  markWelcomed() { set({ welcomed: true }); },
 }));
 
 /** Save list belongs to the signed-in profile; guests keep it on this device. */

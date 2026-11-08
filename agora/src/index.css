@@ -59,3 +59,12 @@
 .agora-range::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 9999px; background: #FFFFFF; border: 2px solid #1E1E1E; box-shadow: 0 2px 8px rgba(30,30,30,.12); cursor: pointer; }
 .agora-range::-moz-range-thumb { width: 28px; height: 28px; border-radius: 9999px; background: #FFFFFF; border: 2px solid #1E1E1E; cursor: pointer; }
 .agora-range:focus-visible { outline: 2px solid #1E1E1E; outline-offset: 6px; }
+
+/* Phone frame — iPhone 17 proportions (402×874). On a phone it is simply the screen. */
+html, body, #root { height: 100%; }
+body { overflow: hidden; }
+.app-frame { position: relative; margin: 0 auto; width: 100%; max-width: 402px; height: 100%; overflow: hidden; background: #FFFFFF; transform: translateZ(0); }
+@media (min-width: 520px) and (min-height: 640px) {
+  body { background: #F6F6F6; }
+  .app-frame { width: 402px; height: min(874px, calc(100% - 48px)); top: max(24px, calc((100% - 874px) / 2)); border-radius: 48px; box-shadow: 0 2px 8px rgba(30,30,30,.12); }
+}

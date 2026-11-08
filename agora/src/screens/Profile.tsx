@@ -52,7 +52,7 @@ export default function Profile() {
   );
 
   return (
-    <div className="min-h-[100dvh] pb-8 pt-safe">
+    <div className="min-h-full pb-8 pt-safe">
       <header className="px-gutter pb-3 pt-5"><h1 className="text-section font-light">פרופיל</h1></header>
       <main className="px-gutter">
         {signedIn ? (

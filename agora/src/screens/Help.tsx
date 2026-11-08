@@ -11,7 +11,7 @@ const TIPS = [
 
 export default function Help() {
   return (
-    <div className="min-h-[100dvh] pb-8">
+    <div className="min-h-full pb-8">
       <TopBar title="מסירה בטוחה" />
       <div className="flex flex-col items-center px-gutter pb-4 text-center">
         <Illustration name="verified" size={130} />

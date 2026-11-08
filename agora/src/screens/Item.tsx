@@ -18,6 +18,7 @@ import { useRequireLogin, usePersonAvatar, usePersonName } from "../lib/hooks";
 import { isNew, useItem, useItems } from "../store/items";
 import { useUI } from "../store/ui";
 import { useUser } from "../store/user";
+import { scrollToTop } from "../lib/scroll";
 import { ContactSheet } from "./ContactSheet";
 
 const RULES = [
@@ -72,7 +73,7 @@ export default function Item() {
   const sellerAvatar = usePersonAvatar(item?.demo ? undefined : item?.seller.id);
 
   useEffect(() => { if (item && !item.demo) getPhotos(item.id, item.photoCount ?? 1).then(setPhotos); }, [item?.id]); // eslint-disable-line
-  useEffect(() => { window.scrollTo(0, 0); if (id) markViewed(id); }, [id]); // eslint-disable-line
+  useEffect(() => { scrollToTop(); if (id) markViewed(id); }, [id]); // eslint-disable-line
 
   if (!item) return loaded ? (
     <div className="p-gutter pt-safe"><BackButton />
@@ -92,7 +93,7 @@ export default function Item() {
   const pickup = [item.floor != null ? (item.floor === 0 ? "קומת קרקע" : `קומה ${item.floor}`) : null, item.elevator === true ? "יש מעלית" : item.elevator === false ? "בלי מעלית" : null].filter(Boolean).join(" · ");
 
   return (
-    <div className="min-h-[100dvh] pb-[110px]">
+    <div className="min-h-full pb-[110px]">
       <div className="relative">
         <Gallery photos={gallery} item={item} />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between px-3 pt-safe">

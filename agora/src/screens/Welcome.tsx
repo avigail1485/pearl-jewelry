@@ -11,7 +11,7 @@ export default function Welcome() {
   const toast = useUI((s) => s.showToast);
   const finish = () => { markWelcomed(); nav("/", { replace: true }); };
   return (
-    <main className="flex min-h-[100dvh] flex-col items-center justify-between bg-white pb-6 pt-safe">
+    <main className="flex min-h-full flex-col items-center justify-between bg-white pb-6 pt-safe">
       <h1 className="sr-only">אגורה · לתת זה לקבל · ברוכים הבאים</h1>
       <img src="./assets/welcome-art.svg" alt="" width={402} height={745} fetchPriority="high" className="block h-auto w-full max-w-[402px] select-none" draggable={false} />
       <div className="-mt-1 flex w-full flex-col items-center gap-1 px-gutter">

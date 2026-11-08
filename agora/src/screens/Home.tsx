@@ -2,15 +2,14 @@ import { ChevronLeft } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
-import { Card } from "../components/Card";
 import { CategoryTabs } from "../components/CategoryTabs";
 import { Header } from "../components/Header";
 import { Illustration } from "../components/Illustration";
 import { Carousel } from "../components/ItemTile";
 import { CATEGORIES } from "../lib/categories";
-import { Tag } from "../components/Tag";
 import { useFilters } from "../store/filters";
 import { useAllItems, useItems } from "../store/items";
+import { scrollToTop } from "../lib/scroll";
 import { useUser } from "../store/user";
 
 export default function Home() {
@@ -37,42 +36,21 @@ export default function Home() {
 
   return (
     <>
-      <Header tabs={<CategoryTabs value={cat} onChange={(c) => { setCat(c); window.scrollTo({ top: 0 }); }} />} />
+      <Header tabs={<CategoryTabs value={cat} onChange={(c) => { setCat(c); scrollToTop(); }} />} />
       <main className="px-gutter pb-10">
         {!cat && (
-          <Card className="mt-5 p-4">
-            <div className="flex items-center gap-3">
-              <div className="min-w-0 flex-1">
-                <h2 className="whitespace-nowrap text-title font-demibold">לתת זה לקבל</h2>
-                <p className="mt-1 text-body">לוח קהילתי למסירת חפצים בחינם. מה שכבר לא צריך אתכם, מחכה למישהו אחר.</p>
-              </div>
-              <Illustration name="hello" size={96} />
-            </div>
-            <ol className="mt-3 flex items-center gap-1.5" aria-label="איך זה עובד">
-              {["מצלמים", "מפרסמים", "מוסרים"].map((s, i) => (
-                <li key={s} className="flex items-center gap-1.5">{i > 0 && <span aria-hidden className="text-meta">·</span>}<Tag>{s}</Tag></li>
-              ))}
-            </ol>
-          </Card>
+          <div className="-mx-gutter mt-4 px-2" aria-hidden>
+            <Illustration name="community" size="full" eager />
+          </div>
         )}
 
         {fresh.length > 0 && <Row title="עלו עכשיו" items={fresh} onMore={() => showAll()} />}
         {near.length > 0 && <Row title={`קרוב אליך ב${city}`} items={near} onMore={() => { setFilters({ categories: cat ? [cat] : [], q: "", maxKm: 15, sort: "near", cities: [], conditions: [] }); nav("/results"); }} />}
-        {!cat && (
-          <Card className="mt-8 flex items-center gap-3 p-4">
-            <Illustration name="add-photo" size={110} />
-            <div className="min-w-0 flex-1">
-              <h2 className="text-title font-demibold">יש לכם משהו למסור?</h2>
-              <p className="mt-1 text-body">צלמו, ואנחנו נסיר את הרקע ונמלא את הפרטים.</p>
-              <Button variant="neon" size="sm" className="mt-3" onClick={() => nav("/give")}>למסור חפץ</Button>
-            </div>
-          </Card>
-        )}
         {viewed.length > 0 && <Row title="נצפו לאחרונה" items={viewed} onMore={() => showAll()} />}
         {!cat && byCat.map(({ c, items }) => <Row key={c} title={c} items={items} onMore={() => showAll([c])} />)}
         {all.length === 0 && <p className="mt-8 text-body">עוד אין כאן חפצים בקטגוריה הזאת.</p>}
 
-        {all.length > 0 && <Button variant="secondary" block className="mt-9" onClick={() => showAll()}>לכל החפצים</Button>}
+        {all.length > 0 && <Button variant="secondary" block className="mt-9" onClick={() => showAll()}>לכל הפריטים</Button>}
       </main>
     </>
   );

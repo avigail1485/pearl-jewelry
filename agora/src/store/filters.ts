@@ -9,8 +9,10 @@ export interface Filters {
   maxKm: number | null;
   conditions: string[];
   sort: Sort;
+  /** results of a search by photo: the photo and the matching item ids, best first */
+  similar: { thumb: string; ids: string[]; label: string | null } | null;
 }
-const empty: Filters = { q: "", categories: [], cities: [], maxKm: null, conditions: [], sort: "new" };
+const empty: Filters = { q: "", categories: [], cities: [], maxKm: null, conditions: [], sort: "new", similar: null };
 
 interface FilterState extends Filters {
   recent: string[];
@@ -23,7 +25,7 @@ interface FilterState extends Filters {
 export const useFilters = create<FilterState>((set, get) => ({
   ...empty,
   recent: ["ספה", "מקרר"],
-  set: (p) => set(p),
+  set: (p) => set("q" in p && p.q !== undefined && !("similar" in p) ? { ...p, similar: null } : p),
   toggle: (key, v) => {
     const cur = get()[key];
     set({ [key]: cur.includes(v) ? cur.filter((x) => x !== v) : [...cur, v] } as Partial<Filters>);
@@ -37,6 +39,14 @@ export function activeCount(f: Filters) {
 }
 
 export function applyFilters(items: Item[], f: Filters): Item[] {
+  if (f.similar) {
+    const byId = new Map(items.map((i) => [i.id, i]));
+    let r = f.similar.ids.map((id) => byId.get(id)).filter((i): i is Item => !!i && i.status === "active");
+    if (f.categories.length) r = r.filter((i) => f.categories.includes(i.category));
+    if (f.conditions.length) r = r.filter((i) => f.conditions.includes(i.condition));
+    if (f.maxKm) r = r.filter((i) => i.distanceKm <= f.maxKm!);
+    return r;
+  }
   const q = f.q.trim();
   let r = items.filter((i) => i.status === "active");
   if (q) r = r.filter((i) => `${i.title} ${i.category} ${i.description} ${i.city}`.includes(q));

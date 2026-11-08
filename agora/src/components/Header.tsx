@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useImageSearch } from "../lib/useImageSearch";
 import { Avatar } from "./Avatar";
+import { scroller, scrollTop } from "../lib/scroll";
 import { Logo, Pinwheel } from "./Icon";
 
 function BellButton() {
@@ -37,10 +38,11 @@ function SearchPill({ compact }: { compact: boolean }) {
 export function Header({ tabs }: { tabs?: ReactNode }) {
   const [compact, setCompact] = useState(false);
   useEffect(() => {
-    const on = () => setCompact((c) => (c ? window.scrollY > 24 : window.scrollY > 72));
+    const el = scroller() ?? window;
+    const on = () => setCompact((c) => (c ? scrollTop() > 24 : scrollTop() > 72));
     on();
-    window.addEventListener("scroll", on, { passive: true });
-    return () => window.removeEventListener("scroll", on);
+    el.addEventListener("scroll", on, { passive: true });
+    return () => el.removeEventListener("scroll", on);
   }, []);
 
   return (

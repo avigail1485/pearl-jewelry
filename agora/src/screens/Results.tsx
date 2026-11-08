@@ -1,4 +1,4 @@
-import { ArrowUpDown, BellPlus, LayoutGrid, List, MapPin, SlidersHorizontal } from "lucide-react";
+import { ArrowUpDown, BellPlus, LayoutGrid, List, MapPin, SlidersHorizontal, X } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../components/Button";
@@ -44,7 +44,7 @@ export default function Results() {
   const res = applyFilters(items, f);
   const count = activeCount(f);
   const alert = () => toast("נעדכן אתכם כשיעלו חפצים חדשים");
-  const title = f.q || (f.categories.length === 1 ? f.categories[0] : f.categories.length ? f.categories.join(", ") : "כל החפצים");
+  const title = f.similar ? (f.similar.label ? `דומים ל${f.similar.label}` : "חפצים דומים לתמונה") : f.q || (f.categories.length === 1 ? f.categories[0] : f.categories.length ? f.categories.join(", ") : "כל הפריטים");
   const where = f.maxKm ? `עד ${f.maxKm} ק"מ מ${city}` : "כל הארץ";
   const subtitle = `${where} · ${f.conditions.length ? f.conditions.join(", ") : "כל המצבים"}`;
   const CatIcon = f.categories.length === 1 ? CATEGORY_ICONS[f.categories[0]] : CATEGORY_ICONS["שונות"];
@@ -53,7 +53,7 @@ export default function Results() {
   const clearSection = (s: Section) => f.set(s === "cat" ? { categories: [] } : s === "cond" ? { conditions: [] } : s === "where" ? { maxKm: null, cities: [] } : { sort: "new" });
 
   return (
-    <div className="min-h-[100dvh]">
+    <div className="min-h-full">
       <header className="sticky top-0 z-30 bg-white/90 pt-safe backdrop-blur-md">
         <div className="flex items-center gap-2 px-3 py-2">
           <BackButton onClick={() => nav("/")} />
@@ -83,6 +83,13 @@ export default function Results() {
       </header>
 
       <main className="px-gutter pb-10">
+        {f.similar && (
+          <div className="mb-4 flex items-center gap-3 rounded-tile bg-gray-100 p-3">
+            <img src={f.similar.thumb} alt="התמונה שחיפשתם" className="h-14 w-14 rounded-btn object-cover" />
+            <p className="min-w-0 flex-1 text-body">{f.similar.label ? <>זיהינו: <b className="font-demibold">{f.similar.label}</b>. אלה החפצים שהכי דומים.</> : "אלה החפצים בלוח שהכי דומים לתמונה."}</p>
+            <button type="button" aria-label="ביטול החיפוש לפי תמונה" onClick={() => f.set({ similar: null })} className="tap inline-flex items-center justify-center rounded-btn"><X size={20} strokeWidth={1.75} /></button>
+          </div>
+        )}
         {res.length === 0 ? (
           <EmptyState name="searching" size={180} title="לא מצאנו חפצים כאלה" text="אולי בקרוב. נעדכן אתכם כשיעלה משהו מתאים.">
             <Button block icon={<BellPlus size={20} strokeWidth={1.75} />} onClick={alert}>התראה על חדשים</Button>

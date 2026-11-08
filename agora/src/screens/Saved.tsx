@@ -11,7 +11,7 @@ export default function Saved() {
   const items = ids.map((id) => all.find((i) => i.id === id)).filter(Boolean) as typeof all;
   const nav = useNavigate();
   return (
-    <div className="min-h-[100dvh] pb-8 pt-safe">
+    <div className="min-h-full pb-8 pt-safe">
       <header className="px-gutter pb-3 pt-5"><h1 className="text-section font-light">אהבתי</h1></header>
       <main className="px-gutter">
         {items.length === 0 ? (

@@ -7,7 +7,7 @@ export default function MessageSent() {
   const { tid = "" } = useParams();
   const nav = useNavigate();
   return (
-    <main className="flex min-h-[100dvh] flex-col pt-safe">
+    <main className="flex min-h-full flex-col pt-safe">
       <div className="px-3 pt-2"><BackButton /></div>
       <div className="flex flex-1 items-center">
         <EmptyState name="message-sent" size={190} title="ההודעה נשלחה" text="המוסר יקבל את ההודעה ויחזור אליכם כאן, בהודעות.">
