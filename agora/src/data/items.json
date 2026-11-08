@@ -1,18 +1,646 @@
 [
-  { "id": "d1", "title": "ספה תלת־מושבית", "category": "ריהוט", "icon": "sofa", "condition": "מצב טוב", "city": "רמת גן", "distanceKm": 1.2, "minutesAgo": 25, "size": "גדול", "times": ["ערב", "בתיאום"], "stairs": true, "description": "ספת בד אפורה, נוחה מאוד. יש כתם קטן בצד, לא מורגש. צריך שניים להרמה, קומה 2 בלי מעלית.", "seller": { "id": "s1", "name": "יוסי", "given": 12 } },
-  { "id": "d2", "title": "מנורת שולחן", "category": "כלי בית", "icon": "lamp", "condition": "כמו חדש", "city": "רמת גן", "distanceKm": 0.6, "minutesAgo": 40, "size": "קטן", "times": ["בוקר", "צהריים"], "stairs": false, "description": "מנורת קריאה עם זרוע מתכווננת. עובדת מצוין, נורת לד כלולה.", "seller": { "id": "s2", "name": "מרים", "given": 5 } },
-  { "id": "d3", "title": "עגלת תינוק", "category": "לתינוק ולילד", "icon": "baby", "condition": "מצב טוב", "city": "גבעתיים", "distanceKm": 2.4, "minutesAgo": 95, "size": "בינוני", "times": ["בתיאום"], "stairs": false, "description": "עגלה מתקפלת, קלה. גלגל קדמי קצת חורק, הכל עובד.", "seller": { "id": "s3", "name": "דוד", "given": 8 } },
-  { "id": "d4", "title": "ארגז ספרי קריאה", "category": "ספרים", "icon": "book", "condition": "מצב טוב", "city": "בני ברק", "distanceKm": 3.1, "minutesAgo": 12, "size": "בינוני", "times": ["ערב"], "stairs": true, "description": "כעשרים ספרי קריאה לילדים ולנוער. כריכות שלמות.", "seller": { "id": "s4", "name": "אהרן", "given": 21 } },
-  { "id": "d5", "title": "מקרר קטן", "category": "חשמל ואלקטרוניקה", "icon": "fridge", "condition": "מעט פגום", "city": "רמת גן", "distanceKm": 1.9, "minutesAgo": 300, "size": "בינוני", "times": ["צהריים", "ערב"], "stairs": false, "description": "מקרר משרדי, מקרר טוב. הדלת עם שריטות.", "seller": { "id": "s5", "name": "שמעון", "given": 3 } },
-  { "id": "d6", "title": "כורסת קריאה", "category": "ריהוט", "icon": "armchair", "condition": "כמו חדש", "city": "תל אביב", "distanceKm": 4.8, "minutesAgo": 50, "size": "בינוני", "times": ["בוקר", "בתיאום"], "stairs": true, "description": "כורסה רכה בצבע ירוק זית. כמעט לא בשימוש.", "seller": { "id": "s6", "name": "רחל", "given": 9 } },
-  { "id": "d7", "title": "שתיל מונסטרה", "category": "צמחים וגינה", "icon": "plant", "condition": "כמו חדש", "city": "גבעתיים", "distanceKm": 2.1, "minutesAgo": 8, "size": "קטן", "times": ["בוקר", "צהריים", "ערב"], "stairs": false, "description": "ייחור שהשריש, בעציץ קטן. מתאים לחלון מואר.", "seller": { "id": "s7", "name": "נחמה", "given": 14 } },
-  { "id": "d8", "title": "ארגז כלי עבודה", "category": "כלי עבודה", "icon": "tool", "condition": "מצב טוב", "city": "פתח תקווה", "distanceKm": 7.5, "minutesAgo": 600, "size": "קטן", "times": ["ערב"], "stairs": false, "description": "פטישים, מברגים ומפתחות. חסרים כמה ביטים.", "seller": { "id": "s8", "name": "משה", "given": 6 } },
-  { "id": "d9", "title": "אופני ילדים", "category": "אופניים ותנועה", "icon": "bike", "condition": "מעט פגום", "city": "רמת גן", "distanceKm": 0.9, "minutesAgo": 140, "size": "בינוני", "times": ["צהריים"], "stairs": false, "description": "אופניים בגודל 16, עם גלגלי עזר. השרשרת צריכה שימון.", "seller": { "id": "s9", "name": "חיים", "given": 2 } },
-  { "id": "d10", "title": "שולחן עבודה", "category": "ריהוט", "icon": "box", "condition": "מצב טוב", "city": "בני ברק", "distanceKm": 2.8, "minutesAgo": 33, "size": "גדול", "times": ["ערב", "בתיאום"], "stairs": true, "description": "שולחן עץ עם מגירה. 120 על 60. מתפרק לשניים.", "seller": { "id": "s4", "name": "אהרן", "given": 21 } },
-  { "id": "d11", "title": "מעילי חורף לילדים", "category": "ביגוד", "icon": "shirt", "condition": "כמו חדש", "city": "ירושלים", "distanceKm": 54, "minutesAgo": 200, "size": "קטן", "times": ["בתיאום"], "stairs": false, "description": "שלושה מעילים במידות 6 עד 10. נקיים ומקופלים.", "seller": { "id": "s10", "name": "לאה", "given": 17 } },
-  { "id": "d12", "title": "טלוויזיה 32 אינץ'", "category": "חשמל ואלקטרוניקה", "icon": "tv", "condition": "לחומר גלם", "city": "תל אביב", "distanceKm": 5.6, "minutesAgo": 1440, "size": "בינוני", "times": ["ערב"], "stairs": false, "description": "לא נדלקת. מתאימה לחלקים או לתיקון.", "seller": { "id": "s11", "name": "אברהם", "given": 4 } },
-  { "id": "d13", "title": "סט סירים", "category": "כלי בית", "icon": "pot", "condition": "מצב טוב", "city": "גבעתיים", "distanceKm": 1.6, "minutesAgo": 18, "size": "קטן", "times": ["בוקר"], "stairs": false, "description": "ארבעה סירים עם מכסים. נירוסטה, מתאימים לכל הכיריים.", "seller": { "id": "s2", "name": "מרים", "given": 5 } },
-  { "id": "d14", "title": "משחקי קופסה", "category": "לתינוק ולילד", "icon": "toy", "condition": "כמו חדש", "city": "רמת גן", "distanceKm": 2.2, "minutesAgo": 75, "size": "קטן", "times": ["צהריים", "ערב"], "stairs": true, "description": "חמישה משחקים שלמים עם כל החלקים.", "seller": { "id": "s12", "name": "צביה", "given": 11 } },
-  { "id": "d15", "title": "מדף ספרים", "category": "ריהוט", "icon": "book", "condition": "מעט פגום", "city": "פתח תקווה", "distanceKm": 8.2, "minutesAgo": 480, "size": "גדול", "times": ["בתיאום"], "stairs": false, "description": "מדף חמש קומות, לבן. פינה אחת מעט שבורה.", "seller": { "id": "s8", "name": "משה", "given": 6 } },
-  { "id": "d16", "title": "עציצים ריקים", "category": "צמחים וגינה", "icon": "plant", "condition": "מצב טוב", "city": "בני ברק", "distanceKm": 3.4, "minutesAgo": 5, "size": "קטן", "times": ["בוקר", "ערב"], "stairs": false, "description": "שמונה עציצי חרס בגדלים שונים.", "seller": { "id": "s13", "name": "בתיה", "given": 7 } }
+ {
+  "id": "a3234266",
+  "title": "3 בקבוקי mam, כמו חדשים",
+  "category": "לתינוק ולילד",
+  "subcategory": "ציוד לתינוק",
+  "condition": "כמו חדש",
+  "city": "אשדוד",
+  "region": "השפלה",
+  "minutesAgo": 12,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "3 בקבוקי mam, תכולה 130, כמו חדשים.",
+  "photo": "assets/items/3234266.webp",
+  "seller": {
+   "id": "s2",
+   "name": "מרים",
+   "given": 8
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234266_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234704",
+  "title": "כיור אמבטיה",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "סניטריה",
+  "condition": "מצב טוב",
+  "city": "תל אביב-יפו",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 21,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "כיור אמבטיה במצב טוב, איסוף מרמת גן",
+  "photo": "assets/items/3234704.webp",
+  "seller": {
+   "id": "s3",
+   "name": "דוד",
+   "given": 15
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234704_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234692",
+  "title": "שידת נעליים",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "שידות וכונניות",
+  "condition": "מעט פגום",
+  "city": "רחובות",
+  "region": "השפלה",
+  "minutesAgo": 21,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "ארונית / שידת נעליים\nגובה 1.80 ס\"מ\nרוחב 70 ס\"מ",
+  "photo": "assets/items/3234692.webp",
+  "seller": {
+   "id": "s5",
+   "name": "רחל",
+   "given": 6
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234692_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234714",
+  "title": "אוניברסיטה לתינוק",
+  "category": "לתינוק ולילד",
+  "subcategory": "ציוד לתינוק",
+  "condition": "מצב טוב",
+  "city": "חיפה",
+  "region": "חיפה, כרמל וקריות",
+  "minutesAgo": 22,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "\"אוניברסיטה\" לתינוק במצב מעולה",
+  "photo": "assets/items/3234714.webp",
+  "seller": {
+   "id": "s7",
+   "name": "נחמה",
+   "given": 20
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234714_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234711",
+  "title": "מקרר",
+  "category": "מוצרי חשמל",
+  "subcategory": "מקררים",
+  "condition": "מצב טוב",
+  "city": "קרית מוצקין",
+  "region": "חיפה, כרמל וקריות",
+  "minutesAgo": 22,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "מקרר סמסונג 500 ליטר במצב טוב, צריך להוריד את המקרר עם במת הרמה (מנוף) מקומה שלישית בקרית מוצקין.\nמעריך שמנוף עולה כ 350 שח.",
+  "photo": "assets/items/3234711.webp",
+  "seller": {
+   "id": "s8",
+   "name": "משה",
+   "given": 4
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234711_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234712",
+  "title": "צדף פלסטט",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "מעמדים",
+  "condition": "כמו חדש",
+  "city": "בני ברק",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 23,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "מדף פלסטיק קטן\nמתאים לשימוש על השיש וכד'",
+  "photo": "assets/items/3234712.webp",
+  "seller": {
+   "id": "s10",
+   "name": "לאה",
+   "given": 18
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234712_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234694",
+  "title": "מייבש כביסה",
+  "category": "מוצרי חשמל",
+  "subcategory": "מכונות ומייבשי כביסה",
+  "condition": "מצב טוב",
+  "city": "קרית ביאליק",
+  "region": "חיפה, כרמל וקריות",
+  "minutesAgo": 23,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "מייבש כביסה ,לפי בעלת הדירה שלי הוא עובד אני פשוט לא משתמשת בו ואין לי מושג ,היא הסכימה למסור אותו ,איסוף עצמאי מקרית ביאליק",
+  "photo": "assets/items/3234694.webp",
+  "seller": {
+   "id": "s12",
+   "name": "בתיה",
+   "given": 9
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234694_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234700",
+  "title": "אופנוע לילדים",
+  "category": "לתינוק ולילד",
+  "subcategory": "שונות - משחקים וצעצועים",
+  "condition": "מצב טוב",
+  "city": "מעלה אדומים",
+  "region": "ירושלים ויהודה",
+  "minutesAgo": 23,
+  "size": "בינוני",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "אופנוע חשמלי לילדים\nצריך להחליף מצבר",
+  "photo": "assets/items/3234700.webp",
+  "seller": {
+   "id": "s13",
+   "name": "צביה",
+   "given": 16
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234700_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234698",
+  "title": "מחבט טניס לילדים",
+  "category": "תחביבים וספורט",
+  "subcategory": "טניס",
+  "condition": "מעט פגום",
+  "city": "רחובות",
+  "region": "השפלה",
+  "minutesAgo": 23,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "מחבט טניס ישן, יש לו 2 מיתרים קרועים, מיועד למשחק בסיסי של ילדים או לתיקון",
+  "photo": "assets/items/3234698.webp",
+  "seller": {
+   "id": "s15",
+   "name": "שרה",
+   "given": 7
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234698_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234693",
+  "title": "פסנתר",
+  "category": "תחביבים וספורט",
+  "subcategory": "פסנתרים",
+  "condition": "מעט פגום",
+  "city": "חיפה",
+  "region": "חיפה, כרמל וקריות",
+  "minutesAgo": 23,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "למסירה פסנתר צרפתי תוצרת שינדלר. הפסנתר זקוק לשיפוץ/כיוון. עדיפות לגופים ציבוריים",
+  "photo": "assets/items/3234693.webp",
+  "seller": {
+   "id": "s16",
+   "name": "מנחם",
+   "given": 14
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234693_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234630",
+  "title": "שידה",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "שידות וכונניות",
+  "condition": "מצב טוב",
+  "city": "רעננה",
+  "region": "השרון",
+  "minutesAgo": 148,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": "רוחב 1 מ גובה 1 עומק 45 סמ",
+  "description": "שידה למסירה בחינם.",
+  "photo": "assets/items/3234630.webp",
+  "seller": {
+   "id": "s4",
+   "name": "אהרן",
+   "given": 19
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234630_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234671",
+  "title": "ספה תלת מושבית צבע שמנת",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "סלון",
+  "condition": "מצב טוב",
+  "city": "פתח תקווה",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 148,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": true,
+  "floor": 6,
+  "elevator": false,
+  "disassembly": null,
+  "dims": "רוחב 2.40",
+  "description": "איסוף מפ\"ת מול שניידר",
+  "photo": "assets/items/3234671.webp",
+  "seller": {
+   "id": "s5",
+   "name": "רחל",
+   "given": 3
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234671_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234614",
+  "title": "שולחן פינת אוכל וארבעה כיסאות",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "פינת אוכל",
+  "condition": "מצב טוב",
+  "city": "רמת גן",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 148,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": 4,
+  "elevator": true,
+  "disassembly": "לא",
+  "dims": "רוחב 80 · גובה 75 · עומק 120",
+  "description": "שולחן פינת אוכל וארבעה כיסאות למסירה בחינם.",
+  "photo": "assets/items/3234614.webp",
+  "seller": {
+   "id": "s6",
+   "name": "שמעון",
+   "given": 10
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234614_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234634",
+  "title": "מקרר",
+  "category": "מוצרי חשמל",
+  "subcategory": "מקררים",
+  "condition": "מצב טוב",
+  "city": "רחובות",
+  "region": "השפלה",
+  "minutesAgo": 148,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": "גובה 180 רוחב 78 עומק 75",
+  "description": "מקרר אפולו במצב טוב",
+  "photo": "assets/items/3234634.webp",
+  "seller": {
+   "id": "s7",
+   "name": "נחמה",
+   "given": 17
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234634_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234625",
+  "title": "סלקל נשלף",
+  "category": "לתינוק ולילד",
+  "subcategory": "כיסא לרכב",
+  "condition": "כמו חדש",
+  "city": "ראשון לציון",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 148,
+  "size": "בינוני",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "סלקל נשלף עם תושבת קבועה לרכב",
+  "photo": "assets/items/3234625.webp",
+  "seller": {
+   "id": "s9",
+   "name": "חיים",
+   "given": 8
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234625_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234633",
+  "title": "מתקן לבקבוק מים לאופניים",
+  "category": "תחביבים וספורט",
+  "subcategory": "אופניים וקורקינטים",
+  "condition": "כמו חדש",
+  "city": "הוד השרון",
+  "region": "השרון",
+  "minutesAgo": 150,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "מתקן לבקבוק לאופניים\nצבע שחור",
+  "photo": "assets/items/3234633.webp",
+  "seller": {
+   "id": "s10",
+   "name": "לאה",
+   "given": 15
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234633_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234624",
+  "title": "שולחן סלוני",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "שולחנות",
+  "condition": "מצב טוב",
+  "city": "רעננה",
+  "region": "השרון",
+  "minutesAgo": 151,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "שולחן מעץ מלא באיתור קרמיקה , אורך 1.6 מ",
+  "photo": "assets/items/3234624.webp",
+  "seller": {
+   "id": "s12",
+   "name": "בתיה",
+   "given": 6
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234624_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234612",
+  "title": "עגלת ספורטליין",
+  "category": "לתינוק ולילד",
+  "subcategory": "עגלות",
+  "condition": "כמו חדש",
+  "city": "פתח תקווה",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 246,
+  "size": "בינוני",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "עגלת אמבטיה ספורטליין ללא הטיולון",
+  "photo": "assets/items/3234612.webp",
+  "seller": {
+   "id": "s14",
+   "name": "יעקב",
+   "given": 20
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234612_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234608",
+  "title": "בימבה לילדים ללא המטען חדשה",
+  "category": "לתינוק ולילד",
+  "subcategory": "ציוד לתינוק",
+  "condition": "כמו חדש",
+  "city": "רמת גן",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 246,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "בימבה חדשה עם מוזיקה משהו מגניב רק לא מצליח למצוא את המטען",
+  "photo": "assets/items/3234608.webp",
+  "seller": {
+   "id": "s15",
+   "name": "שרה",
+   "given": 4
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234608_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234604",
+  "title": "משקולת 24 קילו",
+  "category": "תחביבים וספורט",
+  "subcategory": "כושר",
+  "condition": "מעט פגום",
+  "city": "אור יהודה",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 246,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "גלגלי השיניים לא טובים קצת קשה להוציא את המשקולת עצמה",
+  "photo": "assets/items/3234604.webp",
+  "seller": {
+   "id": "s1",
+   "name": "יוסי",
+   "given": 18
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234604_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234585",
+  "title": "כיסא בטיחות לרכב",
+  "category": "לתינוק ולילד",
+  "subcategory": "כיסא לרכב",
+  "condition": "מצב טוב",
+  "city": "חיפה",
+  "region": "חיפה, כרמל וקריות",
+  "minutesAgo": 247,
+  "size": "בינוני",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "כיסא בטיחות לרכב לתינוק של חברת peg perego דגם primo viaggio\nדורש מעט ניקוי, אבל חוץ מזה מצב 100 אחוז",
+  "photo": "assets/items/3234585.webp",
+  "seller": {
+   "id": "s2",
+   "name": "מרים",
+   "given": 2
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234585_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234573",
+  "title": "קערה ופעמון פורצלן ויטאז",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "קישוטים ופיצ'יפקס",
+  "condition": "כמו חדש",
+  "city": "רעננה",
+  "region": "השרון",
+  "minutesAgo": 247,
+  "size": "קטן",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": null,
+  "description": "קערת פורצלן וינטאז עם שולי תחרה ופעמון דיקורטיבי ויטאז",
+  "photo": "assets/items/3234573.webp",
+  "seller": {
+   "id": "s3",
+   "name": "דוד",
+   "given": 9
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234573_o.asp",
+  "cutout": true
+ },
+ {
+  "id": "a3234566",
+  "title": "ספה",
+  "category": "ריהוט וכלי בית",
+  "subcategory": "סלון",
+  "condition": "מצב טוב",
+  "city": "ראש העין",
+  "region": "גוש דן והמרכז",
+  "minutesAgo": 351,
+  "size": "גדול",
+  "times": [
+   "בתיאום"
+  ],
+  "stairs": false,
+  "floor": null,
+  "elevator": null,
+  "disassembly": null,
+  "dims": "רוחב 3 מטר",
+  "description": "ספה למסירה בחינם.",
+  "photo": "assets/items/3234566.webp",
+  "seller": {
+   "id": "s4",
+   "name": "אהרן",
+   "given": 16
+  },
+  "source": "https://www.agora.co.il/cache/2026-11/3234566_o.asp",
+  "cutout": true
+ }
 ]

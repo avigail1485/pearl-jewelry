@@ -2,14 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { ItemGrid } from "../components/ItemTile";
-import { useItems } from "../store/items";
+import { useAllItems } from "../store/items";
 import { useSaved } from "../store/saved";
 
 export default function Saved() {
   const ids = useSaved((s) => s.ids);
-  const byId = useItems((s) => s.byId);
-  useItems((s) => s.live);
-  const items = ids.map(byId).filter(Boolean) as NonNullable<ReturnType<typeof byId>>[];
+  const all = useAllItems();
+  const items = ids.map((id) => all.find((i) => i.id === id)).filter(Boolean) as typeof all;
   const nav = useNavigate();
   return (
     <div className="min-h-[100dvh] pb-8 pt-safe">

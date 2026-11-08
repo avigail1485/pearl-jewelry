@@ -6,7 +6,7 @@ import { Button } from "../components/Button";
 import { Loading } from "../components/Loading";
 import { TopBar } from "../components/TopBar";
 import { usePersonName } from "../lib/hooks";
-import { useItems } from "../store/items";
+import { useItem } from "../store/items";
 import { useUI } from "../store/ui";
 import { useUser } from "../store/user";
 import { ItemImage } from "../components/ItemImage";
@@ -19,7 +19,7 @@ const time = (t: number) => {
 function Row({ t, me }: { t: Thread; me: string }) {
   const other = t.buyerId === me ? t.sellerId : t.buyerId;
   const name = usePersonName(t.demoSellerName ? undefined : other, t.demoSellerName || "מישהו מהקהילה");
-  const item = useItems((s) => s.byId(t.itemId));
+  const item = useItem(t.itemId);
   return (
     <li>
       <Link to={`/chat/${t.id}`} className="flex items-center gap-3 border-b border-gray-100 py-3">

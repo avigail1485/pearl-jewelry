@@ -3,9 +3,10 @@ export interface Item {
   id: string;
   title: string;
   category: string;
-  icon: string;
+  icon?: string;
   condition: string;
   city: string;
+  /** computed from the viewer's area */
   distanceKm: number;
   createdAt: number;
   size: string;
@@ -16,6 +17,18 @@ export interface Item {
   status: "active" | "given";
   /** small JPEG data URL for tiles (user-published items) */
   thumb?: string;
+  /** photo shipped with the app (demo catalogue from agora.co.il) */
+  photo?: string;
+  /** photo has a transparent background (shown as a product shot) */
+  cutout?: boolean;
+  subcategory?: string;
+  region?: string;
+  floor?: number | null;
+  elevator?: boolean | null;
+  disassembly?: string | null;
+  dims?: string | null;
+  /** the original listing on agora.co.il */
+  source?: string;
   ownerId?: string;
   demo?: boolean;
 }

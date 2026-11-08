@@ -6,14 +6,14 @@ import { Card } from "../components/Card";
 import { Chip } from "../components/Chip";
 import { SearchField } from "../components/SearchField";
 import { TopBar } from "../components/TopBar";
-import { CATEGORIES, CATEGORY_ICON, CITIES, CONDITIONS, ICONS } from "../lib/categories";
+import { CATEGORIES, CATEGORY_ICONS, CITIES, CONDITIONS } from "../lib/categories";
 import { useImageSearch } from "../lib/useImageSearch";
 import { applyFilters, useFilters } from "../store/filters";
-import { useItems } from "../store/items";
+import { useAllItems } from "../store/items";
 
 type Key = "what" | "where" | "cond" | "sort";
-const POPULAR = ["ספה", "עגלה", "ספרים", "מקרר", "שולחן", "אופניים", "עציצים"];
-export const DISTANCES = [1, 3, 5, 10];
+const POPULAR = ["ספה", "מקרר", "שולחן", "שידה", "עגלה", "סלקל", "מזרון"];
+export const DISTANCES = [5, 15, 30, 60];
 
 function Acc({ id, open, setOpen, title, summary, children }: { id: Key; open: Key | null; setOpen: (k: Key | null) => void; title: string; summary: string; children: ReactNode }) {
   const isOpen = open === id;
@@ -33,7 +33,7 @@ function Acc({ id, open, setOpen, title, summary, children }: { id: Key; open: K
 
 export default function Search() {
   const f = useFilters();
-  const items = useItems((s) => s.all)();
+  const items = useAllItems();
   const nav = useNavigate();
   const imageSearch = useImageSearch();
   const [open, setOpen] = useState<Key | null>("what");
@@ -57,7 +57,7 @@ export default function Search() {
           <h3 className="mb-1 mt-5 text-meta text-ink/65">קטגוריה</h3>
           <ul>
             {CATEGORIES.map((c) => {
-              const Icon = ICONS[CATEGORY_ICON[c]];
+              const Icon = CATEGORY_ICONS[c];
               const on = f.categories.includes(c);
               return (
                 <li key={c}>

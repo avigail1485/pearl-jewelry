@@ -1,18 +1,18 @@
-import { ChevronLeft, Clock, MapPin, Package, Share2, ShieldCheck, Sparkles } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Building2, ChevronLeft, Clock, ExternalLink, MapPin, Package, Ruler, Share2, ShieldCheck, Sparkles, Wrench } from "lucide-react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getPhotos, markGiven } from "../api/items";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { StairsIcon } from "../components/Icon";
-import { ItemImage } from "../components/ItemImage";
-import { fmtKm } from "../components/ItemTile";
+import { ItemImage, itemPhoto } from "../components/ItemImage";
 import { Loading } from "../components/Loading";
 import { SaveButton } from "../components/SaveButton";
 import { Tag } from "../components/Tag";
 import { BackButton } from "../components/TopBar";
+import { fmtKm, timeAgo } from "../lib/format";
 import { useRequireLogin, usePersonAvatar, usePersonName } from "../lib/hooks";
-import { isNew, useItems } from "../store/items";
+import { isNew, useItem, useItems } from "../store/items";
 import { useUI } from "../store/ui";
 import { useUser } from "../store/user";
 import { ContactSheet } from "./ContactSheet";
@@ -23,10 +23,42 @@ const RULES = [
   "מתאמים בהודעות בתוך האפליקציה.",
 ];
 
+function Highlight({ icon, title, text }: { icon: ReactNode; title: string; text?: string }) {
+  return (
+    <li className="flex gap-4">
+      <span className="mt-0.5 shrink-0" aria-hidden>{icon}</span>
+      <div><p className="text-body font-demibold">{title}</p>{text && <p className="text-body text-ink/65">{text}</p>}</div>
+    </li>
+  );
+}
+
+function Gallery({ photos, item }: { photos: string[]; item: Parameters<typeof ItemImage>[0]["item"] }) {
+  const [idx, setIdx] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  if (photos.length <= 1) return <ItemImage item={item} src={photos[0]} eager iconSize={96} className="aspect-[4/3.4] w-full" />;
+  return (
+    <>
+      <div
+        ref={ref}
+        onScroll={(e) => setIdx(Math.round(Math.abs(e.currentTarget.scrollLeft) / e.currentTarget.clientWidth))}
+        className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto"
+        aria-label="תמונות"
+      >
+        {photos.map((p, i) => <ItemImage key={i} item={item} src={p} eager={i === 0} className="aspect-[4/3.4] w-full shrink-0 snap-center" />)}
+      </div>
+      <span className="absolute bottom-3 left-3 rounded-full bg-ink/70 px-2.5 py-0.5 text-meta text-white">{idx + 1} / {photos.length}</span>
+      <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5" aria-hidden>
+        {photos.map((_, i) => <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === idx ? "bg-white" : "bg-white/60"}`} />)}
+      </div>
+    </>
+  );
+}
+
 export default function Item() {
   const { id = "" } = useParams();
-  const item = useItems((s) => s.byId(id));
+  const item = useItem(id);
   const loaded = useItems((s) => s.loaded);
+  const markViewed = useItems((s) => s.markViewed);
   const me = useUser((s) => s.viewer?.id);
   const toast = useUI((s) => s.showToast);
   const nav = useNavigate();
@@ -37,29 +69,24 @@ export default function Item() {
   const sellerAvatar = usePersonAvatar(item?.demo ? undefined : item?.seller.id);
 
   useEffect(() => { if (item && !item.demo) getPhotos(item.id).then(setPhotos); }, [item?.id]); // eslint-disable-line
-  useEffect(() => { window.scrollTo(0, 0); }, [id]);
+  useEffect(() => { window.scrollTo(0, 0); if (id) markViewed(id); }, [id]); // eslint-disable-line
 
   if (!item) return loaded ? (
     <div className="p-gutter pt-safe"><BackButton /><p className="mt-8 text-center text-body">החפץ כבר לא בלוח.</p></div>
   ) : <Loading />;
 
   const mine = !!me && item.ownerId === me;
+  const gallery = photos.length ? photos : itemPhoto(item) ? [itemPhoto(item)!] : [];
   const share = async () => {
-    const data = { title: item.title, text: `${item.title} · בחינם באגורה` };
-    try { if (navigator.share) await navigator.share(data); else { await navigator.clipboard.writeText(`${data.text}`); toast("הפרטים הועתקו"); } } catch { /* cancelled */ }
+    const text = `${item.title} · בחינם באגורה`;
+    try { if (navigator.share) await navigator.share({ title: item.title, text }); else { await navigator.clipboard.writeText(text); toast("הפרטים הועתקו"); } } catch { /* cancelled */ }
   };
+  const pickup = [item.floor != null ? (item.floor === 0 ? "קומת קרקע" : `קומה ${item.floor}`) : null, item.elevator === true ? "יש מעלית" : item.elevator === false ? "בלי מעלית" : null].filter(Boolean).join(" · ");
 
   return (
     <div className="min-h-[100dvh] pb-[110px]">
-      {/* Image 4:3.4 with floating buttons */}
       <div className="relative">
-        {photos.length > 1 ? (
-          <div className="no-scrollbar flex snap-x snap-mandatory overflow-x-auto" aria-label="תמונות">
-            {photos.map((p, i) => <ItemImage key={i} item={item} src={p} className="aspect-[4/3.4] w-full shrink-0 snap-center" />)}
-          </div>
-        ) : (
-          <ItemImage item={item} src={photos[0]} iconSize={96} className="aspect-[4/3.4] w-full" />
-        )}
+        <Gallery photos={gallery} item={item} />
         <div className="absolute inset-x-0 top-0 flex items-center justify-between px-3 pt-safe">
           <div className="pt-2"><BackButton className="!bg-white shadow-card" /></div>
           <div className="flex pt-2">
@@ -69,70 +96,71 @@ export default function Item() {
             <SaveButton id={item.id} title={item.title} />
           </div>
         </div>
-        {photos.length > 1 && <span className="absolute bottom-3 left-3 rounded-full bg-white px-2.5 py-0.5 text-meta">{photos.length} תמונות</span>}
       </div>
 
-      <main className="px-gutter">
-        <nav aria-label="נתיב" className="mt-4 flex items-center gap-1 text-meta text-ink/65">
+      <main className="relative -mt-5 rounded-t-sheet bg-white px-gutter pt-6">
+        <nav aria-label="נתיב" className="flex items-center gap-1 text-meta text-ink/65">
           <Link to="/" className="underline-offset-4 hover:underline">ראשי</Link>
           <ChevronLeft size={14} strokeWidth={1.75} aria-hidden />
           <span>{item.category}</span>
+          {item.subcategory && <><ChevronLeft size={14} strokeWidth={1.75} aria-hidden /><span>{item.subcategory}</span></>}
         </nav>
-        <div className="mt-1 flex items-start gap-2">
-          <h1 className="flex-1 text-title font-demibold">{item.title}</h1>
+        <h1 className="mt-2 text-title font-demibold">{item.title}</h1>
+        <p className="mt-1 text-body text-ink/65">{item.city} · {fmtKm(item.distanceKm)} ממך</p>
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <Tag>{item.condition}</Tag>
           {isNew(item) && <Tag tone="neon">חדש</Tag>}
           {item.status === "given" && <Tag>נמסר</Tag>}
-        </div>
-        <p className="mt-1 text-meta text-ink/65">{item.city} · {fmtKm(item.distanceKm)}</p>
-
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <Card className="p-4">
-            <h2 className="flex items-center gap-1.5 text-meta text-ink/65"><Sparkles size={16} strokeWidth={1.75} aria-hidden />מצב</h2>
-            <p className="mt-1 text-body font-demibold">{item.condition}</p>
-            <p className="mt-1 flex items-center gap-1.5 text-meta"><Package size={16} strokeWidth={1.75} aria-hidden />גודל {item.size}</p>
-          </Card>
-          <Card className="p-4">
-            <h2 className="flex items-center gap-1.5 text-meta text-ink/65"><MapPin size={16} strokeWidth={1.75} aria-hidden />איסוף</h2>
-            <p className="mt-1 text-body font-demibold">{item.city}</p>
-            <p className="mt-1 flex items-center gap-1.5 text-meta"><Clock size={16} strokeWidth={1.75} aria-hidden />{item.times.join(", ")}</p>
-            {item.stairs && <p className="mt-1 flex items-center gap-1.5 text-meta"><StairsIcon size={16} />יש מדרגות</p>}
-          </Card>
+          <span className="text-meta text-ink/65">פורסם {timeAgo(item.createdAt)}</span>
         </div>
 
-        {item.description && (
-          <section className="mt-5">
-            <h2 className="text-body font-demibold">תיאור</h2>
-            <p className="mt-1 whitespace-pre-line text-body">{item.description}</p>
-          </section>
-        )}
-
-        <section className="mt-5 flex items-center gap-3 border-y border-gray-100 py-4" aria-label="המוסר">
-          <span className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-neon text-body font-demibold">
+        <section className="mt-5 flex items-center gap-3 border-y border-gray-100 py-5" aria-label="המוסר">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-neon text-title font-demibold">
             {sellerAvatar ? <img src={sellerAvatar} alt="" className="h-full w-full object-cover" /> : sellerName.charAt(0)}
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-body font-demibold">{mine ? "אתם מוסרים את החפץ" : sellerName}</p>
-            <p className="text-meta text-ink/65">מסרו {item.seller.given} חפצים באגורה</p>
+            <p className="text-body font-demibold">{mine ? "אתם מוסרים את החפץ" : `מוסר: ${sellerName}`}</p>
+            <p className="text-meta text-ink/65">מסר {item.seller.given} חפצים באגורה</p>
           </div>
         </section>
 
-        <Card className="mt-5 p-4">
+        <ul className="space-y-5 border-b border-gray-100 py-6">
+          <Highlight icon={<Sparkles size={24} strokeWidth={1.75} />} title={item.condition} text={item.condition === "כמו חדש" ? "כמעט לא היה בשימוש." : item.condition === "מצב טוב" ? "עובד ונראה טוב, עם סימני שימוש רגילים." : item.condition === "מעט פגום" ? "יש פגם קטן. הפרטים בתיאור." : "מתאים לפירוק, לתיקון או ליצירה."} />
+          <Highlight icon={<MapPin size={24} strokeWidth={1.75} />} title={`איסוף ב${item.city}`} text={[item.region, pickup].filter(Boolean).join(" · ") || undefined} />
+          {item.stairs && <Highlight icon={<StairsIcon size={24} />} title="יש מדרגות בדרך" text="כדאי לבוא עם עוד זוג ידיים." />}
+          {item.disassembly && item.disassembly !== "לא" && <Highlight icon={<Wrench size={24} strokeWidth={1.75} />} title={item.disassembly === "כן" ? "צריך לפרק" : "ייתכן שצריך לפרק"} text="קחו איתכם כלי עבודה." />}
+          {item.dims && <Highlight icon={<Ruler size={24} strokeWidth={1.75} />} title="מידות" text={item.dims} />}
+          <Highlight icon={<Package size={24} strokeWidth={1.75} />} title={`גודל ${item.size}`} text={item.size === "גדול" ? "צריך רכב מתאים להובלה." : undefined} />
+          <Highlight icon={<Clock size={24} strokeWidth={1.75} />} title="זמני איסוף" text={item.times.join(", ")} />
+        </ul>
+
+        {item.description && (
+          <section className="border-b border-gray-100 py-6">
+            <h2 className="text-title font-demibold">על החפץ</h2>
+            <p className="mt-2 whitespace-pre-line text-body">{item.description}</p>
+          </section>
+        )}
+
+        <Card className="mt-6 p-4">
           <h2 className="flex items-center gap-2 text-body font-demibold"><ShieldCheck size={20} strokeWidth={1.75} aria-hidden />מסירה בטוחה</h2>
           <ul className="mt-2 list-disc space-y-1 pr-5 text-body">{RULES.map((r) => <li key={r}>{r}</li>)}</ul>
         </Card>
+
+        {item.demo && item.source && (
+          <a href={item.source} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-meta text-ink/65 underline underline-offset-4">
+            <Building2 size={16} strokeWidth={1.75} aria-hidden />המודעה המקורית באתר פרויקט אגורה<ExternalLink size={14} strokeWidth={1.75} aria-hidden />
+          </a>
+        )}
       </main>
 
-      {/* Sticky bar */}
-      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-app bg-white pb-safe shadow-nav">
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-app border-t border-gray-100 bg-white pb-safe">
         <div className="flex items-center gap-3 px-gutter py-3">
           <div className="flex-1">
-            <p className="text-title font-demibold">בחינם</p>
+            <p className="text-title font-demibold underline underline-offset-4">בחינם</p>
             <p className="text-meta text-ink/65">איסוף ב{item.city}</p>
           </div>
           {mine ? (
-            item.status === "active" ? (
-              <Button onClick={async () => { await markGiven(item.id); toast("סומן כנמסר. תודה!"); }}>סימון כנמסר</Button>
-            ) : <Tag>נמסר</Tag>
+            item.status === "active" ? <Button onClick={async () => { await markGiven(item.id); toast("סומן כנמסר. תודה!"); }}>סימון כנמסר</Button> : <Tag>נמסר</Tag>
           ) : (
             <Button variant="neon" disabled={item.status !== "active"} onClick={() => requireLogin(() => setContact(true))}>אני בעניין</Button>
           )}

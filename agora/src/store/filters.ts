@@ -22,7 +22,7 @@ interface FilterState extends Filters {
 
 export const useFilters = create<FilterState>((set, get) => ({
   ...empty,
-  recent: ["ספה", "עגלת תינוק"],
+  recent: ["ספה", "מקרר"],
   set: (p) => set(p),
   toggle: (key, v) => {
     const cur = get()[key];

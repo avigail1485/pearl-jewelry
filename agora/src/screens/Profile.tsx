@@ -59,21 +59,21 @@ export default function Profile() {
       <main className="px-gutter">
         {signedIn ? (
           <>
-            <div className="flex items-center gap-4">
-              <Avatar size={72} asButton={false} />
-              <div className="min-w-0">
-                <p className="truncate text-title font-demibold">{viewer?.name || "שלום!"}</p>
+            <Card className="flex items-center gap-4 p-5">
+              <div className="flex flex-1 flex-col items-center text-center">
+                <Avatar size={88} asButton={false} />
+                <p className="mt-3 max-w-full truncate text-title font-demibold">{viewer?.name || "שלום!"}</p>
                 <p className="text-meta text-ink/65">{city}</p>
               </div>
-            </div>
-            <dl className="mt-5 grid grid-cols-3 gap-3 text-center">
-              {[["נמסרו", given.length], ["בלוח", active.length], ["אהבתי", saved]].map(([l, n]) => (
-                <div key={l as string} className="rounded-tile bg-gray-100 py-3">
-                  <dd className="text-title font-demibold">{n}</dd>
-                  <dt className="text-meta">{l}</dt>
-                </div>
-              ))}
-            </dl>
+              <dl className="w-[96px] divide-y divide-gray-100">
+                {[["נמסרו", given.length], ["בלוח", active.length], ["אהבתי", saved]].map(([l, n]) => (
+                  <div key={l as string} className="flex flex-col py-2">
+                    <dd className="text-title font-demibold">{n}</dd>
+                    <dt className="text-meta">{l}</dt>
+                  </div>
+                ))}
+              </dl>
+            </Card>
             <div role="tablist" className="mt-6 flex gap-2">
               <Chip selected={tab === "active"} onClick={() => setTab("active")}>בלוח</Chip>
               <Chip selected={tab === "given"} onClick={() => setTab("given")}>נמסרו</Chip>

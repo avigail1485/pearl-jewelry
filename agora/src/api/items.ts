@@ -1,5 +1,5 @@
-// Items API. Demo catalogue ships with the app; items people publish live in
-// the shared `items` collection, their full photos in `photos/<itemId>`.
+// Items API. The demo catalogue (real listings from agora.co.il, watermark removed) ships with
+// the app; items people publish live in the shared `items` collection, full photos in `photos/<id>`.
 import demo from "../data/items.json";
 import { getDB } from "./platform";
 import type { Item } from "./types";
@@ -7,6 +7,7 @@ import type { Item } from "./types";
 const loadedAt = Date.now();
 export const demoItems: Item[] = (demo as any[]).map((d) => ({
   ...d,
+  distanceKm: 0,
   createdAt: loadedAt - d.minutesAgo * 60_000,
   status: "active",
   demo: true,
