@@ -21,6 +21,7 @@ export interface Item {
   photo?: string;
   /** photo has a transparent background (shown as a product shot) */
   cutout?: boolean;
+  photoCount?: number;
   subcategory?: string;
   region?: string;
   floor?: number | null;

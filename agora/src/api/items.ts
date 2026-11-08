@@ -22,19 +22,20 @@ export async function subscribeItems(cb: (items: Item[]) => void): Promise<() =>
   );
 }
 
-export async function getPhotos(itemId: string): Promise<string[]> {
+export async function getPhotos(itemId: string, count = 1): Promise<string[]> {
   const db = await getDB();
   if (!db) return [];
-  const s = await db.doc(`photos/${itemId}`).get().catch(() => null);
-  return (s?.exists && (s.data()?.images as string[])) || [];
+  const snaps = await Promise.all(Array.from({ length: count }, (_, i) => db.doc(`photos/${itemId}-${i}`).get().catch(() => null)));
+  return snaps.map((s) => (s?.exists ? (s.data()?.image as string) : "")).filter(Boolean);
 }
 
 export async function publishItem(item: Omit<Item, "id">, photos: string[]): Promise<string> {
   const db = await getDB();
   if (!db) throw new Error("no-db");
   const ref = db.collection("items").doc();
-  await db.doc(`photos/${ref.id}`).set({ images: photos, ownerId: item.ownerId ?? null });
-  await ref.set({ ...item } as unknown as Record<string, unknown>);
+  // One document per photo keeps each well under the database's size limit.
+  for (let i = 0; i < photos.length; i++) await db.doc(`photos/${ref.id}-${i}`).set({ image: photos[i], ownerId: item.ownerId ?? null });
+  await ref.set({ ...item, photoCount: photos.length } as unknown as Record<string, unknown>);
   return ref.id;
 }
 

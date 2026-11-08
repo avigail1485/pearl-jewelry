@@ -1,4 +1,5 @@
 import { Check, ImagePlus, Pencil, X } from "lucide-react";
+import { Illustration as Anim } from "../../components/Illustration";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { publishItem } from "../../api/items";
@@ -17,6 +18,7 @@ import { recognize, type Guess } from "../../lib/ai";
 import { CATEGORIES, CATEGORY_ICON, CITIES, CONDITIONS, SIZES, TIMES } from "../../lib/categories";
 import { useRequireLogin } from "../../lib/hooks";
 import { compress } from "../../lib/image";
+import { preloadRemoveBg, removeBackground } from "../../lib/removeBg";
 import { useDraft } from "../../store/giveDraft";
 import { useUI } from "../../store/ui";
 import { useUser } from "../../store/user";
@@ -60,23 +62,31 @@ function Step1({ onNext }: { onNext: () => void }) {
   const file = useRef<HTMLInputElement>(null);
   const [guess, setGuess] = useState<Guess | null>(null);
   const [scanning, setScanning] = useState(false);
+  const main = d.photos[0];
+
+  // Whenever the main photo changes: remove its background (on the device) and recognise it.
+  useEffect(() => {
+    if (!main) { d.set({ cutout: null, bg: "idle" }); return; }
+    let alive = true;
+    d.set({ cutout: null, bg: "working", useCutout: true });
+    removeBackground(main).then((cut) => { if (alive) d.set({ cutout: cut, bg: cut ? "done" : "failed" }); });
+    if (!guess) {
+      setScanning(true);
+      recognize(main).then((g) => { if (alive) { setGuess(g); setScanning(false); } });
+    }
+    return () => { alive = false; };
+  }, [main]); // eslint-disable-line
 
   const add = async (files: FileList | null) => {
     if (!files?.length) return;
-    const list = await Promise.all(Array.from(files).slice(0, 4 - d.photos.length).map((f) => compress(f)));
-    const photos = [...d.photos, ...list].slice(0, 4);
-    d.set({ photos });
-    if (!guess && photos.length) {
-      setScanning(true);
-      const g = await recognize(photos[0]);
-      setScanning(false);
-      setGuess(g);
-    }
+    const list = await Promise.all(Array.from(files).slice(0, 4 - d.photos.length).map((f) => compress(f, 800, 0.7)));
+    d.set({ photos: [...d.photos, ...list].slice(0, 4) });
   };
   const accept = () => {
     if (guess) d.set({ title: d.title || guess.title, category: d.category || guess.category, condition: d.condition || guess.condition, description: d.description || guess.description });
     onNext();
   };
+  const pick = () => { preloadRemoveBg(); file.current?.click(); };
   const picker = <input ref={file} type="file" accept="image/*" multiple hidden onChange={(e) => { add(e.target.files); e.target.value = ""; }} />;
 
   if (!d.photos.length) {
@@ -84,32 +94,56 @@ function Step1({ onNext }: { onNext: () => void }) {
       <div className="flex flex-col items-center pt-6 text-center">
         <Illustration name="add-photo" size={160} />
         <h2 className="mt-4 text-title font-demibold">צלמו את החפץ</h2>
-        <p className="mt-1 text-body">תמונה ברורה באור טבעי. נזהה את החפץ וננסח בשבילכם את הפרטים.</p>
-        <Button block className="mt-6" icon={<ImagePlus size={20} strokeWidth={1.75} />} onClick={() => file.current?.click()}>צילום או בחירת תמונה</Button>
+        <p className="mt-1 text-body">תמונה ברורה באור טבעי. נסיר את הרקע, נזהה את החפץ וננסח בשבילכם את הפרטים.</p>
+        <Button block className="mt-6" icon={<ImagePlus size={20} strokeWidth={1.75} />} onClick={pick}>צילום או בחירת תמונה</Button>
         {picker}
       </div>
     );
   }
 
+  const showCut = d.useCutout && d.cutout;
   return (
     <div>
-      <div className="grid grid-cols-2 gap-4">
-        {d.photos.map((p, i) => (
-          <div key={i} className="relative">
-            <img src={p} alt={`תמונה ${i + 1}`} className="aspect-[169/170] w-full rounded-tile bg-gray-100 object-cover" />
-            {i === 0 && <Tag className="absolute bottom-2 right-2">תמונה ראשית</Tag>}
-            <button type="button" aria-label={`הסרת תמונה ${i + 1}`} onClick={() => d.set({ photos: d.photos.filter((_, j) => j !== i) })} className="tap absolute left-0 top-0 inline-flex items-center justify-center">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-card"><X size={16} strokeWidth={1.75} /></span>
+      {/* main photo */}
+      <div className="relative">
+        <div className="aspect-square w-full overflow-hidden rounded-tile bg-gray-100">
+          <img src={showCut ? d.cutout! : main} alt="התמונה הראשית" className={`h-full w-full ${showCut ? "object-contain p-[9%]" : "object-cover"}`} />
+        </div>
+        {d.bg === "working" && (
+          <div className="absolute inset-x-0 bottom-3 flex justify-center" aria-live="polite">
+            <span className="flex items-center gap-2 rounded-full bg-white py-1 pl-4 pr-1 text-meta shadow-card"><Anim name="loading" size={28} />מסירים את הרקע…</span>
+          </div>
+        )}
+        <button type="button" aria-label="הסרת התמונה הראשית" onClick={() => d.set({ photos: d.photos.slice(1) })} className="tap absolute left-1 top-1 inline-flex items-center justify-center">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-card"><X size={18} strokeWidth={1.75} /></span>
+        </button>
+      </div>
+      {d.bg === "done" && (
+        <div role="radiogroup" aria-label="רקע התמונה" className="mt-3 flex gap-2">
+          <Chip selected={d.useCutout} onClick={() => d.set({ useCutout: true })}>בלי רקע</Chip>
+          <Chip selected={!d.useCutout} onClick={() => d.set({ useCutout: false })}>רקע מקורי</Chip>
+        </div>
+      )}
+      {d.bg === "failed" && <p className="mt-3 text-meta text-ink/65">לא הצלחנו להסיר את הרקע בתמונה הזאת. היא תפורסם כמו שהיא.</p>}
+
+      {/* more photos */}
+      <div className="no-scrollbar mt-4 flex gap-3 overflow-x-auto">
+        {d.photos.slice(1).map((p, i) => (
+          <div key={i} className="relative shrink-0">
+            <img src={p} alt={`תמונה ${i + 2}`} className="h-20 w-20 rounded-tile bg-gray-100 object-cover" />
+            <button type="button" aria-label={`הסרת תמונה ${i + 2}`} onClick={() => d.set({ photos: d.photos.filter((_, j) => j !== i + 1) })} className="tap absolute -left-3 -top-3 inline-flex items-center justify-center">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-card"><X size={14} strokeWidth={1.75} /></span>
             </button>
           </div>
         ))}
         {d.photos.length < 4 && (
-          <button type="button" onClick={() => file.current?.click()} className="flex aspect-[169/170] w-full flex-col items-center justify-center gap-2 rounded-tile bg-gray-100 text-body">
-            <ImagePlus size={28} strokeWidth={1.75} aria-hidden />עוד תמונה
+          <button type="button" onClick={pick} className="flex h-20 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-tile bg-gray-100 text-meta">
+            <ImagePlus size={22} strokeWidth={1.75} aria-hidden />הוספה
           </button>
         )}
       </div>
       {picker}
+
       <Card className="mt-5 p-4" aria-live="polite">
         {scanning ? (
           <div className="flex items-center gap-3"><Illustration name="loading" size={40} /><p className="text-body">מזהים את החפץ…</p></div>
@@ -198,13 +232,15 @@ function Step4({ goto }: { goto: (n: number) => void }) {
     if (!me) { toast("צריך להתחבר כדי לפרסם"); return; }
     setBusy(true);
     try {
-      const thumb = await compress(await (await fetch(d.photos[0])).blob(), 360, 0.7);
+      const cut = d.useCutout && d.cutout ? d.cutout : null;
+      const mainSrc = cut ?? d.photos[0];
+      const thumb = await compress(await (await fetch(mainSrc)).blob(), 360, 0.75, cut ? "image/webp" : "image/jpeg");
       const item: Omit<Item, "id"> = {
         title: d.title.trim(), category: d.category, icon: CATEGORY_ICON[d.category] ?? "box", condition: d.condition,
         city: d.city, distanceKm: 0.5, createdAt: Date.now(), size: d.size, times: d.times, stairs: d.stairs,
-        description: d.description.trim(), seller: { id: me, name: "", given: 0 }, status: "active", thumb, ownerId: me,
+        description: d.description.trim(), seller: { id: me, name: "", given: 0 }, status: "active", thumb, ownerId: me, cutout: !!cut,
       };
-      const id = await publishItem(item, d.photos);
+      const id = await publishItem(item, cut ? [cut, ...d.photos.slice(1)] : d.photos);
       d.reset();
       nav(`/give/published/${id}`, { replace: true });
     } catch {
@@ -212,7 +248,8 @@ function Step4({ goto }: { goto: (n: number) => void }) {
     } finally { setBusy(false); }
   };
 
-  const preview = { id: "draft", title: d.title, category: d.category, icon: CATEGORY_ICON[d.category] ?? "box" } as Item;
+  const cutMain = d.useCutout && d.cutout ? d.cutout : null;
+  const preview = { id: "draft", title: d.title, category: d.category, icon: CATEGORY_ICON[d.category] ?? "box", cutout: !!cutMain } as Item;
   const Row = ({ label, value, to }: { label: string; value: string; to: number }) => (
     <div className="flex items-center justify-between border-b border-gray-100 py-2 last:border-0">
       <div className="min-w-0"><p className="text-meta text-ink/65">{label}</p><p className="truncate text-body">{value}</p></div>
@@ -223,7 +260,7 @@ function Step4({ goto }: { goto: (n: number) => void }) {
   return (
     <div>
       <Card className="overflow-hidden">
-        <ItemImage item={preview} src={d.photos[0]} className="aspect-[4/3.4] w-full" />
+        <ItemImage item={preview} src={cutMain ?? d.photos[0]} className="aspect-[4/3.4] w-full" />
         <div className="p-4">
           <h2 className="text-title font-demibold">{d.title}</h2>
           <div className="mt-2 flex flex-wrap gap-1.5"><Tag>{d.category}</Tag><Tag>{d.condition}</Tag></div>

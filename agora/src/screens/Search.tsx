@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, Clock, LayoutGrid, MapPin } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
@@ -6,27 +6,28 @@ import { Card } from "../components/Card";
 import { Chip } from "../components/Chip";
 import { SearchField } from "../components/SearchField";
 import { TopBar } from "../components/TopBar";
-import { CATEGORIES, CATEGORY_ICONS, CITIES, CONDITIONS } from "../lib/categories";
+import { CATEGORIES, CATEGORY_ICONS, CITIES } from "../lib/categories";
 import { useImageSearch } from "../lib/useImageSearch";
 import { applyFilters, useFilters } from "../store/filters";
 import { useAllItems } from "../store/items";
+import { useUser } from "../store/user";
 
-type Key = "what" | "where" | "cond" | "sort";
-const POPULAR = ["ספה", "מקרר", "שולחן", "שידה", "עגלה", "סלקל", "מזרון"];
 export const DISTANCES = [5, 15, 30, 60];
+type Key = "where" | "cat";
 
-function Acc({ id, open, setOpen, title, summary, children }: { id: Key; open: Key | null; setOpen: (k: Key | null) => void; title: string; summary: string; children: ReactNode }) {
+function Option({ id, open, setOpen, icon, title, summary, children }: { id: Key; open: Key | null; setOpen: (k: Key | null) => void; icon: ReactNode; title: string; summary: string; children: ReactNode }) {
   const isOpen = open === id;
   return (
     <Card className="overflow-hidden">
       <h2>
-        <button type="button" aria-expanded={isOpen} aria-controls={`acc-${id}`} onClick={() => setOpen(isOpen ? null : id)} className="flex min-h-[59px] w-full items-center justify-between gap-3 px-5 py-3 text-right">
-          <span className={isOpen ? "text-section font-light" : "text-body font-demibold"}>{title}</span>
-          {!isOpen && <span className="truncate text-body text-ink/65">{summary}</span>}
-          {isOpen && <ChevronDown size={20} strokeWidth={1.75} className="rotate-180" aria-hidden />}
+        <button type="button" aria-expanded={isOpen} aria-controls={`opt-${id}`} onClick={() => setOpen(isOpen ? null : id)} className="flex min-h-[64px] w-full items-center gap-3 px-5 text-right">
+          <span aria-hidden>{icon}</span>
+          <span className="flex-1 text-body font-demibold">{title}</span>
+          <span className="max-w-[45%] truncate text-meta text-ink/65">{summary}</span>
+          <ChevronDown size={20} strokeWidth={1.75} aria-hidden className={isOpen ? "rotate-180" : ""} />
         </button>
       </h2>
-      {isOpen && <div id={`acc-${id}`} className="px-5 pb-5">{children}</div>}
+      {isOpen && <div id={`opt-${id}`} className="px-5 pb-5">{children}</div>}
     </Card>
   );
 }
@@ -34,58 +35,58 @@ function Acc({ id, open, setOpen, title, summary, children }: { id: Key; open: K
 export default function Search() {
   const f = useFilters();
   const items = useAllItems();
+  const { city, setCity } = useUser();
   const nav = useNavigate();
   const imageSearch = useImageSearch();
-  const [open, setOpen] = useState<Key | null>("what");
+  const [open, setOpen] = useState<Key | null>(null);
   const n = applyFilters(items, f).length;
   const go = () => { f.pushRecent(f.q); nav("/results"); };
+  const newest = () => { f.set({ q: "", categories: [], cities: [], conditions: [], maxKm: null, sort: "new" }); nav("/results"); };
+  const whereSummary = f.cities.length ? f.cities.join(", ") : f.maxKm ? `עד ${f.maxKm} ק"מ` : "כל הארץ";
 
   return (
     <div className="min-h-[100dvh] pb-[120px]">
       <TopBar title="חיפוש" />
       <main className="space-y-3 px-gutter pt-2">
-        <Acc id="what" open={open} setOpen={setOpen} title="מה מחפשים?" summary={f.q || (f.categories.length ? f.categories.join(", ") : "הכל")}>
-          <SearchField value={f.q} onChange={(q) => f.set({ q })} onSubmit={go} onImage={imageSearch} autoFocus />
-          {f.recent.length > 0 && (
-            <>
-              <h3 className="mb-2 mt-5 text-meta text-ink/65">חיפשתם לאחרונה</h3>
-              <div className="flex flex-wrap gap-2">{f.recent.map((r) => <Chip key={r} selected={f.q === r} onClick={() => f.set({ q: f.q === r ? "" : r })}>{r}</Chip>)}</div>
-            </>
-          )}
-          <h3 className="mb-2 mt-5 text-meta text-ink/65">מחפשים הרבה</h3>
-          <div className="flex flex-wrap gap-2">{POPULAR.map((r) => <Chip key={r} selected={f.q === r} onClick={() => f.set({ q: f.q === r ? "" : r })}>{r}</Chip>)}</div>
-          <h3 className="mb-1 mt-5 text-meta text-ink/65">קטגוריה</h3>
-          <ul>
+        <SearchField value={f.q} onChange={(q) => f.set({ q })} onSubmit={go} onImage={imageSearch} autoFocus className="mb-5 !h-12 !rounded-full px-1" />
+
+        <Option id="where" open={open} setOpen={setOpen} icon={<MapPin size={24} strokeWidth={1.75} />} title="לפי מיקום" summary={whereSummary}>
+          <label htmlFor="city" className="text-meta text-ink/65">האזור שלי</label>
+          <select id="city" value={city} onChange={(e) => setCity(e.target.value)} className="mt-1 h-12 w-full rounded-search bg-gray-100 px-3 text-body">
+            {CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <p className="mb-2 mt-4 text-meta text-ink/65">כמה רחוק?</p>
+          <div className="flex flex-wrap gap-2">
+            <Chip selected={!f.maxKm && !f.cities.length} onClick={() => f.set({ maxKm: null, cities: [] })}>כל הארץ</Chip>
+            {DISTANCES.map((d) => <Chip key={d} selected={f.maxKm === d} onClick={() => f.set({ maxKm: f.maxKm === d ? null : d, cities: [], sort: "near" })}>{`עד ${d} ק"מ`}</Chip>)}
+          </div>
+        </Option>
+
+        <Option id="cat" open={open} setOpen={setOpen} icon={<LayoutGrid size={24} strokeWidth={1.75} />} title="לפי קטגוריה" summary={f.categories.length ? f.categories.join(", ") : "הכל"}>
+          <div className="grid grid-cols-4 gap-2">
             {CATEGORIES.map((c) => {
               const Icon = CATEGORY_ICONS[c];
               const on = f.categories.includes(c);
               return (
-                <li key={c}>
-                  <button type="button" aria-pressed={on} onClick={() => f.toggle("categories", c)} className="flex min-h-[52px] w-full items-center gap-3 border-b border-gray-100 text-right">
-                    <span className={`flex h-10 w-10 items-center justify-center rounded-full ${on ? "bg-ink text-white" : "bg-gray-100"}`}><Icon size={20} strokeWidth={1.75} /></span>
-                    <span className={`flex-1 text-body ${on ? "font-demibold" : ""}`}>{c}</span>
-                  </button>
-                </li>
+                <button key={c} type="button" aria-pressed={on} onClick={() => f.toggle("categories", c)} className="flex flex-col items-center gap-1.5 rounded-tile py-2 text-center">
+                  <span className={`flex h-12 w-12 items-center justify-center rounded-full ${on ? "bg-ink text-white" : "bg-gray-100"}`}><Icon size={22} strokeWidth={1.75} /></span>
+                  <span className={`text-nav leading-tight ${on ? "font-demibold" : ""}`}>{c}</span>
+                </button>
               );
             })}
-          </ul>
-        </Acc>
-        <Acc id="where" open={open} setOpen={setOpen} title="איפה?" summary={f.cities.length ? f.cities.join(", ") : f.maxKm ? `עד ${f.maxKm} ק"מ` : "כל הארץ"}>
-          <div className="flex flex-wrap gap-2">{CITIES.map((c) => <Chip key={c} selected={f.cities.includes(c)} onClick={() => f.toggle("cities", c)}>{c}</Chip>)}</div>
-          <h3 className="mb-2 mt-5 text-meta text-ink/65">מרחק</h3>
-          <div className="flex flex-wrap gap-2">{DISTANCES.map((d) => <Chip key={d} selected={f.maxKm === d} onClick={() => f.set({ maxKm: f.maxKm === d ? null : d })}>{`עד ${d} ק"מ`}</Chip>)}</div>
-        </Acc>
-        <Acc id="cond" open={open} setOpen={setOpen} title="באיזה מצב?" summary={f.conditions.length ? f.conditions.join(", ") : "כל המצבים"}>
-          <div className="flex flex-wrap gap-2">{CONDITIONS.map((c) => <Chip key={c} selected={f.conditions.includes(c)} onClick={() => f.toggle("conditions", c)}>{c}</Chip>)}</div>
-        </Acc>
-        <Acc id="sort" open={open} setOpen={setOpen} title="סדר תוצאות" summary={f.sort === "new" ? "חדש קודם" : "קרוב אליי"}>
-          <div className="flex flex-wrap gap-2">
-            <Chip selected={f.sort === "new"} onClick={() => f.set({ sort: "new" })}>חדש קודם</Chip>
-            <Chip selected={f.sort === "near"} onClick={() => f.set({ sort: "near" })}>קרוב אליי</Chip>
           </div>
-        </Acc>
+        </Option>
+
+        <Card className="overflow-hidden">
+          <button type="button" onClick={newest} className="flex min-h-[64px] w-full items-center gap-3 px-5 text-right">
+            <Clock size={24} strokeWidth={1.75} aria-hidden />
+            <span className="flex-1 text-body font-demibold">הכי חדש</span>
+            <span className="text-meta text-ink/65">מה עלה עכשיו</span>
+            <ChevronLeft size={20} strokeWidth={1.75} aria-hidden />
+          </button>
+        </Card>
       </main>
-      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto flex max-w-app items-center gap-4 bg-white px-gutter pb-safe pt-3 shadow-nav">
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-app bg-white px-gutter pb-safe pt-3 shadow-nav">
         <div className="flex w-full items-center gap-4 pb-3">
           <Button variant="link" onClick={f.clear}>ניקוי הכל</Button>
           <Button block onClick={go} aria-live="polite">{`הצגת ${n} חפצים`}</Button>

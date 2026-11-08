@@ -7,7 +7,7 @@ import { EmptyState } from "../components/EmptyState";
 import { ItemFeed, ItemGrid } from "../components/ItemTile";
 import { Sheet } from "../components/Sheet";
 import { BackButton } from "../components/TopBar";
-import { CATEGORIES, CITIES, CONDITIONS } from "../lib/categories";
+import { CATEGORIES, CONDITIONS } from "../lib/categories";
 import { ls } from "../lib/storage";
 import { activeCount, applyFilters, useFilters } from "../store/filters";
 import { useAllItems } from "../store/items";
@@ -51,8 +51,6 @@ export default function Results() {
       {s === "where" && (<>
         <h3 className="mb-3 text-body font-demibold">מרחק מ{city}</h3>
         <div className="flex flex-wrap gap-2">{DISTANCES.map((d) => <Chip key={d} selected={f.maxKm === d} onClick={() => f.set({ maxKm: f.maxKm === d ? null : d })}>{`עד ${d} ק"מ`}</Chip>)}</div>
-        <h3 className="mb-3 mt-5 text-body font-demibold">יישוב</h3>
-        <div className="flex flex-wrap gap-2">{CITIES.map((c) => <Chip key={c} selected={f.cities.includes(c)} onClick={() => f.toggle("cities", c)}>{c}</Chip>)}</div>
       </>)}
       {s === "sort" && (<><h3 className="mb-3 text-body font-demibold">מיון</h3><div className="flex flex-wrap gap-2"><Chip selected={f.sort === "new"} onClick={() => f.set({ sort: "new" })}>חדש קודם</Chip><Chip selected={f.sort === "near"} onClick={() => f.set({ sort: "near" })}>קרוב אליי</Chip></div></>)}
     </section>

@@ -10,8 +10,12 @@ export interface Draft {
   size: string;
   times: string[];
   stairs: boolean;
+  /** first photo with the background removed */
+  cutout: string | null;
+  useCutout: boolean;
+  bg: "idle" | "working" | "done" | "failed";
 }
-const blank = (): Draft => ({ photos: [], title: "", category: "", condition: "", description: "", city: "", size: "", times: [], stairs: false });
+const blank = (): Draft => ({ photos: [], title: "", category: "", condition: "", description: "", city: "", size: "", times: [], stairs: false, cutout: null, useCutout: true, bg: "idle" });
 
 interface DraftState extends Draft {
   set(p: Partial<Draft>): void;

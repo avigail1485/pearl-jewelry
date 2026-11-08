@@ -1,6 +1,7 @@
-import { Building2, ChevronLeft, Clock, ExternalLink, MapPin, Package, Ruler, Share2, ShieldCheck, Sparkles, Wrench } from "lucide-react";
+import { Clock, MapPin, Package, Ruler, Share2, ShieldCheck, Wrench } from "lucide-react";
+import { conditionIcon } from "../lib/conditions";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { getPhotos, markGiven } from "../api/items";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
@@ -68,7 +69,7 @@ export default function Item() {
   const sellerName = usePersonName(item?.demo ? undefined : item?.seller.id, item?.seller.name || "מוסר מהקהילה");
   const sellerAvatar = usePersonAvatar(item?.demo ? undefined : item?.seller.id);
 
-  useEffect(() => { if (item && !item.demo) getPhotos(item.id).then(setPhotos); }, [item?.id]); // eslint-disable-line
+  useEffect(() => { if (item && !item.demo) getPhotos(item.id, item.photoCount ?? 1).then(setPhotos); }, [item?.id]); // eslint-disable-line
   useEffect(() => { window.scrollTo(0, 0); if (id) markViewed(id); }, [id]); // eslint-disable-line
 
   if (!item) return loaded ? (
@@ -76,6 +77,7 @@ export default function Item() {
   ) : <Loading />;
 
   const mine = !!me && item.ownerId === me;
+  const CondIcon = conditionIcon(item.condition);
   const gallery = photos.length ? photos : itemPhoto(item) ? [itemPhoto(item)!] : [];
   const share = async () => {
     const text = `${item.title} · בחינם באגורה`;
@@ -99,16 +101,9 @@ export default function Item() {
       </div>
 
       <main className="relative -mt-5 rounded-t-sheet bg-white px-gutter pt-6">
-        <nav aria-label="נתיב" className="flex items-center gap-1 text-meta text-ink/65">
-          <Link to="/" className="underline-offset-4 hover:underline">ראשי</Link>
-          <ChevronLeft size={14} strokeWidth={1.75} aria-hidden />
-          <span>{item.category}</span>
-          {item.subcategory && <><ChevronLeft size={14} strokeWidth={1.75} aria-hidden /><span>{item.subcategory}</span></>}
-        </nav>
-        <h1 className="mt-2 text-title font-demibold">{item.title}</h1>
-        <p className="mt-1 text-body text-ink/65">{item.city} · {fmtKm(item.distanceKm)} ממך</p>
+        <h1 className="text-title font-demibold">{item.title}</h1>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <Tag>{item.condition}</Tag>
+          <Tag className="gap-1"><CondIcon size={14} strokeWidth={1.75} aria-hidden />{item.condition}</Tag>
           {isNew(item) && <Tag tone="neon">חדש</Tag>}
           {item.status === "given" && <Tag>נמסר</Tag>}
           <span className="text-meta text-ink/65">פורסם {timeAgo(item.createdAt)}</span>
@@ -125,8 +120,8 @@ export default function Item() {
         </section>
 
         <ul className="space-y-5 border-b border-gray-100 py-6">
-          <Highlight icon={<Sparkles size={24} strokeWidth={1.75} />} title={item.condition} text={item.condition === "כמו חדש" ? "כמעט לא היה בשימוש." : item.condition === "מצב טוב" ? "עובד ונראה טוב, עם סימני שימוש רגילים." : item.condition === "מעט פגום" ? "יש פגם קטן. הפרטים בתיאור." : "מתאים לפירוק, לתיקון או ליצירה."} />
-          <Highlight icon={<MapPin size={24} strokeWidth={1.75} />} title={`איסוף ב${item.city}`} text={[item.region, pickup].filter(Boolean).join(" · ") || undefined} />
+          <Highlight icon={<CondIcon size={24} strokeWidth={1.75} />} title={item.condition} text={item.condition === "כמו חדש" ? "כמעט לא היה בשימוש." : item.condition === "מצב טוב" ? "עובד ונראה טוב, עם סימני שימוש רגילים." : item.condition === "מעט פגום" ? "יש פגם קטן. הפרטים בתיאור." : "מתאים לפירוק, לתיקון או ליצירה."} />
+          <Highlight icon={<MapPin size={24} strokeWidth={1.75} />} title={`איסוף ב${item.city}`} text={[`${fmtKm(item.distanceKm)} ממך`, pickup].filter(Boolean).join(" · ")} />
           {item.stairs && <Highlight icon={<StairsIcon size={24} />} title="יש מדרגות בדרך" text="כדאי לבוא עם עוד זוג ידיים." />}
           {item.disassembly && item.disassembly !== "לא" && <Highlight icon={<Wrench size={24} strokeWidth={1.75} />} title={item.disassembly === "כן" ? "צריך לפרק" : "ייתכן שצריך לפרק"} text="קחו איתכם כלי עבודה." />}
           {item.dims && <Highlight icon={<Ruler size={24} strokeWidth={1.75} />} title="מידות" text={item.dims} />}
@@ -146,23 +141,14 @@ export default function Item() {
           <ul className="mt-2 list-disc space-y-1 pr-5 text-body">{RULES.map((r) => <li key={r}>{r}</li>)}</ul>
         </Card>
 
-        {item.demo && item.source && (
-          <a href={item.source} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-[44px] items-center gap-1.5 text-meta text-ink/65 underline underline-offset-4">
-            <Building2 size={16} strokeWidth={1.75} aria-hidden />המודעה המקורית באתר פרויקט אגורה<ExternalLink size={14} strokeWidth={1.75} aria-hidden />
-          </a>
-        )}
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-app border-t border-gray-100 bg-white pb-safe">
         <div className="flex items-center gap-3 px-gutter py-3">
-          <div className="flex-1">
-            <p className="text-title font-demibold underline underline-offset-4">בחינם</p>
-            <p className="text-meta text-ink/65">איסוף ב{item.city}</p>
-          </div>
           {mine ? (
-            item.status === "active" ? <Button onClick={async () => { await markGiven(item.id); toast("סומן כנמסר. תודה!"); }}>סימון כנמסר</Button> : <Tag>נמסר</Tag>
+            item.status === "active" ? <Button block onClick={async () => { await markGiven(item.id); toast("סומן כנמסר. תודה!"); }}>סימון כנמסר</Button> : <Tag>נמסר</Tag>
           ) : (
-            <Button variant="neon" disabled={item.status !== "active"} onClick={() => requireLogin(() => setContact(true))}>אני בעניין</Button>
+            <Button variant="neon" block disabled={item.status !== "active"} onClick={() => requireLogin(() => setContact(true))}>אני בעניין</Button>
           )}
         </div>
       </div>

@@ -1,25 +1,17 @@
 import { ChevronLeft } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
 import { CategoryTabs } from "../components/CategoryTabs";
 import { Header } from "../components/Header";
 import { Illustration } from "../components/Illustration";
-import { Carousel, ItemFeed } from "../components/ItemTile";
+import { Carousel } from "../components/ItemTile";
+import { CATEGORIES } from "../lib/categories";
 import { Tag } from "../components/Tag";
 import { useFilters } from "../store/filters";
 import { useAllItems, useItems } from "../store/items";
 import { useUser } from "../store/user";
-
-function SectionLink({ title, to }: { title: string; to: string }) {
-  return (
-    <Link to={to} className="mb-3 inline-flex min-h-[44px] items-center gap-1">
-      <h2 className="text-title font-demibold">{title}</h2>
-      <ChevronLeft size={20} strokeWidth={2.25} aria-hidden />
-    </Link>
-  );
-}
 
 export default function Home() {
   const [cat, setCat] = useState("");
@@ -29,9 +21,19 @@ export default function Home() {
   const setFilters = useFilters((s) => s.set);
   const nav = useNavigate();
   const viewed = viewedIds.map((id) => all.find((i) => i.id === id)).filter(Boolean) as typeof all;
-  const near = [...all].filter((i) => i.distanceKm <= 15).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, 10);
-  const feed = all.slice(0, 12);
-  const showAll = () => { setFilters({ categories: cat ? [cat] : [], q: "" }); nav("/results"); };
+  const near = [...all].filter((i) => i.distanceKm <= 15).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, 12);
+  const fresh = all.slice(0, 12);
+  const byCat = CATEGORIES.map((c) => ({ c, items: all.filter((i) => i.category === c).slice(0, 12) })).filter((r) => r.items.length >= 2);
+  const showAll = (categories: string[] = cat ? [cat] : []) => { setFilters({ categories, q: "", sort: "new", maxKm: null, cities: [], conditions: [] }); nav("/results"); };
+  const Row = ({ title, items, onMore }: { title: string; items: typeof all; onMore: () => void }) => (
+    <section className="mt-7">
+      <button type="button" onClick={onMore} className="mb-3 inline-flex min-h-[44px] items-center gap-1 text-right">
+        <h2 className="text-title font-demibold">{title}</h2>
+        <ChevronLeft size={20} strokeWidth={2.25} aria-hidden />
+      </button>
+      <Carousel items={items} />
+    </section>
+  );
 
   return (
     <>
@@ -54,25 +56,13 @@ export default function Home() {
           </Card>
         )}
 
-        {viewed.length > 0 && (
-          <section className="mt-7">
-            <SectionLink title="נצפו לאחרונה" to="/results" />
-            <Carousel items={viewed} />
-          </section>
-        )}
+        {fresh.length > 0 && <Row title="עלו עכשיו" items={fresh} onMore={() => showAll()} />}
+        {near.length > 0 && <Row title={`קרוב אליך ב${city}`} items={near} onMore={() => { setFilters({ categories: cat ? [cat] : [], q: "", maxKm: 15, sort: "near", cities: [], conditions: [] }); nav("/results"); }} />}
+        {viewed.length > 0 && <Row title="נצפו לאחרונה" items={viewed} onMore={() => showAll()} />}
+        {!cat && byCat.map(({ c, items }) => <Row key={c} title={c} items={items} onMore={() => showAll([c])} />)}
+        {all.length === 0 && <p className="mt-8 text-body">עוד אין כאן חפצים בקטגוריה הזאת.</p>}
 
-        {near.length > 0 && (
-          <section className="mt-7">
-            <SectionLink title={`קרוב אליך ב${city}`} to="/results?near=1" />
-            <Carousel items={near} />
-          </section>
-        )}
-
-        <section className="mt-8">
-          <h2 className="mb-4 text-section font-light">עלו עכשיו</h2>
-          {feed.length ? <ItemFeed items={feed} /> : <p className="text-body">עוד אין כאן חפצים בקטגוריה הזאת.</p>}
-          {all.length > feed.length && <Button variant="secondary" block className="mt-8" onClick={showAll}>{`לכל ${all.length} החפצים`}</Button>}
-        </section>
+        {all.length > 0 && <Button variant="secondary" block className="mt-9" onClick={() => showAll()}>לכל החפצים</Button>}
       </main>
     </>
   );
