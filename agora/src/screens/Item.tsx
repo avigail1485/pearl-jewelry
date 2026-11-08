@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getPhotos, markGiven } from "../api/items";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
+import { EmptyState } from "../components/EmptyState";
 import { StairsIcon } from "../components/Icon";
 import { ItemImage, itemPhoto } from "../components/ItemImage";
 import { Loading } from "../components/Loading";
@@ -47,7 +48,7 @@ function Gallery({ photos, item }: { photos: string[]; item: Parameters<typeof I
       >
         {photos.map((p, i) => <ItemImage key={i} item={item} src={p} eager={i === 0} className="aspect-[4/3.4] w-full shrink-0 snap-center" />)}
       </div>
-      <span className="absolute bottom-3 left-3 rounded-full bg-ink/70 px-2.5 py-0.5 text-meta text-white">{idx + 1} / {photos.length}</span>
+      <span className="absolute bottom-3 left-3 rounded-btn bg-ink/70 px-2.5 py-0.5 text-meta text-white">{idx + 1} / {photos.length}</span>
       <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5" aria-hidden>
         {photos.map((_, i) => <span key={i} className={`h-1.5 w-1.5 rounded-full ${i === idx ? "bg-white" : "bg-white/60"}`} />)}
       </div>
@@ -73,7 +74,11 @@ export default function Item() {
   useEffect(() => { window.scrollTo(0, 0); if (id) markViewed(id); }, [id]); // eslint-disable-line
 
   if (!item) return loaded ? (
-    <div className="p-gutter pt-safe"><BackButton /><p className="mt-8 text-center text-body">החפץ כבר לא בלוח.</p></div>
+    <div className="p-gutter pt-safe"><BackButton />
+      <EmptyState name="searching" size={180} title="החפץ כבר לא בלוח" text="כנראה שמישהו כבר אסף אותו. יש עוד הרבה חפצים שמחכים.">
+        <Button block onClick={() => nav("/")}>לגלות חפצים</Button>
+      </EmptyState>
+    </div>
   ) : <Loading />;
 
   const mine = !!me && item.ownerId === me;
@@ -93,7 +98,7 @@ export default function Item() {
           <div className="pt-2"><BackButton className="!bg-white shadow-card" /></div>
           <div className="flex pt-2">
             <button type="button" aria-label="שיתוף" onClick={share} className="tap inline-flex items-center justify-center">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-card"><Share2 size={18} strokeWidth={1.75} /></span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-btn bg-white shadow-card"><Share2 size={18} strokeWidth={1.75} /></span>
             </button>
             <SaveButton id={item.id} title={item.title} />
           </div>
@@ -115,7 +120,7 @@ export default function Item() {
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-body font-demibold">{mine ? "אתם מוסרים את החפץ" : `מוסר: ${sellerName}`}</p>
-            <p className="text-meta text-ink/65">מסר {item.seller.given} חפצים באגורה</p>
+            <p className="text-meta text-ink/65">חבר בקהילת אגורה</p>
           </div>
         </section>
 

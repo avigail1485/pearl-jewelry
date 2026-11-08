@@ -4,6 +4,7 @@ import { isHosted } from "./api/platform";
 import { BottomNav } from "./components/BottomNav";
 import { Loading } from "./components/Loading";
 import { LoginSheet } from "./components/LoginSheet";
+import { LocationPrompt } from "./components/LocationPrompt";
 import { Toast } from "./components/Toast";
 import Home from "./screens/Home";
 import Item from "./screens/Item";
@@ -70,6 +71,7 @@ export default function App() {
         </Suspense>
       </div>
       <LoginSheet />
+      <LocationPrompt />
       <Toast />
     </Router>
   );

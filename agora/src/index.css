@@ -48,3 +48,9 @@
   .sheet-enter, .scrim-enter { animation: none; }
   * { scroll-behavior: auto !important; transition-duration: 0ms !important; }
 }
+
+/* Distance slider */
+.agora-range { -webkit-appearance: none; appearance: none; height: 6px; border-radius: 3px; direction: rtl; }
+.agora-range::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; border-radius: 9999px; background: #FFFFFF; border: 2px solid #1E1E1E; box-shadow: 0 2px 8px rgba(30,30,30,.12); cursor: pointer; }
+.agora-range::-moz-range-thumb { width: 28px; height: 28px; border-radius: 9999px; background: #FFFFFF; border: 2px solid #1E1E1E; cursor: pointer; }
+.agora-range:focus-visible { outline: 2px solid #1E1E1E; outline-offset: 6px; }

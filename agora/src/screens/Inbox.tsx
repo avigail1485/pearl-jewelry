@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { subscribeThreads } from "../api/messages";
 import type { Thread } from "../api/types";
 import { Button } from "../components/Button";
+import { EmptyState } from "../components/EmptyState";
 import { Loading } from "../components/Loading";
 import { TopBar } from "../components/TopBar";
 import { usePersonName } from "../lib/hooks";
@@ -54,15 +55,13 @@ export default function Inbox() {
       <TopBar title="הודעות" />
       <main className="px-gutter">
         {!signedIn ? (
-          <div className="py-10 text-center">
-            <p className="text-body">ההודעות שלכם יופיעו כאן אחרי ההתחברות.</p>
-            <Button className="mt-4" onClick={() => askLogin()}>התחברות</Button>
-          </div>
+          <EmptyState name="verified" size={130} title="ההודעות שלכם מחכות כאן" text="התחברו כדי לפנות למוסרים ולקבל תשובות.">
+            <Button block onClick={() => askLogin()}>התחברות</Button>
+          </EmptyState>
         ) : threads === null ? <Loading /> : threads.length === 0 ? (
-          <div className="py-10 text-center">
-            <p className="text-body">עוד אין הודעות. מצאו חפץ ופנו למוסר.</p>
-            <Button className="mt-4" onClick={() => nav("/")}>לגלות חפצים</Button>
-          </div>
+          <EmptyState name="hello" size={150} title="עוד אין הודעות" text="מצאו חפץ שאהבתם ופנו למוסר. השיחה תופיע כאן.">
+            <Button block onClick={() => nav("/")}>לגלות חפצים</Button>
+          </EmptyState>
         ) : <ul>{threads.map((t) => <Row key={t.id} t={t} me={viewer!.id!} />)}</ul>}
       </main>
     </div>

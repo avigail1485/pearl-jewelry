@@ -25,7 +25,7 @@ export function BottomNav() {
                 className={`flex h-full flex-col items-center justify-center gap-1 text-nav font-light ${active ? "text-ink" : "text-placeholder"}`}
               >
                 {give ? (
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-neon text-ink">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-btn bg-neon text-ink">
                     <Icon size={22} strokeWidth={2} />
                   </span>
                 ) : (

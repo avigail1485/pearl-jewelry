@@ -21,7 +21,7 @@ export function Button({ variant = "primary", size = "md", block, icon, classNam
     <button
       type="button"
       {...rest}
-      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-demibold text-button transition-transform active:scale-[.98] disabled:opacity-40 disabled:active:scale-100 ${h} ${styles[variant]} ${block ? "w-full" : ""} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-btn font-demibold text-button transition-transform active:scale-[.98] disabled:opacity-40 disabled:active:scale-100 ${h} ${styles[variant]} ${block ? "w-full" : ""} ${className}`}
     >
       {icon}
       {children}

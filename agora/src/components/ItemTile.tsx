@@ -11,7 +11,7 @@ export { fmtKm };
 function ConditionBadge({ condition }: { condition: string }) {
   const Icon = conditionIcon(condition);
   return (
-    <span role="img" aria-label={`מצב: ${condition}`} title={condition} className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-card">
+    <span role="img" aria-label={`מצב: ${condition}`} title={condition} className="flex h-9 w-9 items-center justify-center rounded-btn bg-white shadow-card">
       <Icon size={18} strokeWidth={1.75} aria-hidden />
     </span>
   );

@@ -23,4 +23,5 @@ export const shadows = {
   nav: "0 -2px 10px rgba(30,30,30,.08)",
 };
 
-export const radii = { search: "8px", tile: "16px", sheet: "28px" };
+// Every button and chip: rectangle with 16px corners (Figma).
+export const radii = { search: "8px", tile: "16px", btn: "16px", sheet: "28px" };

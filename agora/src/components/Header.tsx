@@ -20,12 +20,12 @@ function SearchPill({ compact }: { compact: boolean }) {
   const imageSearch = useImageSearch();
   const file = useRef<HTMLInputElement>(null);
   return (
-    <div className={`relative flex min-w-0 flex-1 items-center rounded-full bg-white shadow-card transition-[height] duration-200 ${compact ? "h-11" : "h-12"}`}>
-      <button type="button" onClick={() => nav("/search")} className="flex h-full min-w-0 flex-1 items-center justify-center gap-2 rounded-full pl-11 pr-4">
+    <div className={`relative flex min-w-0 flex-1 items-center rounded-btn bg-white shadow-card transition-[height] duration-200 ${compact ? "h-11" : "h-12"}`}>
+      <button type="button" onClick={() => nav("/search")} className="flex h-full min-w-0 flex-1 items-center justify-center gap-2 rounded-btn pl-11 pr-4">
         <Search size={18} strokeWidth={2.25} aria-hidden className="shrink-0" />
         <span className="truncate text-body font-demibold">מה תרצו לחפש היום?</span>
       </button>
-      <button type="button" aria-label="חיפוש לפי תמונה" onClick={() => file.current?.click()} className="absolute left-0.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full">
+      <button type="button" aria-label="חיפוש לפי תמונה" onClick={() => file.current?.click()} className="absolute left-0.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-btn">
         <Camera size={20} strokeWidth={1.75} />
       </button>
       <input ref={file} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) imageSearch(f); e.target.value = ""; }} />

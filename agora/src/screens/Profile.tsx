@@ -10,7 +10,6 @@ import { ItemGrid } from "../components/ItemTile";
 import { Sheet } from "../components/Sheet";
 import { CITIES } from "../lib/categories";
 import { useItems } from "../store/items";
-import { useSaved } from "../store/saved";
 import { useUI } from "../store/ui";
 import { useUser } from "../store/user";
 
@@ -35,7 +34,6 @@ function CommunityCard() {
 export default function Profile() {
   const { viewer, signedIn, signOut, city, setCity } = useUser();
   const askLogin = useUI((s) => s.askLogin);
-  const saved = useSaved((s) => s.ids.length);
   const live = useItems((s) => s.live);
   const nav = useNavigate();
   const [tab, setTab] = useState<"active" | "given">("active");
@@ -59,20 +57,10 @@ export default function Profile() {
       <main className="px-gutter">
         {signedIn ? (
           <>
-            <Card className="flex items-center gap-4 p-5">
-              <div className="flex flex-1 flex-col items-center text-center">
-                <Avatar size={88} asButton={false} />
-                <p className="mt-3 max-w-full truncate text-title font-demibold">{viewer?.name || "שלום!"}</p>
-                <p className="text-meta text-ink/65">{city}</p>
-              </div>
-              <dl className="w-[96px] divide-y divide-gray-100">
-                {[["נמסרו", given.length], ["בלוח", active.length], ["אהבתי", saved]].map(([l, n]) => (
-                  <div key={l as string} className="flex flex-col py-2">
-                    <dd className="text-title font-demibold">{n}</dd>
-                    <dt className="text-meta">{l}</dt>
-                  </div>
-                ))}
-              </dl>
+            <Card className="flex flex-col items-center p-6 text-center">
+              <Avatar size={88} asButton={false} />
+              <p className="mt-3 max-w-full truncate text-title font-demibold">{viewer?.name || "שלום!"}</p>
+              <p className="text-meta text-ink/65">{city}</p>
             </Card>
             <div role="tablist" className="mt-6 flex gap-2">
               <Chip selected={tab === "active"} onClick={() => setTab("active")}>בלוח</Chip>

@@ -111,11 +111,11 @@ function Step1({ onNext }: { onNext: () => void }) {
         </div>
         {d.bg === "working" && (
           <div className="absolute inset-x-0 bottom-3 flex justify-center" aria-live="polite">
-            <span className="flex items-center gap-2 rounded-full bg-white py-1 pl-4 pr-1 text-meta shadow-card"><Anim name="loading" size={28} />מסירים את הרקע…</span>
+            <span className="flex items-center gap-2 rounded-btn bg-white py-1 pl-4 pr-1 text-meta shadow-card"><Anim name="loading" size={28} />מסירים את הרקע…</span>
           </div>
         )}
         <button type="button" aria-label="הסרת התמונה הראשית" onClick={() => d.set({ photos: d.photos.slice(1) })} className="tap absolute left-1 top-1 inline-flex items-center justify-center">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-card"><X size={18} strokeWidth={1.75} /></span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-btn bg-white shadow-card"><X size={18} strokeWidth={1.75} /></span>
         </button>
       </div>
       {d.bg === "done" && (
@@ -132,7 +132,7 @@ function Step1({ onNext }: { onNext: () => void }) {
           <div key={i} className="relative shrink-0">
             <img src={p} alt={`תמונה ${i + 2}`} className="h-20 w-20 rounded-tile bg-gray-100 object-cover" />
             <button type="button" aria-label={`הסרת תמונה ${i + 2}`} onClick={() => d.set({ photos: d.photos.filter((_, j) => j !== i + 1) })} className="tap absolute -left-3 -top-3 inline-flex items-center justify-center">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white shadow-card"><X size={14} strokeWidth={1.75} /></span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-btn bg-white shadow-card"><X size={14} strokeWidth={1.75} /></span>
             </button>
           </div>
         ))}
