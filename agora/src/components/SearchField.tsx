@@ -19,7 +19,7 @@ export function SearchField({ value, onChange, onSubmit, onFocus, onImage, autoF
     <form
       role="search"
       onSubmit={(e) => { e.preventDefault(); onSubmit?.(value ?? ""); }}
-      className={`flex h-9 min-w-0 items-center gap-2 rounded-search bg-gray-100 pr-3 ${className}`}
+      className={`flex h-9 min-w-0 items-center gap-2 rounded-search bg-gray-100 pr-4 pl-1 ${className}`}
     >
       <Search size={20} strokeWidth={1.75} className="shrink-0 text-placeholder" aria-hidden />
       <input

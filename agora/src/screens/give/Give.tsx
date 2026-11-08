@@ -1,4 +1,4 @@
-import { Check, ImagePlus, Pencil, Sparkles, X } from "lucide-react";
+import { Check, ImagePlus, LayoutGrid, Pencil, Sparkles, X } from "lucide-react";
 import { Illustration as Anim } from "../../components/Illustration";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +13,9 @@ import { Sheet } from "../../components/Sheet";
 import { Tag } from "../../components/Tag";
 import { Toggle } from "../../components/Toggle";
 import { describe, recognize, type Guess, type RecognizeResult } from "../../lib/ai";
-import { CATEGORIES, CATEGORY_ICON, CONDITIONS, SIZES, TIMES } from "../../lib/categories";
+import { CATEGORY_ICON, CATEGORY_ICONS, CONDITIONS, SIZES, TIMES } from "../../lib/categories";
+import { conditionIcon } from "../../lib/conditions";
+import { CategoryPicker } from "../../components/CategoryPicker";
 import { CityInput } from "../../components/CityInput";
 import { useRequireLogin } from "../../lib/hooks";
 import { compress } from "../../lib/image";
@@ -32,7 +34,7 @@ import type { Item } from "../../api/types";
 
 const MAX_PHOTOS = 6;
 const TITLES = ["צלמו את הפריט", "ספרו על הפריט", "איפה ומתי אוספים?", "ככה זה ייראה בלוח"];
-const STEP_ANIM = [null, "searching", "hello", "verified"] as const;
+const STEP_ANIM = [null, null, "hello", "verified"] as const;
 
 /** Small square buttons from the design: 8px corners, 36px tall (with a 44px touch area). */
 function StepButton({ tone, children, ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { tone: "neon" | "gray" }) {
@@ -165,40 +167,52 @@ function Step1({ onNext }: { onNext: () => void }) {
   const [failed, setFailed] = useState<RecognizeResult | null>(null);
   const [scanning, setScanning] = useState(false);
   const [soft, setSoft] = useState(false);
+  const runId = useRef(0);
   const main = d.photos[0];
 
-  // Fill the form from what was recognised (only fields the person has not filled).
-  const apply = (g: Guess) => {
+  // Fill the form from what was recognised. Fields the AI filled before are replaced;
+  // anything the person typed stays.
+  const apply = (g: Guess | null) => {
+    const cur = useDraft.getState(), prev = cur.auto, next: typeof prev = {}, patch: Record<string, string> = {};
+    for (const k of ["title", "category", "condition", "size", "description"] as const) {
+      const mine = cur[k] && cur[k] !== prev[k];
+      if (mine) continue;
+      const v = g?.[k] ?? "";
+      patch[k] = v;
+      if (v) next[k] = v;
+    }
+    d.set({ ...patch, auto: next });
+  };
+  const run = (thorough = false) => {
     const cur = useDraft.getState();
-    d.set({
-      title: cur.title || g.title, category: cur.category || g.category, condition: cur.condition || g.condition,
-      size: cur.size || g.size, description: cur.description || g.description,
+    const src = cur.mainHQ ?? cur.photos[0];
+    if (!src) return;
+    const token = ++runId.current;
+    setScanning(true); setFailed(null); setGuess(null);
+    Promise.all([recognize([src, ...cur.photos.slice(1, 2)], { thorough }), visualMatch(src)]).then(([r, vis]) => {
+      if (token !== runId.current) return; // a newer photo is being recognised
+      setScanning(false);
+      if (r.ok) { setGuess(r.guess); setSoft(false); apply(r.guess); return; }
+      if (vis?.guess && (vis.guess.title || vis.guess.confidence > 0.45)) {
+        const top = vis.similar[0] && useDraftItems().get(vis.similar[0].id);
+        const g: Guess = { title: vis.guess.title ?? "", category: vis.guess.category, condition: "מצב טוב", size: top?.size ?? "בינוני", description: "" };
+        setGuess(g); setSoft(true); apply(g); return;
+      }
+      apply(null);
+      setFailed(r);
     });
   };
 
   // Whenever the main photo changes: remove its background (on the device) and recognise it.
   useEffect(() => {
-    if (!main) { d.set({ cutout: null, bg: "idle" }); return; }
+    if (!main) { runId.current++; setGuess(null); setScanning(false); apply(null); d.set({ cutout: null, bg: "idle" }); return; }
     let alive = true;
     if (REMOVE_BG) {
       d.set({ cutout: null, bg: "working", useCutout: true });
       removeBackground(useDraft.getState().mainHQ ?? main).then((cut) => { if (alive) d.set({ cutout: cut, bg: cut ? "done" : "failed" }); });
     } else d.set({ cutout: null, bg: "idle", useCutout: false });
-    if (!guess) {
-      setScanning(true); setFailed(null);
-      // Claude names the item; the on-device visual match is the fallback.
-      Promise.all([recognize(d.photos), visualMatch(main)]).then(([r, vis]) => {
-        if (!alive) return;
-        setScanning(false);
-        if (r.ok) { setGuess(r.guess); setSoft(false); apply(r.guess); return; }
-        if (vis?.guess && (vis.guess.title || vis.guess.confidence > 0.45)) {
-          const top = vis.similar[0] && useDraftItems().get(vis.similar[0].id);
-          const g: Guess = { title: vis.guess.title ?? "", category: vis.guess.category, condition: "מצב טוב", size: top?.size ?? "בינוני", description: "" };
-          setGuess(g); setSoft(true); apply(g); return;
-        }
-        setFailed(r);
-      });
-    }
+    // Every new main photo is recognised from scratch (Claude first, on-device match as fallback).
+    run();
     return () => { alive = false; };
   }, [main]); // eslint-disable-line
 
@@ -288,10 +302,17 @@ function Step1({ onNext }: { onNext: () => void }) {
             <div className="mt-2 flex flex-wrap gap-1.5"><Tag>{d.category || guess.category}</Tag><Tag>{d.condition || guess.condition}</Tag><Tag>{`גודל ${d.size || guess.size}`}</Tag></div>
             {(d.description || guess.description) && <p className="mt-2 text-body">{d.description || guess.description}</p>}
             <Button block className="mt-4" icon={<Check size={20} strokeWidth={1.75} />} onClick={accept}>נראה טוב, להמשך</Button>
-            <p className="mt-2 text-center text-meta text-ink/65">משהו לא מדויק? אפשר לשנות בשלב הבא.</p>
+            <div className="mt-2 flex items-center justify-center gap-1 text-meta text-ink/65">
+              <span>לא מדויק?</span>
+              <button type="button" onClick={() => run(true)} className="inline-flex min-h-[44px] items-center rounded-btn-sm px-1 underline underline-offset-4">זיהוי מחדש</button>
+              <span>או שנו בשלב הבא.</span>
+            </div>
           </>
         ) : (
-          <p className="text-body">{failed?.ok === false && failed.reason === "unclear" ? "לא הצלחנו לזהות את החפץ בתמונה. נסו תמונה ברורה יותר, או מלאו את הפרטים בשלב הבא." : "בשלב הבא תמלאו שם ופרטים."}</p>
+          <div>
+            <p className="text-body">{failed?.ok === false && failed.reason === "unclear" ? "לא הצלחנו לזהות את החפץ בתמונה. נסו תמונה ברורה יותר, או מלאו את הפרטים בשלב הבא." : failed?.ok === false && failed.reason === "declined" ? "הזיהוי האוטומטי כבוי. אפשר למלא את הפרטים בשלב הבא." : "בשלב הבא תמלאו שם ופרטים."}</p>
+            {failed && <button type="button" onClick={() => run(true)} className="mt-1 inline-flex min-h-[44px] items-center rounded-btn-sm text-body underline underline-offset-4">נסו לזהות שוב</button>}
+          </div>
         )}
       </Card>
     </div>
@@ -302,6 +323,7 @@ function Step1({ onNext }: { onNext: () => void }) {
 function Step2() {
   const d = useDraft();
   const [writing, setWriting] = useState(false);
+  const [catOpen, setCatOpen] = useState(false);
   const toast = useUI((s) => s.showToast);
   const write = async () => {
     setWriting(true);
@@ -309,20 +331,37 @@ function Step2() {
     setWriting(false);
     if (t) d.set({ description: t }); else toast("לא הצלחנו לכתוב תיאור כרגע. אפשר לכתוב בעצמכם.");
   };
+  const CatIcon = CATEGORY_ICONS[d.category] ?? LayoutGrid;
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[365px] space-y-5">
       <div>
         <label htmlFor="title" className="text-body font-demibold">מה מוסרים?</label>
-        <input id="title" value={d.title} maxLength={40} onChange={(e) => d.set({ title: e.target.value })} placeholder="למשל: ספה תלת־מושבית" className="mt-2 h-12 w-full rounded-search bg-gray-100 px-3 text-body" />
+        <input id="title" value={d.title} maxLength={40} onChange={(e) => d.set({ title: e.target.value })} placeholder="למשל: ספה תלת־מושבית" className="mt-2 h-12 w-full rounded-btn bg-gray-100 px-4 text-body" />
       </div>
-      <fieldset>
-        <legend className="text-body font-demibold">קטגוריה</legend>
-        <div className="mt-2 flex flex-wrap gap-2">{CATEGORIES.map((c) => <Chip key={c} selected={d.category === c} onClick={() => d.set({ category: c })}>{c}</Chip>)}</div>
-      </fieldset>
+
+      <div>
+        <p className="text-body font-demibold" id="cat-label">קטגוריה</p>
+        <button type="button" aria-labelledby="cat-label" onClick={() => setCatOpen(true)} className="mt-2 flex h-12 w-full items-center gap-3 rounded-btn bg-gray-100 px-4 text-right">
+          <CatIcon size={20} strokeWidth={1.75} aria-hidden />
+          <span className={`flex-1 text-body ${d.category ? "" : "text-ink/65"}`}>{d.category || "בחירת קטגוריה"}</span>
+          <span className="text-meta underline underline-offset-4">שינוי</span>
+        </button>
+      </div>
+
       <fieldset>
         <legend className="text-body font-demibold">מצב</legend>
-        <div className="mt-2 flex flex-wrap gap-2">{CONDITIONS.map((c) => <Chip key={c} selected={d.condition === c} onClick={() => d.set({ condition: c })}>{c}</Chip>)}</div>
+        <div className="mt-2 grid grid-cols-4 gap-2">
+          {CONDITIONS.map((c) => {
+            const Icon = conditionIcon(c), on = d.condition === c;
+            return (
+              <button key={c} type="button" aria-pressed={on} onClick={() => d.set({ condition: c })} className={`flex h-[68px] flex-col items-center justify-center gap-1 rounded-btn-sm px-1 text-nav leading-tight ${on ? "bg-ink font-demibold text-white" : "bg-gray-100"}`}>
+                <Icon size={20} strokeWidth={1.75} aria-hidden />{c}
+              </button>
+            );
+          })}
+        </div>
       </fieldset>
+
       <div>
         <div className="flex items-center justify-between gap-2">
           <label htmlFor="desc" className="text-body font-demibold">תיאור <span className="font-light text-ink/65">(לא חובה)</span></label>
@@ -330,8 +369,13 @@ function Step2() {
             <Sparkles size={16} strokeWidth={1.75} aria-hidden />{writing ? "כותבים…" : "כתבו לי תיאור"}
           </button>
         </div>
-        <textarea id="desc" rows={4} value={d.description} maxLength={400} onChange={(e) => d.set({ description: e.target.value })} placeholder="מידות, פגמים, כל מה שכדאי לדעת…" className="mt-2 w-full resize-none rounded-tile bg-gray-100 p-3 text-body" />
+        <textarea id="desc" rows={3} value={d.description} maxLength={400} onChange={(e) => d.set({ description: e.target.value })} placeholder="מידות, פגמים, כל מה שכדאי לדעת…" className="mt-1 w-full resize-none rounded-btn bg-gray-100 p-3 text-body" />
       </div>
+
+      <Sheet open={catOpen} onClose={() => setCatOpen(false)} label="קטגוריה">
+        <h2 className="mb-5 text-section font-light">קטגוריה</h2>
+        <CategoryPicker selected={d.category ? [d.category] : []} onToggle={(c) => { d.set({ category: c }); setCatOpen(false); }} />
+      </Sheet>
     </div>
   );
 }

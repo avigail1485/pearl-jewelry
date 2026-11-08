@@ -30,7 +30,7 @@ Return JSON only, no prose:
 
 Category guide: furniture, kitchenware, decor and home items → "ריהוט וכלי בית"; appliances and electronics → "מוצרי חשמל"; anything for babies or children → "לתינוק ולילד"; sports, music, games, hobbies, travel gear → "תחביבים וספורט"; books, DVDs, records → "ספרים ומדיה"; clothes, shoes, bags → "בגדים ואופנה"; everything else → "שונות".`;
 
-export async function recognize(photos: string | string[]): Promise<RecognizeResult> {
+export async function recognize(photos: string | string[], opts: { thorough?: boolean } = {}): Promise<RecognizeResult> {
   const list = (Array.isArray(photos) ? photos : [photos]).filter(Boolean).slice(0, 2);
   try {
     const sample = await getSample();
@@ -38,7 +38,8 @@ export async function recognize(photos: string | string[]): Promise<RecognizeRes
     const lim = await sample.limits?.().catch(() => null);
     if (!lim?.images) return { ok: false, reason: "unavailable" };
     const images = await Promise.all(list.slice(0, lim.images.maxCount ?? 1).map(dataUrlToBlob));
-    const out = await sample.json(PROMPT, { images, modelTier: "quick" });
+    // cache: false — every photo is looked at afresh, never a replayed answer
+    const out = await sample.json(PROMPT, { images, modelTier: opts.thorough ? "default" : "quick", cache: false });
     if (!out || typeof out !== "object" || out.clear === false || !out.title) return { ok: false, reason: "unclear" };
     return {
       ok: true,
@@ -66,7 +67,7 @@ export async function describe(photos: string[], title: string, condition: strin
 Item: ${title || "(see photo)"}. Condition: ${condition || "unknown"}.
 ${images ? "Use only what is visible in the attached photo(s): colour, material, size hints, visible wear." : ""}
 Two or three short, plain sentences, plural addressing ("אתם"), no emojis, no prices, no phone numbers, nothing you cannot see. Return only the description text.`;
-    const { text } = await sample(prompt, images ? { images, modelTier: "quick" } : { modelTier: "quick" });
+    const { text } = await sample(prompt, images ? { images, modelTier: "quick", cache: false } : { modelTier: "quick", cache: false });
     const t = String(text || "").trim().replace(/^["״]|["״]$/g, "");
     return t ? t.slice(0, 400) : null;
   } catch {
