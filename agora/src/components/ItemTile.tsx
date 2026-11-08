@@ -8,11 +8,15 @@ import { SaveButton } from "./SaveButton";
 
 export { fmtKm };
 
+/** Condition icon; on hover it opens into a 16px-rounded label with the condition's name. */
 function ConditionBadge({ condition }: { condition: string }) {
   const Icon = conditionIcon(condition);
   return (
-    <span role="img" aria-label={`מצב: ${condition}`} title={condition} className="flex h-9 w-9 items-center justify-center rounded-btn-sm bg-white shadow-card">
-      <Icon size={18} strokeWidth={1.75} aria-hidden />
+    <span title={condition} className="group/cond flex h-9 items-center rounded-btn bg-white px-[9px] shadow-card">
+      <Icon size={18} strokeWidth={1.75} aria-hidden className="shrink-0" />
+      <span className="max-w-0 overflow-hidden whitespace-nowrap text-meta opacity-0 transition-all duration-200 ease-out group-hover/cond:mr-1.5 group-hover/cond:max-w-[120px] group-hover/cond:opacity-100">
+        {condition}
+      </span>
     </span>
   );
 }
@@ -25,13 +29,15 @@ export function ItemCard({ item, eager, big }: { item: Item; eager?: boolean; bi
   return (
     <article className="relative" data-reveal>
       <Link to={`/item/${item.id}`} aria-label={`${item.title} · ${item.condition} · ${item.city}`} className="block rounded-tile">
-        <ItemImage item={item} eager={eager} iconSize={big ? 72 : 48} className={`${big ? "aspect-[4/3.4]" : "aspect-square"} w-full rounded-tile`} />
+        <span className="relative block">
+          <ItemImage item={item} eager={eager} iconSize={big ? 72 : 48} className={`${big ? "aspect-[4/3.4]" : "aspect-square"} w-full rounded-tile`} />
+          <span className="absolute right-2 top-2 z-10"><ConditionBadge condition={item.condition} /></span>
+        </span>
         <p className="mt-2 flex items-center gap-1 text-meta">
           <MapPin size={16} strokeWidth={1.75} aria-hidden className="shrink-0" />
           <span className="truncate">{item.city}</span>
         </p>
       </Link>
-      <div className="pointer-events-none absolute right-2 top-2"><ConditionBadge condition={item.condition} /></div>
       <div className="absolute left-0 top-0"><SaveButton id={item.id} title={item.title} /></div>
     </article>
   );
