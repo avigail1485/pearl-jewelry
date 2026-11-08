@@ -4,7 +4,7 @@
 [id="Group 40"]{animation-delay:-1.5s}
 [id="Group 41"]{animation-delay:-2.25s}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-7px) rotate(-2deg)}50%{transform:translateY(0) rotate(0)}75%{transform:translateY(-3px) rotate(1.5deg)}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+
 </style>
 
 <g id="iPhone 17 - 1" clip-path="url(#clip0_35_56)">

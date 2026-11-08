@@ -9,7 +9,7 @@ import { Logo, Pinwheel } from "./Icon";
 function BellButton() {
   const nav = useNavigate();
   return (
-    <button type="button" aria-label="הודעות" onClick={() => nav("/inbox")} className="tap inline-flex shrink-0 items-center justify-center">
+    <button type="button" aria-label="הודעות" onClick={() => nav("/inbox")} className="tap inline-flex shrink-0 items-center justify-center rounded-btn-sm">
       <Bell size={24} strokeWidth={1.75} />
     </button>
   );
@@ -26,7 +26,7 @@ function SearchPill({ compact }: { compact: boolean }) {
         <Search size={18} strokeWidth={1.75} aria-hidden className="shrink-0 text-ink/65" />
         <span className="truncate text-body font-light text-ink/65">מה מחפשים?</span>
       </button>
-      <button type="button" aria-label="חיפוש לפי תמונה" onClick={() => file.current?.click()} className="absolute left-0.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-btn">
+      <button type="button" aria-label="חיפוש לפי תמונה" onClick={() => file.current?.click()} className="absolute left-0.5 top-1/2 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-btn-sm">
         <Camera size={20} strokeWidth={1.75} />
       </button>
       <input ref={file} type="file" accept="image/*" hidden onChange={(e) => { const f = e.target.files?.[0]; if (f) imageSearch(f); e.target.value = ""; }} />
@@ -55,8 +55,8 @@ export function Header({ tabs }: { tabs?: ReactNode }) {
           </div>
         </div>
       </div>
-      <div className={`flex items-center gap-1 px-gutter ${compact ? "h-16" : "pb-3 pt-1"}`}>
-        {compact && <Link to="/" aria-label="אגורה · ראשי" className="tap -mr-1 ml-1 inline-flex shrink-0 items-center justify-center"><Pinwheel size={32} /></Link>}
+      <div className={`flex items-center gap-4 px-gutter ${compact ? "h-16" : "pb-3 pt-1"}`}>
+        {compact && <Link to="/" aria-label="אגורה · ראשי" className="tap -mr-1 inline-flex shrink-0 items-center justify-center rounded-btn-sm"><Pinwheel size={32} /></Link>}
         <SearchPill compact={compact} />
         <BellButton />
         {compact && <Avatar />}

@@ -11,6 +11,7 @@
     "build:artifact:photos": "tsc -b && VITE_VARIANT=photos vite build --mode artifact --outDir dist-artifact-photos && node scripts/make-artifact.mjs dist-artifact-photos artifact-photos/index.html \"אגורה · תמונות אמיתיות\""
   },
   "dependencies": {
+    "gsap": "^3.12.5",
     "lucide-react": "^0.460.0",
     "onnxruntime-web": "^1.20.1",
     "react": "^18.3.1",

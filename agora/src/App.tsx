@@ -11,6 +11,7 @@ import Home from "./screens/Home";
 import Item from "./screens/Item";
 import { useItems } from "./store/items";
 import { scrollToTop } from "./lib/scroll";
+import { pageIn, ScrollTrigger } from "./lib/motion";
 import { useUser } from "./store/user";
 
 const Welcome = lazy(() => import("./screens/Welcome"));
@@ -38,7 +39,7 @@ function FirstRun({ children }: { children: ReactNode }) {
 
 function ScrollTop() {
   const { pathname } = useLocation();
-  useEffect(() => { scrollToTop(); }, [pathname]);
+  useEffect(() => { scrollToTop(); pageIn(document.getElementById("page")); requestAnimationFrame(() => ScrollTrigger.refresh()); }, [pathname]);
   return null;
 }
 
@@ -52,6 +53,7 @@ export default function App() {
       <ScrollTop />
       <div id="app-frame" className="app-frame">
       <div id="scroll-root" className="h-full overflow-y-auto overscroll-contain bg-white">
+      <div id="page" className="min-h-full">
         <Suspense fallback={<Loading />}>
           <FirstRun>
             <Routes>
@@ -72,6 +74,7 @@ export default function App() {
             </Routes>
           </FirstRun>
         </Suspense>
+      </div>
       </div>
       <LoginSheet />
       <LocationPrompt />

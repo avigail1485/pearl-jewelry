@@ -27,6 +27,7 @@ import { useDraft } from "../../store/giveDraft";
 import { useUI } from "../../store/ui";
 import { useUser } from "../../store/user";
 import { scrollToTop } from "../../lib/scroll";
+import { stepIn } from "../../lib/motion";
 import type { Item } from "../../api/types";
 
 const MAX_PHOTOS = 6;
@@ -39,7 +40,7 @@ function StepButton({ tone, children, ...rest }: React.ButtonHTMLAttributes<HTML
     <button
       type="button"
       {...rest}
-      className={`relative inline-flex h-9 min-w-[75px] items-center justify-center rounded-[8px] px-4 text-button after:absolute after:-inset-y-1 after:inset-x-0 disabled:opacity-40 ${tone === "neon" ? "bg-neon font-demibold" : "bg-gray-100 font-light"}`}
+      className={`relative inline-flex h-9 min-w-[75px] items-center justify-center rounded-btn-sm px-4 text-button after:absolute after:-inset-y-1 after:inset-x-0 disabled:opacity-40 ${tone === "neon" ? "bg-neon font-demibold" : "bg-gray-100 font-light"}`}
     >
       {children}
     </button>
@@ -48,6 +49,9 @@ function StepButton({ tone, children, ...rest }: React.ButtonHTMLAttributes<HTML
 
 export default function Give() {
   const [step, setStep] = useState(1);
+  const prevStep = useRef(1);
+  const stepRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { if (step !== prevStep.current) stepIn(stepRef.current, step > prevStep.current ? 1 : -1); prevStep.current = step; }, [step]);
   const d = useDraft();
   const nav = useNavigate();
   const city = useUser((s) => s.city);
@@ -64,7 +68,7 @@ export default function Give() {
     <div className="flex min-h-full flex-col bg-white">
       <header className="pt-safe">
         <div className="flex h-12 items-center px-3">
-          <button type="button" aria-label="סגירה" onClick={() => (history.length > 1 ? nav(-1) : nav("/"))} className="tap inline-flex items-center justify-center rounded-[8px]">
+          <button type="button" aria-label="סגירה" onClick={() => (history.length > 1 ? nav(-1) : nav("/"))} className="tap inline-flex items-center justify-center rounded-btn-sm">
             <X size={24} strokeWidth={1.75} />
           </button>
         </div>
@@ -80,7 +84,7 @@ export default function Give() {
                   aria-label={`שלב ${n}: ${TITLES[n - 1]}`}
                   disabled={!reachable}
                   onClick={() => setStep(n)}
-                  className={`relative flex h-9 w-[41px] items-center justify-center rounded-[8px] text-section font-demibold leading-none after:absolute after:-inset-1 ${n === step ? "bg-green-100" : "bg-gray-100"} disabled:cursor-default`}
+                  className={`relative flex h-9 w-[41px] items-center justify-center rounded-btn-sm text-section font-demibold leading-none after:absolute after:-inset-1 ${n === step ? "bg-green-100" : "bg-gray-100"} disabled:cursor-default`}
                 >
                   {n}
                 </button>
@@ -91,6 +95,7 @@ export default function Give() {
       </header>
 
       <main className="flex-1 px-gutter pb-[120px] pt-12">
+        <div ref={stepRef}>
         <h1 className="text-center text-section font-demibold">{TITLES[step - 1]}</h1>
         {anim && <div className="mt-3 flex justify-center"><Illustration name={anim} size={96} /></div>}
         <div className={step === 1 ? "mt-0" : "mt-5"}>
@@ -98,6 +103,7 @@ export default function Give() {
           {step === 2 && <Step2 />}
           {step === 3 && <Step3 />}
           {step === 4 && <Step4 goto={setStep} />}
+        </div>
         </div>
       </main>
 
@@ -239,11 +245,11 @@ function Step1({ onNext }: { onNext: () => void }) {
         </div>
         {d.bg === "working" && (
           <div className="absolute inset-x-0 bottom-3 flex justify-center" aria-live="polite">
-            <span className="flex items-center gap-2 rounded-btn bg-white py-1 pl-4 pr-1 text-meta shadow-card"><Anim name="loading" size={28} />מסירים את הרקע…</span>
+            <span className="flex items-center gap-2 rounded-btn-sm bg-white py-1 pl-4 pr-1 text-meta shadow-card"><Anim name="loading" size={28} />מסירים את הרקע…</span>
           </div>
         )}
         <button type="button" aria-label="הסרת התמונה הראשית" onClick={() => d.set({ photos: d.photos.slice(1), mainHQ: null })} className="tap absolute left-1 top-1 inline-flex items-center justify-center">
-          <span className="flex h-9 w-9 items-center justify-center rounded-btn bg-white shadow-card"><X size={18} strokeWidth={1.75} /></span>
+          <span className="flex h-9 w-9 items-center justify-center rounded-btn-sm bg-white shadow-card"><X size={18} strokeWidth={1.75} /></span>
         </button>
       </div>
       {d.bg === "done" && (
@@ -260,7 +266,7 @@ function Step1({ onNext }: { onNext: () => void }) {
           <div key={i} className="relative shrink-0">
             <img src={p} alt={`תמונה ${i + 2}`} className="h-20 w-20 rounded-tile bg-gray-100 object-cover" />
             <button type="button" aria-label={`הסרת תמונה ${i + 2}`} onClick={() => d.set({ photos: d.photos.filter((_, j) => j !== i + 1) })} className="tap absolute -left-3 -top-3 inline-flex items-center justify-center">
-              <span className="flex h-7 w-7 items-center justify-center rounded-btn bg-white shadow-card"><X size={14} strokeWidth={1.75} /></span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-btn-sm bg-white shadow-card"><X size={14} strokeWidth={1.75} /></span>
             </button>
           </div>
         ))}
@@ -320,7 +326,7 @@ function Step2() {
       <div>
         <div className="flex items-center justify-between gap-2">
           <label htmlFor="desc" className="text-body font-demibold">תיאור <span className="font-light text-ink/65">(לא חובה)</span></label>
-          <button type="button" onClick={write} disabled={writing} className="inline-flex min-h-[44px] items-center gap-1.5 rounded-[8px] px-2 text-body disabled:opacity-50">
+          <button type="button" onClick={write} disabled={writing} className="inline-flex min-h-[44px] items-center gap-1.5 rounded-btn-sm px-2 text-body disabled:opacity-50">
             <Sparkles size={16} strokeWidth={1.75} aria-hidden />{writing ? "כותבים…" : "כתבו לי תיאור"}
           </button>
         </div>

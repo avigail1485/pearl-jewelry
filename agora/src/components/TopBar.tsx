@@ -6,7 +6,7 @@ export function BackButton({ onClick, className = "" }: { onClick?: () => void; 
   const nav = useNavigate();
   const loc = useLocation();
   return (
-    <button type="button" aria-label="חזרה" onClick={onClick ?? (() => (loc.key !== "default" ? nav(-1) : nav("/")))} className={`tap inline-flex items-center justify-center rounded-btn ${className}`}>
+    <button type="button" aria-label="חזרה" onClick={onClick ?? (() => (loc.key !== "default" ? nav(-1) : nav("/")))} className={`tap inline-flex items-center justify-center rounded-btn-sm ${className}`}>
       <ArrowRight size={24} strokeWidth={1.75} />
     </button>
   );

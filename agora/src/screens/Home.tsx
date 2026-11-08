@@ -1,5 +1,6 @@
 import { ChevronLeft } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useParallax, useScrollReveal } from "../lib/motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { CategoryTabs } from "../components/CategoryTabs";
@@ -23,6 +24,10 @@ export default function Home() {
   const near = [...all].filter((i) => i.distanceKm <= 15).sort((a, b) => a.distanceKm - b.distanceKm).slice(0, 12);
   const fresh = all.slice(0, 12);
   const byCat = CATEGORIES.map((c) => ({ c, items: all.filter((i) => i.category === c).slice(0, 12) })).filter((r) => r.items.length >= 2);
+  const mainRef = useRef<HTMLElement>(null);
+  const artRef = useRef<HTMLDivElement>(null);
+  useScrollReveal(mainRef, [cat, all.length, viewed.length]);
+  useParallax(artRef);
   const showAll = (categories: string[] = cat ? [cat] : []) => { setFilters({ categories, q: "", sort: "new", maxKm: null, cities: [], conditions: [] }); nav("/results"); };
   const Row = ({ title, items, onMore }: { title: string; items: typeof all; onMore: () => void }) => (
     <section className="mt-7">
@@ -37,9 +42,9 @@ export default function Home() {
   return (
     <>
       <Header tabs={<CategoryTabs value={cat} onChange={(c) => { setCat(c); scrollToTop(); }} />} />
-      <main className="px-gutter pb-10">
+      <main ref={mainRef} className="px-gutter pb-10">
         {!cat && (
-          <div className="-mx-gutter mt-4 px-2" aria-hidden>
+          <div ref={artRef} className="-mx-gutter mt-4 origin-top px-2" aria-hidden>
             <Illustration name="community" size="full" eager />
           </div>
         )}

@@ -1,5 +1,6 @@
 import { ArrowUpDown, BellPlus, LayoutGrid, List, MapPin, SlidersHorizontal, X } from "lucide-react";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useScrollReveal } from "../lib/motion";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "../components/Button";
 import { CategoryPicker } from "../components/CategoryPicker";
@@ -22,7 +23,7 @@ const TITLES: Record<Section, string> = { cat: "קטגוריה", cond: "מצב �
 
 function FilterButton({ label, icon, active, onClick }: { label: string; icon: ReactNode; active: boolean; onClick: () => void }) {
   return (
-    <button type="button" aria-pressed={active} onClick={onClick} className={`relative flex h-11 shrink-0 items-center gap-1.5 rounded-btn border px-3 text-body ${active ? "border-ink bg-ink font-demibold text-white" : "border-gray-100 bg-white"}`}>
+    <button type="button" aria-pressed={active} onClick={onClick} className={`relative flex h-11 shrink-0 items-center gap-1.5 rounded-btn-sm border px-3 text-body ${active ? "border-ink bg-ink font-demibold text-white" : "border-gray-100 bg-white"}`}>
       {icon}{label}
     </button>
   );
@@ -42,11 +43,13 @@ export default function Results() {
   useEffect(() => { ls.set("agora.view", view); }, [view]);
 
   const res = applyFilters(items, f);
+  const mainRef = useRef<HTMLElement>(null);
+  useScrollReveal(mainRef, [res.map((r) => r.id).join(","), view]);
   const count = activeCount(f);
   const alert = () => toast("נעדכן אתכם כשיעלו חפצים חדשים");
   const title = f.similar ? (f.similar.label ? `דומים ל${f.similar.label}` : "חפצים דומים לתמונה") : f.q || (f.categories.length === 1 ? f.categories[0] : f.categories.length ? f.categories.join(", ") : "כל הפריטים");
-  const where = f.maxKm ? `עד ${f.maxKm} ק"מ מ${city}` : "כל הארץ";
-  const subtitle = `${where} · ${f.conditions.length ? f.conditions.join(", ") : "כל המצבים"}`;
+  // second line only for filters that are actually on
+  const subtitle = [f.maxKm ? `עד ${f.maxKm} ק"מ מ${city}` : null, f.conditions.length ? f.conditions.join(", ") : null].filter(Boolean).join(" · ");
   const CatIcon = f.categories.length === 1 ? CATEGORY_ICONS[f.categories[0]] : CATEGORY_ICONS["שונות"];
   const CondIcon = f.conditions.length === 1 ? conditionIcon(f.conditions[0]) : conditionIcon("מצב טוב");
 
@@ -59,14 +62,14 @@ export default function Results() {
           <BackButton onClick={() => nav("/")} />
           <button type="button" onClick={() => nav("/search")} className="flex min-h-[52px] min-w-0 flex-1 flex-col items-center justify-center rounded-btn bg-white px-4 shadow-card">
             <h1 className="max-w-full truncate text-body font-demibold">{title}</h1>
-            <p className="max-w-full truncate text-meta text-ink/65">{subtitle}</p>
+            {subtitle && <p className="max-w-full truncate text-meta text-ink/65">{subtitle}</p>}
           </button>
           <button
             type="button"
             aria-label="סינון מתקדם"
             aria-expanded={showFilters}
             onClick={() => setShowFilters((v) => !v)}
-            className={`tap relative inline-flex items-center justify-center rounded-btn border ${showFilters ? "border-ink bg-ink text-white" : "border-gray-100"}`}
+            className={`tap relative inline-flex items-center justify-center rounded-btn-sm border ${showFilters ? "border-ink bg-ink text-white" : "border-gray-100"}`}
           >
             <SlidersHorizontal size={20} strokeWidth={1.75} />
             {count > 0 && !showFilters && <span aria-hidden className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-neon ring-2 ring-white" />}
@@ -82,12 +85,12 @@ export default function Results() {
         )}
       </header>
 
-      <main className="px-gutter pb-10">
+      <main ref={mainRef} className="px-gutter pb-10">
         {f.similar && (
           <div className="mb-4 flex items-center gap-3 rounded-tile bg-gray-100 p-3">
             <img src={f.similar.thumb} alt="התמונה שחיפשתם" className="h-14 w-14 rounded-btn object-cover" />
             <p className="min-w-0 flex-1 text-body">{f.similar.label ? <>זיהינו: <b className="font-demibold">{f.similar.label}</b>. אלה החפצים שהכי דומים.</> : "אלה החפצים בלוח שהכי דומים לתמונה."}</p>
-            <button type="button" aria-label="ביטול החיפוש לפי תמונה" onClick={() => f.set({ similar: null })} className="tap inline-flex items-center justify-center rounded-btn"><X size={20} strokeWidth={1.75} /></button>
+            <button type="button" aria-label="ביטול החיפוש לפי תמונה" onClick={() => f.set({ similar: null })} className="tap inline-flex items-center justify-center rounded-btn-sm"><X size={20} strokeWidth={1.75} /></button>
           </div>
         )}
         {res.length === 0 ? (
@@ -98,12 +101,12 @@ export default function Results() {
         ) : (
           <>
             <div className="flex items-center justify-between pb-2">
-              <button type="button" onClick={alert} className="inline-flex min-h-[44px] items-center gap-1.5 whitespace-nowrap rounded-btn text-body underline underline-offset-4">
+              <button type="button" onClick={alert} className="inline-flex min-h-[44px] items-center gap-1.5 whitespace-nowrap rounded-btn-sm text-body underline underline-offset-4">
                 <BellPlus size={18} strokeWidth={1.75} aria-hidden />התראה על חדשים
               </button>
               <div className="flex shrink-0 items-center">
-                <button type="button" aria-label="תצוגת רשימה" aria-pressed={view === "list"} onClick={() => setView("list")} className={`tap inline-flex items-center justify-center rounded-btn ${view === "list" ? "" : "text-ink/65"}`}><List size={20} strokeWidth={view === "list" ? 2.25 : 1.75} /></button>
-                <button type="button" aria-label="תצוגת גריד" aria-pressed={view === "grid"} onClick={() => setView("grid")} className={`tap inline-flex items-center justify-center rounded-btn ${view === "grid" ? "" : "text-ink/65"}`}><LayoutGrid size={20} strokeWidth={view === "grid" ? 2.25 : 1.75} /></button>
+                <button type="button" aria-label="תצוגת רשימה" aria-pressed={view === "list"} onClick={() => setView("list")} className={`tap inline-flex items-center justify-center rounded-btn-sm ${view === "list" ? "" : "text-ink/65"}`}><List size={20} strokeWidth={view === "list" ? 2.25 : 1.75} /></button>
+                <button type="button" aria-label="תצוגת גריד" aria-pressed={view === "grid"} onClick={() => setView("grid")} className={`tap inline-flex items-center justify-center rounded-btn-sm ${view === "grid" ? "" : "text-ink/65"}`}><LayoutGrid size={20} strokeWidth={view === "grid" ? 2.25 : 1.75} /></button>
               </div>
             </div>
             <h2 className="sr-only">תוצאות</h2>
@@ -124,7 +127,7 @@ export default function Results() {
                   const Icon = conditionIcon(c);
                   const on = f.conditions.includes(c);
                   return (
-                    <button key={c} type="button" aria-pressed={on} onClick={() => f.toggle("conditions", c)} className={`flex h-14 items-center gap-2 rounded-btn px-4 text-body ${on ? "bg-ink font-demibold text-white" : "bg-gray-100"}`}>
+                    <button key={c} type="button" aria-pressed={on} onClick={() => f.toggle("conditions", c)} className={`flex h-14 items-center gap-2 rounded-btn-sm px-4 text-body ${on ? "bg-ink font-demibold text-white" : "bg-gray-100"}`}>
                       <Icon size={20} strokeWidth={1.75} aria-hidden />{c}
                     </button>
                   );

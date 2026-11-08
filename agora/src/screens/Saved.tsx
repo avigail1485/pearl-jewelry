@@ -1,4 +1,6 @@
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { useScrollReveal } from "../lib/motion";
 import { Button } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { ItemGrid } from "../components/ItemTile";
@@ -10,10 +12,12 @@ export default function Saved() {
   const all = useAllItems();
   const items = ids.map((id) => all.find((i) => i.id === id)).filter(Boolean) as typeof all;
   const nav = useNavigate();
+  const mainRef = useRef<HTMLElement>(null);
+  useScrollReveal(mainRef, [items.length]);
   return (
     <div className="min-h-full pb-8 pt-safe">
       <header className="px-gutter pb-3 pt-5"><h1 className="text-section font-light">אהבתי</h1></header>
-      <main className="px-gutter">
+      <main ref={mainRef} className="px-gutter">
         {items.length === 0 ? (
           <EmptyState name="saved-empty" size={170} title="עוד לא שמרתם חפצים" text="לחצו על הלב בחפץ שאהבתם, והוא יחכה לכם כאן.">
             <Button block onClick={() => nav("/")}>לגלות חפצים</Button>

@@ -1,0 +1,12 @@
+{
+  "name": "אגורה · לתת זה לקבל",
+  "short_name": "אגורה",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FFFFFF",
+  "icons": [{ "src": "./assets/icons/logo-neon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}

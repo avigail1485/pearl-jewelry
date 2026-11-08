@@ -11,18 +11,6 @@ const NATURAL: Record<IllustrationName, [number, number]> = {
   community: [520, 147], loading: [96, 96],
 };
 
-function useReducedMotion() {
-  const q = "(prefers-reduced-motion: reduce)";
-  const [r, setR] = useState(() => typeof matchMedia !== "undefined" && matchMedia(q).matches);
-  useEffect(() => {
-    const m = matchMedia(q);
-    const f = () => setR(m.matches);
-    m.addEventListener?.("change", f);
-    return () => m.removeEventListener?.("change", f);
-  }, []);
-  return r;
-}
-
 interface Props {
   name: IllustrationName;
   /** display width in px; "full" stretches to the container width (keeps ratio) */
@@ -33,7 +21,7 @@ interface Props {
 }
 
 export function Illustration({ name, size, alt = "", eager, className = "" }: Props) {
-  const reduced = useReducedMotion();
+  const reduced = false; // the animations always play (they are gentle, built-in loops)
   const [nw, nh] = NATURAL[name];
   const w = size === "full" ? nw : size;
   const h = Math.round((w * nh) / nw);

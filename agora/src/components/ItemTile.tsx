@@ -11,7 +11,7 @@ export { fmtKm };
 function ConditionBadge({ condition }: { condition: string }) {
   const Icon = conditionIcon(condition);
   return (
-    <span role="img" aria-label={`מצב: ${condition}`} title={condition} className="flex h-9 w-9 items-center justify-center rounded-btn bg-white shadow-card">
+    <span role="img" aria-label={`מצב: ${condition}`} title={condition} className="flex h-9 w-9 items-center justify-center rounded-btn-sm bg-white shadow-card">
       <Icon size={18} strokeWidth={1.75} aria-hidden />
     </span>
   );
@@ -23,7 +23,7 @@ function ConditionBadge({ condition }: { condition: string }) {
  */
 export function ItemCard({ item, eager, big }: { item: Item; eager?: boolean; big?: boolean }) {
   return (
-    <article className="relative">
+    <article className="relative" data-reveal>
       <Link to={`/item/${item.id}`} aria-label={`${item.title} · ${item.condition} · ${item.city}`} className="block rounded-tile">
         <ItemImage item={item} eager={eager} iconSize={big ? 72 : 48} className={`${big ? "aspect-[4/3.4]" : "aspect-square"} w-full rounded-tile`} />
         <p className="mt-2 flex items-center gap-1 text-meta">

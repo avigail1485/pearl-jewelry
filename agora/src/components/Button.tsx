@@ -16,12 +16,12 @@ const styles: Record<Variant, string> = {
 };
 
 export function Button({ variant = "primary", size = "md", block, icon, className = "", children, ...rest }: Props) {
-  const h = variant === "link" ? "min-h-[44px] px-2" : size === "md" ? "h-12 px-6" : "h-10 px-5 relative after:absolute after:-inset-y-[2px] after:inset-x-0";
+  const h = variant === "link" ? "min-h-[44px] px-2 rounded-btn-sm" : size === "md" ? "h-12 px-6 rounded-btn" : "h-10 px-5 rounded-btn-sm relative after:absolute after:-inset-y-[2px] after:inset-x-0";
   return (
     <button
       type="button"
       {...rest}
-      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-btn font-demibold text-button transition-transform active:scale-[.98] disabled:opacity-40 disabled:active:scale-100 ${h} ${styles[variant]} ${block ? "w-full" : ""} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 whitespace-nowrap font-demibold text-button transition-transform active:scale-[.98] disabled:opacity-40 disabled:active:scale-100 ${h} ${styles[variant]} ${block ? "w-full" : ""} ${className}`}
     >
       {icon}
       {children}

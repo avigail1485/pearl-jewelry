@@ -58,7 +58,7 @@ export default function Chat() {
         <div className="flex w-full items-center gap-2 pb-3">
           <label htmlFor="chat-in" className="sr-only">הודעה</label>
           <input id="chat-in" value={text} onChange={(e) => setText(e.target.value)} placeholder="כתבו הודעה…" className="h-11 flex-1 rounded-btn bg-gray-100 px-4 text-body" />
-          <button type="submit" aria-label="שליחה" disabled={!text.trim()} className="tap inline-flex items-center justify-center rounded-btn bg-ink text-white disabled:opacity-40">
+          <button type="submit" aria-label="שליחה" disabled={!text.trim()} className="tap inline-flex items-center justify-center rounded-btn-sm bg-ink text-white disabled:opacity-40">
             <Send size={20} strokeWidth={1.75} className="-scale-x-100" />
           </button>
         </div>
