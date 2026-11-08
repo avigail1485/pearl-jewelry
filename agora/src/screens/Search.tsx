@@ -3,12 +3,12 @@ import { useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
+import { CityInput } from "../components/CityInput";
 import { CategoryPicker } from "../components/CategoryPicker";
 import { DistanceSlider } from "../components/DistanceSlider";
 import { Illustration } from "../components/Illustration";
 import { SearchField } from "../components/SearchField";
 import { TopBar } from "../components/TopBar";
-import { CITIES } from "../lib/categories";
 import { detectCity } from "../lib/locate";
 import { useImageSearch } from "../lib/useImageSearch";
 import { useFilters } from "../store/filters";
@@ -64,12 +64,7 @@ export default function Search() {
         <div className="space-y-3">
           <Option id="where" open={open} setOpen={setOpen} icon={<MapPin size={24} strokeWidth={1.75} />} title="לפי מיקום" summary={f.maxKm ? `עד ${f.maxKm} ק"מ` : "כל הארץ"}>
             <div className="flex items-end gap-2">
-              <div className="min-w-0 flex-1">
-                <label htmlFor="city" className="text-meta text-ink/65">האזור שלי</label>
-                <select id="city" value={city} onChange={(e) => setCity(e.target.value)} className="mt-1 h-12 w-full rounded-btn bg-gray-100 px-3 text-body">
-                  {CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
+              <div className="min-w-0 flex-1"><CityInput value={city} onPick={setCity} label="האזור שלי" /></div>
               <Button variant="secondary" disabled={locating} onClick={locate} icon={<LocateFixed size={20} strokeWidth={1.75} />} className="!px-4">{locating ? "מזהים…" : "זיהוי"}</Button>
             </div>
             <div className="mt-6">

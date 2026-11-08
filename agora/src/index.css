@@ -29,6 +29,11 @@
   input::placeholder, textarea::placeholder { @apply text-placeholder; opacity: 1; }
   :focus { outline: none; }
   :focus-visible { outline: 2px solid #1E1E1E; outline-offset: 2px; }
+  /* Text fields: no black frame while typing — the caret and a soft edge are enough */
+  input:not([type="range"]):focus-visible, textarea:focus-visible, select:focus-visible { outline: none; }
+  input:not([type="range"]):focus, textarea:focus, select:focus { box-shadow: 0 0 0 1px rgba(30,30,30,.18); }
+  form[role="search"] input:focus, .field input:focus { box-shadow: none; }
+  form[role="search"]:focus-within, .field:focus-within { box-shadow: 0 0 0 1px rgba(30,30,30,.18); }
 }
 
 @layer utilities {

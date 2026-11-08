@@ -1,4 +1,4 @@
-import { Check, ImagePlus, Pencil, X } from "lucide-react";
+import { Check, ImagePlus, Pencil, Sparkles, X } from "lucide-react";
 import { Illustration as Anim } from "../../components/Illustration";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -14,8 +14,9 @@ import { Sheet } from "../../components/Sheet";
 import { Tag } from "../../components/Tag";
 import { Toggle } from "../../components/Toggle";
 import { TopBar } from "../../components/TopBar";
-import { recognize, type Guess } from "../../lib/ai";
-import { CATEGORIES, CATEGORY_ICON, CITIES, CONDITIONS, SIZES, TIMES } from "../../lib/categories";
+import { recognize, type Guess, type RecognizeResult } from "../../lib/ai";
+import { CATEGORIES, CATEGORY_ICON, CONDITIONS, SIZES, TIMES } from "../../lib/categories";
+import { CityInput } from "../../components/CityInput";
 import { useRequireLogin } from "../../lib/hooks";
 import { compress } from "../../lib/image";
 import { preloadRemoveBg, removeBackground } from "../../lib/removeBg";
@@ -33,6 +34,8 @@ export default function Give() {
   const city = useUser((s) => s.city);
   useEffect(() => { if (!d.city) d.set({ city }); }, []); // eslint-disable-line
   useEffect(() => { window.scrollTo(0, 0); }, [step]);
+  // Start fetching the background-removal model while the person picks a photo.
+  useEffect(() => { preloadRemoveBg(); }, []);
 
   const back = () => (step > 1 ? setStep(step - 1) : nav(-1));
   const canNext = step === 1 ? d.photos.length > 0 : step === 2 ? !!(d.title.trim() && d.category && d.condition) : step === 3 ? !!(d.city && d.size && d.times.length) : true;
@@ -43,6 +46,12 @@ export default function Give() {
       <div className="px-gutter pb-2"><ProgressBar step={step} /></div>
       <main className="px-gutter pt-3">
         {step === 1 && <Step1 onNext={() => setStep(2)} />}
+        {step > 1 && (
+          <div className="mb-4 flex items-center gap-3">
+            <Illustration name={step === 2 ? "hello" : step === 3 ? "message-sent" : "verified"} size={72} />
+            <p className="text-body">{step === 2 ? "בדקו שהפרטים נכונים. מילאנו מה שזיהינו." : step === 3 ? "איך ומתי אפשר לאסוף?" : "כמעט שם. ככה זה ייראה בלוח."}</p>
+          </div>
+        )}
         {step === 2 && <Step2 />}
         {step === 3 && <Step3 />}
         {step === 4 && <Step4 goto={setStep} />}
@@ -61,31 +70,46 @@ function Step1({ onNext }: { onNext: () => void }) {
   const d = useDraft();
   const file = useRef<HTMLInputElement>(null);
   const [guess, setGuess] = useState<Guess | null>(null);
+  const [failed, setFailed] = useState<RecognizeResult | null>(null);
   const [scanning, setScanning] = useState(false);
   const main = d.photos[0];
+
+  // Fill the form from what was recognised (only fields the person has not filled).
+  const apply = (g: Guess) => {
+    const cur = useDraft.getState();
+    d.set({
+      title: cur.title || g.title, category: cur.category || g.category, condition: cur.condition || g.condition,
+      size: cur.size || g.size, description: cur.description || g.description,
+    });
+  };
 
   // Whenever the main photo changes: remove its background (on the device) and recognise it.
   useEffect(() => {
     if (!main) { d.set({ cutout: null, bg: "idle" }); return; }
     let alive = true;
     d.set({ cutout: null, bg: "working", useCutout: true });
-    removeBackground(main).then((cut) => { if (alive) d.set({ cutout: cut, bg: cut ? "done" : "failed" }); });
+    removeBackground(useDraft.getState().mainHQ ?? main).then((cut) => { if (alive) d.set({ cutout: cut, bg: cut ? "done" : "failed" }); });
     if (!guess) {
-      setScanning(true);
-      recognize(main).then((g) => { if (alive) { setGuess(g); setScanning(false); } });
+      setScanning(true); setFailed(null);
+      recognize(d.photos).then((r) => {
+        if (!alive) return;
+        setScanning(false);
+        if (r.ok) { setGuess(r.guess); apply(r.guess); } else setFailed(r);
+      });
     }
     return () => { alive = false; };
   }, [main]); // eslint-disable-line
 
   const add = async (files: FileList | null) => {
     if (!files?.length) return;
-    const list = await Promise.all(Array.from(files).slice(0, 4 - d.photos.length).map((f) => compress(f, 800, 0.7)));
+    const picked = Array.from(files).slice(0, 4 - d.photos.length);
+    if (!picked.length) return;
+    const list = await Promise.all(picked.map((f) => compress(f, 800, 0.7)));
+    // the first photo becomes the main one: keep a sharper copy for cutting out its background
+    if (!d.photos.length) d.set({ mainHQ: await compress(picked[0], 1280, 0.92) });
     d.set({ photos: [...d.photos, ...list].slice(0, 4) });
   };
-  const accept = () => {
-    if (guess) d.set({ title: d.title || guess.title, category: d.category || guess.category, condition: d.condition || guess.condition, description: d.description || guess.description });
-    onNext();
-  };
+  const accept = () => onNext();
   const pick = () => { preloadRemoveBg(); file.current?.click(); };
   const picker = <input ref={file} type="file" accept="image/*" multiple hidden onChange={(e) => { add(e.target.files); e.target.value = ""; }} />;
 
@@ -114,7 +138,7 @@ function Step1({ onNext }: { onNext: () => void }) {
             <span className="flex items-center gap-2 rounded-btn bg-white py-1 pl-4 pr-1 text-meta shadow-card"><Anim name="loading" size={28} />מסירים את הרקע…</span>
           </div>
         )}
-        <button type="button" aria-label="הסרת התמונה הראשית" onClick={() => d.set({ photos: d.photos.slice(1) })} className="tap absolute left-1 top-1 inline-flex items-center justify-center">
+        <button type="button" aria-label="הסרת התמונה הראשית" onClick={() => d.set({ photos: d.photos.slice(1), mainHQ: null })} className="tap absolute left-1 top-1 inline-flex items-center justify-center">
           <span className="flex h-9 w-9 items-center justify-center rounded-btn bg-white shadow-card"><X size={18} strokeWidth={1.75} /></span>
         </button>
       </div>
@@ -146,16 +170,18 @@ function Step1({ onNext }: { onNext: () => void }) {
 
       <Card className="mt-5 p-4" aria-live="polite">
         {scanning ? (
-          <div className="flex items-center gap-3"><Illustration name="loading" size={40} /><p className="text-body">מזהים את החפץ…</p></div>
+          <div className="flex items-center gap-3"><Illustration name="loading" size={40} /><div><p className="text-body font-demibold">מזהים את החפץ…</p><p className="text-meta text-ink/65">ממלאים בשבילכם את הפרטים</p></div></div>
         ) : guess?.title ? (
           <>
-            <p className="text-meta text-ink/65">זיהינו</p>
-            <p className="mt-1 text-title font-demibold">{guess.title}</p>
-            <div className="mt-2 flex flex-wrap gap-1.5"><Tag>{guess.category}</Tag><Tag>{guess.condition}</Tag></div>
+            <p className="flex items-center gap-1.5 text-meta text-ink/65"><Sparkles size={14} strokeWidth={1.75} aria-hidden />זיהינו ומילאנו את הפרטים</p>
+            <p className="mt-1 text-title font-demibold">{d.title || guess.title}</p>
+            <div className="mt-2 flex flex-wrap gap-1.5"><Tag>{d.category || guess.category}</Tag><Tag>{d.condition || guess.condition}</Tag><Tag>{`גודל ${d.size || guess.size}`}</Tag></div>
+            {(d.description || guess.description) && <p className="mt-2 text-body">{d.description || guess.description}</p>}
             <Button block className="mt-4" icon={<Check size={20} strokeWidth={1.75} />} onClick={accept}>נראה טוב, להמשך</Button>
+            <p className="mt-2 text-center text-meta text-ink/65">משהו לא מדויק? אפשר לשנות בשלב הבא.</p>
           </>
         ) : (
-          <p className="text-body">בשלב הבא תוסיפו שם ופרטים.</p>
+          <p className="text-body">{failed?.ok === false && failed.reason === "unclear" ? "לא הצלחנו לזהות את החפץ בתמונה. נסו תמונה ברורה יותר, או מלאו את הפרטים בשלב הבא." : "בשלב הבא תמלאו שם ופרטים."}</p>
         )}
       </Card>
     </div>
@@ -212,7 +238,7 @@ function Step3() {
       </div>
       <Sheet open={pick} onClose={() => setPick(false)} label="בחירת יישוב">
         <h2 className="text-section font-light">איפה אוספים?</h2>
-        <div className="mt-4 flex flex-wrap gap-2">{CITIES.map((c) => <Chip key={c} selected={d.city === c} onClick={() => { d.set({ city: c }); setCity(c); setPick(false); }}>{c}</Chip>)}</div>
+        <div className="mt-4 min-h-[320px]"><CityInput value={d.city} onPick={(c) => { d.set({ city: c }); setCity(c); setPick(false); }} label="יישוב האיסוף" autoFocus /></div>
       </Sheet>
     </div>
   );

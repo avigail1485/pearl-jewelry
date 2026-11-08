@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getPhotos, markGiven } from "../api/items";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
+import { Illustration } from "../components/Illustration";
 import { EmptyState } from "../components/EmptyState";
 import { StairsIcon } from "../components/Icon";
 import { ItemImage, itemPhoto } from "../components/ItemImage";
@@ -141,9 +142,12 @@ export default function Item() {
           </section>
         )}
 
-        <Card className="mt-6 p-4">
-          <h2 className="flex items-center gap-2 text-body font-demibold"><ShieldCheck size={20} strokeWidth={1.75} aria-hidden />מסירה בטוחה</h2>
-          <ul className="mt-2 list-disc space-y-1 pr-5 text-body">{RULES.map((r) => <li key={r}>{r}</li>)}</ul>
+        <Card className="mt-6 flex gap-3 p-4">
+          <div className="min-w-0 flex-1">
+            <h2 className="flex items-center gap-2 text-body font-demibold"><ShieldCheck size={20} strokeWidth={1.75} aria-hidden />מסירה בטוחה</h2>
+            <ul className="mt-2 list-disc space-y-1 pr-5 text-body">{RULES.map((r) => <li key={r}>{r}</li>)}</ul>
+          </div>
+          <Illustration name="verified" size={72} className="self-end" />
         </Card>
 
       </main>

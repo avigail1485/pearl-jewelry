@@ -1,7 +1,6 @@
 import { LocateFixed } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { CITIES } from "../lib/categories";
 import { detectCity } from "../lib/locate";
 import { ls } from "../lib/storage";
 import { useUI } from "../store/ui";
@@ -9,6 +8,7 @@ import { useUser } from "../store/user";
 import { Button } from "./Button";
 import { Illustration } from "./Illustration";
 import { Sheet } from "./Sheet";
+import { CityInput } from "./CityInput";
 
 /** Asked once, after the welcome screen: find the person's area so "near you" works. */
 export function LocationPrompt() {
@@ -45,11 +45,8 @@ export function LocationPrompt() {
           {manual ? "לא הצלחנו לזהות את המיקום. בחרו יישוב ונראה לכם חפצים קרובים." : "כדי להראות לכם חפצים קרובים ואת המרחק לכל אחד, צריך לאשר זיהוי מיקום. המיקום המדויק לא נשמר."}
         </p>
         {manual ? (
-          <div className="mt-5 w-full">
-            <label htmlFor="loc-city" className="sr-only">יישוב</label>
-            <select id="loc-city" value={pick} onChange={(e) => setPick(e.target.value)} className="h-12 w-full rounded-btn bg-gray-100 px-3 text-body">
-              {CITIES.map((c) => <option key={c} value={c}>{c}</option>)}
-            </select>
+          <div className="mt-5 w-full text-right">
+            <CityInput value={pick} onPick={setPick} label="היישוב שלי" autoFocus />
             <Button block className="mt-3" onClick={() => { setCity(pick); done(); }}>שמירה</Button>
           </div>
         ) : (

@@ -11,9 +11,9 @@ export function useImageSearch() {
   const toast = useUI((s) => s.showToast);
   return async (f: File) => {
     toast("מזהים את התמונה…");
-    const guess = await recognize(await compress(f, 640));
-    if (guess?.title) {
-      set({ q: guess.title.split(" ")[0], categories: [] });
+    const r = await recognize(await compress(f, 640));
+    if (r.ok) {
+      set({ q: r.guess.title.split(" ")[0], categories: [] });
       nav("/results");
     } else {
       toast("לא הצלחנו לזהות. נסו לחפש במילים.");

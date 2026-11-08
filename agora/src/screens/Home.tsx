@@ -58,6 +58,16 @@ export default function Home() {
 
         {fresh.length > 0 && <Row title="עלו עכשיו" items={fresh} onMore={() => showAll()} />}
         {near.length > 0 && <Row title={`קרוב אליך ב${city}`} items={near} onMore={() => { setFilters({ categories: cat ? [cat] : [], q: "", maxKm: 15, sort: "near", cities: [], conditions: [] }); nav("/results"); }} />}
+        {!cat && (
+          <Card className="mt-8 flex items-center gap-3 p-4">
+            <Illustration name="add-photo" size={110} />
+            <div className="min-w-0 flex-1">
+              <h2 className="text-title font-demibold">יש לכם משהו למסור?</h2>
+              <p className="mt-1 text-body">צלמו, ואנחנו נסיר את הרקע ונמלא את הפרטים.</p>
+              <Button variant="neon" size="sm" className="mt-3" onClick={() => nav("/give")}>למסור חפץ</Button>
+            </div>
+          </Card>
+        )}
         {viewed.length > 0 && <Row title="נצפו לאחרונה" items={viewed} onMore={() => showAll()} />}
         {!cat && byCat.map(({ c, items }) => <Row key={c} title={c} items={items} onMore={() => showAll([c])} />)}
         {all.length === 0 && <p className="mt-8 text-body">עוד אין כאן חפצים בקטגוריה הזאת.</p>}

@@ -4,11 +4,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { Avatar } from "../components/Avatar";
 import { Button } from "../components/Button";
 import { Card } from "../components/Card";
+import { CityInput } from "../components/CityInput";
 import { Chip } from "../components/Chip";
 import { Illustration } from "../components/Illustration";
 import { ItemGrid } from "../components/ItemTile";
 import { Sheet } from "../components/Sheet";
-import { CITIES } from "../lib/categories";
 import { useItems } from "../store/items";
 import { useUI } from "../store/ui";
 import { useUser } from "../store/user";
@@ -96,7 +96,7 @@ export default function Profile() {
       </main>
       <Sheet open={cityOpen} onClose={() => setCityOpen(false)} label="האזור שלי">
         <h2 className="text-section font-light">האזור שלי</h2>
-        <div className="mt-4 flex flex-wrap gap-2">{CITIES.map((c) => <Chip key={c} selected={city === c} onClick={() => { setCity(c); setCityOpen(false); }}>{c}</Chip>)}</div>
+        <div className="mt-4 min-h-[320px]"><CityInput value={city} onPick={(c) => { setCity(c); setCityOpen(false); }} label="היישוב שלי" autoFocus /></div>
       </Sheet>
     </div>
   );

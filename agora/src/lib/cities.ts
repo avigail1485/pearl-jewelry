@@ -1,17 +1,31 @@
-// Approximate city centres, for "how far is it" on the board.
-export const CITY_COORDS: Record<string, [number, number]> = {
-  "רמת גן": [32.068, 34.824], "תל אביב-יפו": [32.08, 34.78], "גבעתיים": [32.072, 34.81], "בני ברק": [32.084, 34.834],
-  "פתח תקווה": [32.087, 34.887], "ראשון לציון": [31.964, 34.804], "אור יהודה": [32.03, 34.855], "ראש העין": [32.096, 34.957],
-  "הרצליה": [32.166, 34.844], "רמת השרון": [32.146, 34.84], "רעננה": [32.184, 34.871], "כפר סבא": [32.175, 34.907],
-  "הוד השרון": [32.15, 34.889], "נתניה": [32.328, 34.857], "נורדיה": [32.312, 34.893], "אלעד": [32.052, 34.951],
-  "רחובות": [31.894, 34.809], "אשדוד": [31.804, 34.655], "ירושלים": [31.769, 35.214], "מעלה אדומים": [31.777, 35.3],
-  "בית שמש": [31.747, 34.989], "חיפה": [32.794, 34.99], "קרית מוצקין": [32.837, 35.078], "קרית ביאליק": [32.833, 35.086],
-  "צביה": [32.862, 35.252], "אבן יהודה": [32.27, 34.888], "באר יעקב": [31.942, 34.835], "באר שבע": [31.252, 34.791],
-  "בית הלוי": [32.355, 34.926], "בר יוחאי": [32.997, 35.448], "גני תקווה": [32.06, 34.873], "חדרה": [32.434, 34.919],
-  "חולון": [32.011, 34.779], "יקנעם עילית": [32.659, 35.105], "לוד": [31.951, 34.888], "נס ציונה": [31.93, 34.799],
-  "נשר": [32.766, 35.044], "פרדס חנה-כרכור": [32.474, 34.974], "שלומי": [33.075, 35.145],
-};
-export const CITY_LIST = Object.keys(CITY_COORDS);
+// Every locality recognised by the State of Israel (data.gov.il), with coordinates from Wikidata
+// where they exist. Used for the area picker and for "how far is it" on the board.
+import raw from "../data/cities.json";
+import rankRaw from "../data/city-rank.json";
+
+const RANK = rankRaw as Record<string, number>;
+
+export const CITY_COORDS = raw as unknown as Record<string, [number, number] | null>;
+export const CITY_LIST = Object.keys(CITY_COORDS).sort((a, b) => a.localeCompare(b, "he"));
+
+const strip = (s: string) => s.replace(/["'״׳()\-–־\s]/g, "").replace(/יי/g, "י").replace(/וו/g, "ו").replace(/קריית/g, "קרית");
+
+/** Places whose name starts with what was typed first, then places that contain it. */
+export function suggestCities(q: string, limit = 8): string[] {
+  const t = strip(q.trim());
+  if (!t) return [];
+  const starts: string[] = [], words: string[] = [], inside: string[] = [];
+  for (const c of CITY_LIST) {
+    const n = strip(c);
+    if (n.startsWith(t)) starts.push(c);
+    else if (c.split(/[\s-]/).some((w) => strip(w).startsWith(t))) words.push(c);
+    else if (n.includes(t)) inside.push(c);
+  }
+  const byRank = (a: string, b: string) => (RANK[a] ?? 3000) - (RANK[b] ?? 3000) || a.length - b.length || a.localeCompare(b, "he");
+  return [...starts.sort(byRank), ...words.sort(byRank), ...inside.sort(byRank)].slice(0, limit);
+}
+
+export const isCity = (c: string) => c in CITY_COORDS;
 
 export function distanceKm(a: string, b: string): number | null {
   const p = CITY_COORDS[a], q = CITY_COORDS[b];
