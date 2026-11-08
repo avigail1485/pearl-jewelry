@@ -9,11 +9,9 @@ import { Chip } from "../../components/Chip";
 import { StairsIcon } from "../../components/Icon";
 import { Illustration } from "../../components/Illustration";
 import { ItemImage } from "../../components/ItemImage";
-import { ProgressBar } from "../../components/ProgressBar";
 import { Sheet } from "../../components/Sheet";
 import { Tag } from "../../components/Tag";
 import { Toggle } from "../../components/Toggle";
-import { TopBar } from "../../components/TopBar";
 import { recognize, type Guess, type RecognizeResult } from "../../lib/ai";
 import { CATEGORIES, CATEGORY_ICON, CONDITIONS, SIZES, TIMES } from "../../lib/categories";
 import { CityInput } from "../../components/CityInput";
@@ -30,44 +28,126 @@ import { useUser } from "../../store/user";
 import { scrollToTop } from "../../lib/scroll";
 import type { Item } from "../../api/types";
 
-const TITLES = ["תמונות", "פרטים", "איסוף", "סיכום"];
+const MAX_PHOTOS = 6;
+const TITLES = ["צלמו את הפריט", "ספרו על הפריט", "איפה ומתי אוספים?", "ככה זה ייראה בלוח"];
+const STEP_ANIM = [null, "searching", "hello", "verified"] as const;
+
+/** Small square buttons from the design: 8px corners, 36px tall (with a 44px touch area). */
+function StepButton({ tone, children, ...rest }: React.ButtonHTMLAttributes<HTMLButtonElement> & { tone: "neon" | "gray" }) {
+  return (
+    <button
+      type="button"
+      {...rest}
+      className={`relative inline-flex h-9 min-w-[75px] items-center justify-center rounded-[8px] px-4 text-button after:absolute after:-inset-y-1 after:inset-x-0 disabled:opacity-40 ${tone === "neon" ? "bg-neon font-demibold" : "bg-gray-100 font-light"}`}
+    >
+      {children}
+    </button>
+  );
+}
 
 export default function Give() {
   const [step, setStep] = useState(1);
   const d = useDraft();
   const nav = useNavigate();
   const city = useUser((s) => s.city);
+  const publisher = usePublish();
   useEffect(() => { if (!d.city) d.set({ city }); }, []); // eslint-disable-line
   useEffect(() => { scrollToTop(); }, [step]);
-  // Start fetching the background-removal model while the person picks a photo.
+  // Start fetching the on-device models while the person picks a photo.
   useEffect(() => { preloadRemoveBg(); preloadVisual(); }, []);
 
-  const back = () => (step > 1 ? setStep(step - 1) : nav(-1));
-  const canNext = step === 1 ? d.photos.length > 0 : step === 2 ? !!(d.title.trim() && d.category && d.condition) : step === 3 ? !!(d.city && d.size && d.times.length) : true;
+  const valid = (n: number) => n === 1 ? true : n === 2 ? !!(d.title.trim() && d.category && d.condition) : n === 3 ? !!(d.city && d.size && d.times.length) : true;
+  const anim = STEP_ANIM[step - 1];
 
   return (
-    <div className="min-h-full pb-[110px]">
-      <TopBar title={<span>למסור <span className="text-meta font-light text-ink/65">· שלב {step} מתוך 4 · {TITLES[step - 1]}</span></span>} onBack={back} />
-      <div className="px-gutter pb-2"><ProgressBar step={step} /></div>
-      <main className="px-gutter pt-3">
-        {step === 1 && <Step1 onNext={() => setStep(2)} />}
-        {step > 1 && (
-          <div className="mb-4 flex items-center gap-3">
-            <Illustration name={step === 2 ? "hello" : step === 3 ? "message-sent" : "verified"} size={72} />
-            <p className="text-body">{step === 2 ? "בדקו שהפרטים נכונים. מילאנו מה שזיהינו." : step === 3 ? "איך ומתי אפשר לאסוף?" : "כמעט שם. ככה זה ייראה בלוח."}</p>
-          </div>
-        )}
-        {step === 2 && <Step2 />}
-        {step === 3 && <Step3 />}
-        {step === 4 && <Step4 goto={setStep} />}
-      </main>
-      {step < 4 && !(step === 1 && d.photos.length === 0) && (
-        <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-app bg-white px-gutter pb-safe pt-3 shadow-nav">
-          <div className="pb-3"><Button block disabled={!canNext} onClick={() => setStep(step + 1)}>להמשך</Button></div>
+    <div className="flex min-h-full flex-col bg-white">
+      <header className="pt-safe">
+        <div className="flex h-12 items-center px-3">
+          <button type="button" aria-label="סגירה" onClick={() => (history.length > 1 ? nav(-1) : nav("/"))} className="tap inline-flex items-center justify-center rounded-[8px]">
+            <X size={24} strokeWidth={1.75} />
+          </button>
         </div>
-      )}
+        <p className="text-center text-body font-demibold">מסרו חפץ ב-4 צעדים פשוטים</p>
+        <ol className="mt-4 flex justify-center gap-6" aria-label="שלבים">
+          {[1, 2, 3, 4].map((n) => {
+            const reachable = n <= step || [...Array(n - 1)].every((_, k) => valid(k + 1));
+            return (
+              <li key={n}>
+                <button
+                  type="button"
+                  aria-current={n === step ? "step" : undefined}
+                  aria-label={`שלב ${n}: ${TITLES[n - 1]}`}
+                  disabled={!reachable}
+                  onClick={() => setStep(n)}
+                  className={`relative flex h-9 w-[41px] items-center justify-center rounded-[8px] text-section font-demibold leading-none after:absolute after:-inset-1 ${n === step ? "bg-green-100" : "bg-gray-100"} disabled:cursor-default`}
+                >
+                  {n}
+                </button>
+              </li>
+            );
+          })}
+        </ol>
+      </header>
+
+      <main className="flex-1 px-gutter pb-[120px] pt-12">
+        <h1 className="text-center text-section font-demibold">{TITLES[step - 1]}</h1>
+        {anim && <div className="mt-3 flex justify-center"><Illustration name={anim} size={96} /></div>}
+        <div className={step === 1 ? "mt-0" : "mt-5"}>
+          {step === 1 && <Step1 onNext={() => setStep(2)} />}
+          {step === 2 && <Step2 />}
+          {step === 3 && <Step3 />}
+          {step === 4 && <Step4 goto={setStep} />}
+        </div>
+      </main>
+
+      <footer className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-app bg-white pb-safe">
+        <div className="flex items-center justify-center gap-4 py-6">
+          {step < 4 ? (
+            <StepButton tone="neon" disabled={!valid(step)} onClick={() => setStep(step + 1)}>הבא</StepButton>
+          ) : (
+            <StepButton tone="neon" disabled={publisher.busy} onClick={publisher.go}>{publisher.busy ? "מפרסמים…" : "פרסום בלוח"}</StepButton>
+          )}
+          {step === 1 ? (
+            <StepButton tone="gray" onClick={() => setStep(2)}>דילוג</StepButton>
+          ) : (
+            <StepButton tone="gray" onClick={() => setStep(step - 1)}>חזרה</StepButton>
+          )}
+        </div>
+      </footer>
     </div>
   );
+}
+
+/** Publishing (needs a logged-in person). */
+function usePublish() {
+  const d = useDraft();
+  const toast = useUI((s) => s.showToast);
+  const requireLogin = useRequireLogin();
+  const nav = useNavigate();
+  const [busy, setBusy] = useState(false);
+  const publish = async () => {
+    const me = useUser.getState().viewer?.id;
+    if (!me) { toast("צריך להתחבר כדי לפרסם"); return; }
+    setBusy(true);
+    try {
+      const cur = useDraft.getState();
+      const cut = cur.useCutout && cur.cutout ? cur.cutout : null;
+      const mainSrc = cut ?? cur.photos[0];
+      const thumb = mainSrc ? await compress(await (await fetch(mainSrc)).blob(), 360, 0.75, cut ? "image/webp" : "image/jpeg") : undefined;
+      const item: Omit<Item, "id"> = {
+        title: cur.title.trim(), category: cur.category, icon: CATEGORY_ICON[cur.category] ?? "box", condition: cur.condition,
+        city: cur.city, distanceKm: 0.5, createdAt: Date.now(), size: cur.size, times: cur.times, stairs: cur.stairs,
+        description: cur.description.trim(), seller: { id: me, name: "", given: 0 }, status: "active", ownerId: me, cutout: !!cut,
+        ...(thumb ? { thumb } : {}),
+      };
+      const id = await publishItem(item, cut ? [cut, ...cur.photos.slice(1)] : cur.photos);
+      d.reset();
+      nav(`/give/published/${id}`, { replace: true });
+    } catch {
+      toast("הפרסום לא הצליח. נסו שוב.");
+    } finally { setBusy(false); }
+  };
+  return { busy, go: () => requireLogin(publish) };
 }
 
 /* ---------- 1 · photos + automatic recognition ---------- */
@@ -115,12 +195,12 @@ function Step1({ onNext }: { onNext: () => void }) {
 
   const add = async (files: FileList | null) => {
     if (!files?.length) return;
-    const picked = Array.from(files).slice(0, 4 - d.photos.length);
+    const picked = Array.from(files).slice(0, MAX_PHOTOS - d.photos.length);
     if (!picked.length) return;
     const list = await Promise.all(picked.map((f) => compress(f, 800, 0.7)));
     // the first photo becomes the main one: keep a sharper copy for cutting out its background
     if (!d.photos.length) d.set({ mainHQ: await compress(picked[0], 1280, 0.92) });
-    d.set({ photos: [...d.photos, ...list].slice(0, 4) });
+    d.set({ photos: [...d.photos, ...list].slice(0, MAX_PHOTOS) });
   };
   const accept = () => onNext();
   const pick = () => { preloadRemoveBg(); file.current?.click(); };
@@ -128,11 +208,19 @@ function Step1({ onNext }: { onNext: () => void }) {
 
   if (!d.photos.length) {
     return (
-      <div className="flex flex-col items-center pt-6 text-center">
-        <Illustration name="add-photo" size={160} />
-        <h2 className="mt-4 text-title font-demibold">צלמו את החפץ</h2>
-        <p className="mt-1 text-body">תמונה ברורה באור טבעי. נסיר את הרקע, נזהה את החפץ וננסח בשבילכם את הפרטים.</p>
-        <Button block className="mt-6" icon={<ImagePlus size={20} strokeWidth={1.75} />} onClick={pick}>צילום או בחירת תמונה</Button>
+      <div className="relative mx-auto mt-[86px] max-w-[365px]">
+        {/* the skateboarder rolls in over the top edge of the box */}
+        <div className="pointer-events-none absolute inset-x-0 -top-[78px] z-10 flex justify-center">
+          <Illustration name="message-sent" size={136} eager />
+        </div>
+        <button
+          type="button"
+          onClick={pick}
+          className="flex aspect-square w-full flex-col items-center justify-end rounded-tile border-[1.5px] border-dashed border-ink bg-gray-100 pb-16 text-center"
+        >
+          <span className="text-section font-demibold leading-none">הוספת תמונות</span>
+          <span className="mt-2 text-body">ניתן להוסיף עד 6 תמונות</span>
+        </button>
         {picker}
       </div>
     );
@@ -142,8 +230,8 @@ function Step1({ onNext }: { onNext: () => void }) {
   return (
     <div>
       {/* main photo */}
-      <div className="relative">
-        <div className="aspect-square w-full overflow-hidden rounded-tile bg-gray-100">
+      <div className="relative mx-auto mt-6 max-w-[365px]">
+        <div className="aspect-square w-full overflow-hidden rounded-tile border-[1.5px] border-dashed border-ink bg-gray-100">
           <img src={showCut ? d.cutout! : main} alt="התמונה הראשית" className={`h-full w-full ${showCut ? "object-contain p-[9%]" : "object-cover"}`} />
         </div>
         {d.bg === "working" && (
@@ -156,7 +244,7 @@ function Step1({ onNext }: { onNext: () => void }) {
         </button>
       </div>
       {d.bg === "done" && (
-        <div role="radiogroup" aria-label="רקע התמונה" className="mt-3 flex gap-2">
+        <div role="radiogroup" aria-label="רקע התמונה" className="mx-auto mt-3 flex max-w-[365px] justify-center gap-2">
           <Chip selected={d.useCutout} onClick={() => d.set({ useCutout: true })}>בלי רקע</Chip>
           <Chip selected={!d.useCutout} onClick={() => d.set({ useCutout: false })}>רקע מקורי</Chip>
         </div>
@@ -164,7 +252,7 @@ function Step1({ onNext }: { onNext: () => void }) {
       {d.bg === "failed" && <p className="mt-3 text-meta text-ink/65">לא הצלחנו להסיר את הרקע בתמונה הזאת. היא תפורסם כמו שהיא.</p>}
 
       {/* more photos */}
-      <div className="no-scrollbar mt-4 flex gap-3 overflow-x-auto">
+      <div className="no-scrollbar mx-auto mt-4 flex max-w-[365px] gap-3 overflow-x-auto">
         {d.photos.slice(1).map((p, i) => (
           <div key={i} className="relative shrink-0">
             <img src={p} alt={`תמונה ${i + 2}`} className="h-20 w-20 rounded-tile bg-gray-100 object-cover" />
@@ -173,7 +261,7 @@ function Step1({ onNext }: { onNext: () => void }) {
             </button>
           </div>
         ))}
-        {d.photos.length < 4 && (
+        {d.photos.length < MAX_PHOTOS && (
           <button type="button" onClick={pick} className="flex h-20 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-tile bg-gray-100 text-meta">
             <ImagePlus size={22} strokeWidth={1.75} aria-hidden />הוספה
           </button>
@@ -181,7 +269,7 @@ function Step1({ onNext }: { onNext: () => void }) {
       </div>
       {picker}
 
-      <Card className="mt-5 p-4" aria-live="polite">
+      <Card className="mx-auto mt-5 max-w-[365px] p-4" aria-live="polite">
         {scanning ? (
           <div className="flex items-center gap-3"><Illustration name="loading" size={40} /><div><p className="text-body font-demibold">מזהים את החפץ…</p><p className="text-meta text-ink/65">ממלאים בשבילכם את הפרטים</p></div></div>
         ) : guess?.title ? (
@@ -260,33 +348,6 @@ function Step3() {
 /* ---------- 4 · summary + publish ---------- */
 function Step4({ goto }: { goto: (n: number) => void }) {
   const d = useDraft();
-  const { viewer } = useUser();
-  const toast = useUI((s) => s.showToast);
-  const requireLogin = useRequireLogin();
-  const nav = useNavigate();
-  const [busy, setBusy] = useState(false);
-
-  const publish = async () => {
-    const me = useUser.getState().viewer?.id;
-    if (!me) { toast("צריך להתחבר כדי לפרסם"); return; }
-    setBusy(true);
-    try {
-      const cut = d.useCutout && d.cutout ? d.cutout : null;
-      const mainSrc = cut ?? d.photos[0];
-      const thumb = await compress(await (await fetch(mainSrc)).blob(), 360, 0.75, cut ? "image/webp" : "image/jpeg");
-      const item: Omit<Item, "id"> = {
-        title: d.title.trim(), category: d.category, icon: CATEGORY_ICON[d.category] ?? "box", condition: d.condition,
-        city: d.city, distanceKm: 0.5, createdAt: Date.now(), size: d.size, times: d.times, stairs: d.stairs,
-        description: d.description.trim(), seller: { id: me, name: "", given: 0 }, status: "active", thumb, ownerId: me, cutout: !!cut,
-      };
-      const id = await publishItem(item, cut ? [cut, ...d.photos.slice(1)] : d.photos);
-      d.reset();
-      nav(`/give/published/${id}`, { replace: true });
-    } catch {
-      toast("הפרסום לא הצליח. נסו שוב.");
-    } finally { setBusy(false); }
-  };
-
   const cutMain = d.useCutout && d.cutout ? d.cutout : null;
   const preview = { id: "draft", title: d.title, category: d.category, icon: CATEGORY_ICON[d.category] ?? "box", cutout: !!cutMain } as Item;
   const Row = ({ label, value, to }: { label: string; value: string; to: number }) => (
@@ -304,7 +365,7 @@ function Step4({ goto }: { goto: (n: number) => void }) {
           <h2 className="text-title font-demibold">{d.title}</h2>
           <div className="mt-2 flex flex-wrap gap-1.5"><Tag>{d.category}</Tag><Tag>{d.condition}</Tag></div>
           <div className="mt-3">
-            <Row label="תמונות" value={`${d.photos.length} תמונות`} to={1} />
+            <Row label="תמונות" value={d.photos.length ? "נוספו תמונות" : "בלי תמונה"} to={1} />
             {d.description && <Row label="תיאור" value={d.description} to={2} />}
             <Row label="איסוף" value={`${d.city} · ${d.times.join(", ")}`} to={3} />
             <Row label="גודל" value={`${d.size}${d.stairs ? " · יש מדרגות" : ""}`} to={3} />
@@ -312,12 +373,6 @@ function Step4({ goto }: { goto: (n: number) => void }) {
         </div>
       </Card>
       <p className="mt-4 text-meta text-ink/65">החפץ יופיע בלוח לכל הקהילה. אפשר לסמן אותו כנמסר בכל רגע.</p>
-      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-app bg-white px-gutter pb-safe pt-3 shadow-nav">
-        <div className="pb-3">
-          <Button variant="neon" block disabled={busy} onClick={() => requireLogin(publish)}>{busy ? "מפרסמים…" : "פרסום בלוח"}</Button>
-          {!viewer && <span className="sr-only">נדרשת התחברות</span>}
-        </div>
-      </div>
     </div>
   );
 }
