@@ -1,0 +1,50 @@
+@font-face {
+  font-family: "Gloria";
+  src: url("/assets/fonts/gloria-light-aaa.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Gloria";
+  src: url("/assets/fonts/gloria-demibold-aaa.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    @apply bg-white text-ink font-sans font-light text-body antialiased;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+  }
+  button { @apply font-sans; }
+  input, textarea, select { @apply font-sans font-light text-ink; }
+  input::placeholder, textarea::placeholder { @apply text-placeholder; opacity: 1; }
+  :focus { outline: none; }
+  :focus-visible { outline: 2px solid #1E1E1E; outline-offset: 2px; }
+}
+
+@layer utilities {
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+  .pt-safe { padding-top: env(safe-area-inset-top); }
+  .h-nav-safe { height: calc(75px + env(safe-area-inset-bottom)); }
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .tap { min-width: 44px; min-height: 44px; }
+}
+
+.sheet-enter { animation: sheet-up 240ms cubic-bezier(.2,.8,.2,1); }
+.scrim-enter { animation: fade-in 200ms ease-out; }
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .sheet-enter, .scrim-enter { animation: none; }
+  * { scroll-behavior: auto !important; transition-duration: 0ms !important; }
+}
